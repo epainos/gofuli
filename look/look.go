@@ -149,13 +149,13 @@ func MyColor(ext string) tcell.Style {
 		myColor = d.Foreground(tcell.ColorYellowGreen) //.Background((tcell.ColorGreen))
 	} else if hasExtension(ext, []string{"html", "htm"}) { //인터넷 파일
 		myColor = d.Foreground(tcell.ColorDodgerBlue) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"exe", "com", "app"}) { //실행 파일
+	} else if hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //실행 파일
 		myColor = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorYellow).Bold(true), d.Foreground(tcell.ColorSkyblue).Background((tcell.ColorDarkSlateGray)).Bold(true))
-	} else if hasExtension(ext, []string{"iso", "dmg"}) { //오피스파일
+	} else if hasExtension(ext, []string{"iso", "dmg"}) { //이미지 파일
 		myColor = d.Foreground(tcell.ColorPeru) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"dwg", "dxg", "dng"}) { //캐드파일
+	} else if hasExtension(ext, []string{"dwg", "dxg", "dgn"}) { //캐드파일
 		myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"", ""}) { //오피스파일
+	} else if hasExtension(ext, []string{"", ""}) { //
 		myColor = d.Foreground(tcell.ColorCadetBlue) //.Background((tcell.ColorGreen))
 	} else {
 		//기본 색상
