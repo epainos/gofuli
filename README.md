@@ -65,7 +65,7 @@ key                  | function
 `T`                  | open tab menu
 `space`              | Toggle mark
 `M-=` `              | Invert mark
-`C-l`  ``           | Reload
+`C-l`  `'`           | refresh screen
 `i`                  | Open by pager
 `s`                  | Sort
 `v`                  | View
@@ -102,7 +102,8 @@ key                  | function
 `z`               | unzip file to neighbor dir
 `Z`               | unzip file go this dir
 
-**f2, f5, f6, f7 use External command(rename, copy, move, mkdir)
+**f2, f5, f6, f7 do External command(rename, copy, move, mkdir)
+external command is more fast and comfortable in some cases. but 'refresh screen' is needed because goful doesn't know it has been finished. 
 
 
 
@@ -113,7 +114,7 @@ For more see [main.go](main.go)
 
 ### Copy and Move
 
-Copy (default `c`) and move (default `m`) mark (default `space` and invert
+Copy (default `c`, external command `f5`) and move (default `m`, `f6`) mark (default `space` and invert
 `C-space`) files.
 
 ![demo_copy](.github/demo_copy.gif)
@@ -264,12 +265,12 @@ Install after edit `my/goful/main.go`
 [Contributing Guide](.github/CONTRIBUTING.md)
 
 
-## what is difference between https://github.com/anmitsu/goful
-add fuction
+### difference between https://github.com/anmitsu/goful
+#add fuction
 * set color by extension 
 * add History. so you can go back to previous folder
 
-some tweaks for windows user
+#some tweaks for windows user
 * quote symbol changed to ' not  ". windows have troubles using ". 
 * windows cmd changed to powershell
 * \ changed to /. so 'c:\users\bilbo' -> c:/users/bilbo'
