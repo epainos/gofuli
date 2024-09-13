@@ -6,7 +6,7 @@
 
 Goful is a CUI file manager written in Go.
 
-* Works on cross-platform such as gnome-terminal, osx and windows terminal.
+* Works on cross-platform such as gnome-terminal, osx and windows terminal(cmd.exe is ok but not recommended. powershell or windows terminal is better).
 * Displays multiple windows and workspaces
 * A command line to execute using such as bash and tmux
 * Provides filtering search, async copy, glob, bulk rename, etc.
@@ -65,7 +65,7 @@ key                  | function
 `T`                  | open tab menu
 `space`              | Toggle mark
 `M-=` `              | Invert mark
-`C-l`  `'`           | Reload
+`C-l`  ``           | Reload
 `i`                  | Open by pager
 `s`                  | Sort
 `v`                  | View
@@ -83,7 +83,7 @@ key                  | function
 `m` `f6` `Xm`        | Move
 `r` `f2` `Xr`        | Rename
 `R`                  | Bulk rename by regexp
-`D` `delete'         | Remove
+`D` `delete`         | Remove
 `d`                  | Change directory
 `g`                  | Glob
 `G`                  | Glob recursive
@@ -100,7 +100,7 @@ key                  | function
 `a`              | zip marked files, dirs to neighbor dir
 `A`               | zip marked files, dirs to this dir
 `z`               | unzip file to neighbor dir
-`z`               | unzip file go this dir
+`Z`               | unzip file go this dir
 
 **f2, f5, f6, f7 use External command(rename, copy, move, mkdir)
 
@@ -211,7 +211,7 @@ If goful is running in tmux, it creates a new window and executes the command.
 macro        | expanded string
 -------------|------------------
 `%f` `%F`   | File name/path on cursor 
-`%x` `%X`   | File name/path with extension excluded on cursor
+`%x` `%X`   | File name/path without extension on cursor
 `%e`        | File extension only on cursor
 `%m` `%M`   | Marked file names/paths joined by spaces
 `%d` `%D`   | Directory name/path on cursor
