@@ -37,28 +37,30 @@ key                  | function
 ---------------------|-----------
 `C-n` `down` `j`     | Move cursor down
 `C-p` `up` `k`       | Move cursor up
-`C-a` `home` `^` `I`     | Move cursor top
-`C-e` `end` `$`      | Move cursor bottom
+`C-a` `home` `^` `I` | Move cursor top
+`C-e` `end` `$` `U`  | Move cursor bottom
 `C-f` `C-i` `right` `l`| Move cursor right
 `C-b` `left` `h`     | Move cursor left
-`C-d`                | More move cursor down
-`C-u`                | More move cursor up
+`C-d` `u`            | More move cursor down
+`C-u` `i`            | More move cursor up
 `C-v` `pgdn`         | Page down
 `M-v` `pgup`         | Page up
 `M-n`                | Scroll down
 `M-p`                | Scroll up
-`C-h` `backspace` `u`| Change to upper directory
+`C-h` `backspace` `left` `h`| Change to upper directory
+`enter` `o` `l` `left`| open selected directory or file
 `~`                  | Change to home directory
 `\`                  | Change to root directory
-`w`                  | Change to neighbor directory
+`w`                  | Change to neighbor directory to this one
+`W`                  | Change to this directory to neighbor's
 `C-o`                | Create directory window
 `C-w`                | Close directory window
-`M-f`                | Move next workspace
+`M-f` `tab`               | Move next workspace
 `M-b`                | Move previous workspace
-`M-C-o`              | Create workspace
-`M-C-w`              | Close workspace
+`C-o`                | Create workspace
+`C-w`                | Close workspace
 `space`              | Toggle mark
-`M-=`                | Invert mark
+`M-=` `\``               | Invert mark
 `C-l`                | Reload
 `C-m` `o`            | Open
 `i`                  | Open by pager
