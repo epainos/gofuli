@@ -6,7 +6,7 @@
 
 Goful is a CUI file manager written in Go.
 
-* Works on cross-platform such as gnome-terminal and wwindows terminal.
+* Works on cross-platform such as gnome-terminal, osx and windows terminal.
 * Displays multiple windows and workspaces
 * A command line to execute using such as bash and tmux
 * Provides filtering search, async copy, glob, bulk rename, etc.
@@ -37,7 +37,7 @@ key                  | function
 ---------------------|-----------
 `C-n` `down` `j`     | Move cursor down
 `C-p` `up` `k`       | Move cursor up
-`C-a` `home` `^`     | Move cursor top
+`C-a` `home` `^` `I`     | Move cursor top
 `C-e` `end` `$`      | Move cursor bottom
 `C-f` `C-i` `right` `l`| Move cursor right
 `C-b` `left` `h`     | Move cursor left
