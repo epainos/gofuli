@@ -269,12 +269,12 @@ Install after edit `my/goful/main.go`
 
 ### add fuction
 * set color by extension 
-* add History. so you can go back to previous folder
+* History. so you can go back to previous folder you've been
 
 ### some tweaks for windows user
 * quote symbol changed to ' not  ". windows have troubles using ". 
 * windows cmd changed to powershell
-* \ changed to /. so 'c:\users\bilbo' -> c:/users/bilbo'
+* \ changed to /  ('c:\users\bilbo' -> c:/users/bilbo')
 * 7z is main archive manager. zip, tar files are compressed and unzipped with 7z. 
 * fastcopy(fcp) is copy manager in WINDOWS. so I let 7z.exe and fcp.exe to 'bin' folder. you can use it or download it by yourself
 7z: https://7-zip.org/a/7z2408-extra.7z

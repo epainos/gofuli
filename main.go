@@ -291,10 +291,10 @@ func config(g *app.Goful, is_tmux bool) {
 	// )
 
 	menu.Add("bookmark",
-		"d", "~/          홈", func() { g.Dir().Chdir("~") },
-		"k", "~/Desktop   바탕화면 ", func() { g.Dir().Chdir("~/Desktop") },
-		"c", "~/Documents 내문서", func() { g.Dir().Chdir("~/Documents") },
-		"l", "~/Downloads 다운로드", func() { g.Dir().Chdir("~/Downloads") },
+		"d", "~/            홈", func() { g.Dir().Chdir("~") },
+		"k", "~/Desktop     바탕화면 ", func() { g.Dir().Chdir("~/Desktop") },
+		"c", "~/Documents   내문서", func() { g.Dir().Chdir("~/Documents") },
+		"l", "~/Downloads   다운로드", func() { g.Dir().Chdir("~/Downloads") },
 	)
 	if runtime.GOOS == "windows" {
 		menu.Add("bookmark",
@@ -418,8 +418,8 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"C-w":   func() { g.Workspace().CloseDir() },
 		"C-l":   func() { g.Workspace().ReloadAll() },
 		"'":     func() { g.Dir().Reset(); g.Workspace().ReloadAll() },
-		"A":     func() { g.Shell(`7z a '%~d.zip' %M`, -7) },                                 //반대쪽 창에 압축파일 생성
-		"a":     func() { g.Shell(`7z a '%~D2/%~d.zip' %M`, -7); g.Workspace().ReloadAll() }, //같은 창에 압축파일 생성
+		"A":     func() { g.Shell(`7z a '%~d.zip' %M`, -7) },                                 //같은 창에 압축파일 생성
+		"a":     func() { g.Shell(`7z a '%~D2/%~d.zip' %M`, -7); g.Workspace().ReloadAll() }, //반대쪽 창에 압축파일 생성
 
 		"Z": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) },
 		"z": func() { g.Shell(`7z x '%~F' -o'%~D2/%~x'`) },
