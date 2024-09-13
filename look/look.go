@@ -2,6 +2,10 @@
 package look
 
 import (
+	"regexp"
+	"runtime"
+	"strings"
+
 	"github.com/gdamore/tcell/v2"
 )
 
@@ -14,6 +18,8 @@ func Set(name string) {
 		setMidnight()
 	case "black":
 		setBlack()
+	case "original":
+		setOriginal()
 	case "white":
 		setWhite()
 	default:
@@ -105,6 +111,62 @@ func Executable() tcell.Style { return executable }
 // SetExecutable sets an executable file look.
 func SetExecutable(s tcell.Style) { executable = s }
 
+// ifElse 함수 정의
+func ifElse(condition bool, trueVal, falseVal tcell.Style) tcell.Style {
+	if condition {
+		return trueVal
+	}
+	return falseVal
+}
+
+// 확장자 확인
+func hasExtension(text string, extensions []string) bool {
+	// 정규 표현식 생성
+	regexStr := "^.*\\.(" + strings.Join(extensions, "|") + ")$"
+	re := regexp.MustCompile(regexStr)
+
+	// 정규 표현식 매칭
+	return re.MatchString(text)
+}
+
+// Executable is an executable file look.
+func MyColor(ext string) tcell.Style {
+	if ext == "" {
+		return myColor
+	}
+
+	d := tcell.StyleDefault
+
+	if hasExtension(ext, []string{"zip", "gz", "tar", "tgz", "bx2", "xz", "txz", "rar"}) { //압축파일
+		myColor = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorBurlyWood), d.Foreground(tcell.ColorBurlyWood)) //.Background((tcell.ColorGreen))
+	} else if hasExtension(ext, []string{"doc", "docx", "ppt", "pptx", "xls", "xlsx", "hwp", "hwpx"}) { //오피스파일
+		myColor = d.Foreground(tcell.ColorSkyblue) //.Background((tcell.ColorGreen))
+	} else if hasExtension(ext, []string{"pdf", ""}) { //pdf파일
+		myColor = d.Foreground(tcell.ColorCadetBlue) //.Background((tcell.ColorGreen))
+	} else if hasExtension(ext, []string{"jpg", "png", "jpeg", "gif", "bmp"}) { //이미지 파일
+		myColor = d.Foreground(tcell.ColorGreenYellow) //.Background((tcell.ColorGreen))
+	} else if hasExtension(ext, []string{"mp4", "mov"}) { //영상 파일
+		myColor = d.Foreground(tcell.ColorYellowGreen) //.Background((tcell.ColorGreen))
+	} else if hasExtension(ext, []string{"html", "htm"}) { //인터넷 파일
+		myColor = d.Foreground(tcell.ColorDodgerBlue) //.Background((tcell.ColorGreen))
+	} else if hasExtension(ext, []string{"exe", "com", "app"}) { //실행 파일
+		myColor = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorYellow).Bold(true), d.Foreground(tcell.ColorSkyblue).Background((tcell.ColorDarkSlateGray)).Bold(true))
+	} else if hasExtension(ext, []string{"iso", "dmg"}) { //오피스파일
+		myColor = d.Foreground(tcell.ColorPeru) //.Background((tcell.ColorGreen))
+	} else if hasExtension(ext, []string{"dwg", "dxg", "dng"}) { //캐드파일
+		myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
+	} else if hasExtension(ext, []string{"", ""}) { //오피스파일
+		myColor = d.Foreground(tcell.ColorCadetBlue) //.Background((tcell.ColorGreen))
+	} else {
+		//기본 색상
+		myColor = d.Foreground(tcell.ColorGray) //.Bold(true)
+	}
+	return myColor
+}
+
+// SetExecutable sets an executable file look.
+func SetMyColor(s tcell.Style) { myColor = s }
+
 // Marked is a marked file look.
 func Marked() tcell.Style { return marked }
 
@@ -138,6 +200,7 @@ var (
 	symlinkDir     tcell.Style
 	directory      tcell.Style
 	executable     tcell.Style
+	myColor        tcell.Style
 	marked         tcell.Style
 	finder         tcell.Style
 	progress       tcell.Style
@@ -150,6 +213,27 @@ func init() {
 }
 
 func setDefault() {
+	d := tcell.StyleDefault
+	defaultAttr = d
+	messageInfo = d.Foreground(tcell.ColorLime).Bold(true)
+	messageErr = d.Foreground(tcell.ColorRed).Bold(true)
+	prompt = d.Foreground(tcell.ColorAqua).Bold(true)
+	cmdline = d
+	cmdlineCommand = d.Foreground(tcell.ColorLime).Bold(true)
+	cmdlineMacro = d.Foreground(tcell.ColorFuchsia)
+	cmdlineOption = d.Foreground(tcell.ColorYellow)
+	highlight = d.Bold(true)
+	title = d.Foreground(tcell.ColorOrangeRed)
+	symlink = d.Foreground(tcell.ColorFuchsia)
+	symlinkDir = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorWhite).Background(tcell.ColorOrangeRed).Bold(true), d.Foreground(tcell.ColorWhite).Background(tcell.ColorDarkRed).Bold(true))
+	directory = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorWhite).Background(tcell.ColorOrangeRed).Bold(true), d.Foreground(tcell.ColorWhite).Background(tcell.ColorDarkRed).Bold(true))
+	executable = d.Foreground(tcell.ColorGreen).Bold(true)
+	marked = d.Foreground(tcell.ColorBlack).Background(tcell.ColorYellow).Bold(true)
+	finder = d.Foreground(tcell.ColorBlack).Background(tcell.ColorAqua)
+	progress = d.Background(tcell.ColorNavy)
+}
+
+func setOriginal() {
 	d := tcell.StyleDefault
 	defaultAttr = d
 	messageInfo = d.Foreground(tcell.ColorLime).Bold(true)

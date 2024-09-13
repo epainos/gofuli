@@ -6,8 +6,10 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
+	// "github.com/anmitsu/goful/cmdline"
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/util"
@@ -17,11 +19,14 @@ import (
 // Directory is a list box to store file stats.
 type Directory struct {
 	*widget.ListBox
-	reader  reader
-	history map[string]string // key: path, value: file name on cursor
-	finder  *Finder
-	Path    string   `json:"path"`
-	Sort    sortType `json:"sort_kind"`
+	reader    reader
+	history   map[string]string // key: path, value: file name on cursor
+	finder    *Finder
+	Path      string   `json:"path"`
+	Sort      sortType `json:"sort_kind"`
+	myHistory []string // 첫번째는 현재위치 인덱스(previous, forward로 왔다갔다 하는 이정표).  두번째부터는 이동했었던 주소
+	// myHistoryLeft  []string
+	// myHistoryRight []string
 }
 
 // NewDirectory creates a new directory based on specified size and coordinates.
@@ -67,7 +72,7 @@ func TogglePriority() {
 	priorityDir = !priorityDir
 }
 
-var showHiddens = true
+var showHiddens = false
 
 // ToggleShowHiddens toggles the showing of hidden files.
 func ToggleShowHiddens() {
@@ -177,6 +182,13 @@ func (d *Directory) Finder() {
 
 // EnterDir changes the directory to a path on the cursor.
 func (d *Directory) EnterDir() {
+	if 0 >= len(d.myHistory) {
+	} else {
+		myIndex, _ := strconv.Atoi(d.myHistory[0])
+		if len(d.myHistory)-1 > myIndex {
+			d.myHistory = d.myHistory[:myIndex+1]
+		}
+	}
 	d.Chdir(d.File().Name())
 }
 
@@ -196,8 +208,10 @@ func (d *Directory) Reset() {
 // Chdir changes the current directory and reads a new path by the default reader.
 // Sets the cursor to the history name or to the previous directory name if parent destinats.
 func (d *Directory) Chdir(path string) {
+	// glippy.Set(fmt.Sprintf("%v", d.history))
 	path = util.ExpandPath(path)
 	path = filepath.Clean(path)
+
 	if !filepath.IsAbs(path) {
 		path, _ = filepath.Abs(filepath.Join(d.Path, path))
 	}
@@ -220,15 +234,70 @@ func (d *Directory) Chdir(path string) {
 	d.reader = defaultReader(".")
 	d.read()
 
+	d.myHistory = AddHistory(d.myHistory, path)
+
 	if name, ok := d.history[d.Path]; ok {
 		d.SetCursorByName(name)
 		d.SetOffsetCenteredCursor()
+		// glippy.Set(fmt.Sprintf("%v: %s: %s", d.history, d.Path, name))
 	} else if path == parent {
 		d.SetCursorByName(olddir)
 		d.SetOffsetCenteredCursor()
 	} else {
 		d.SetCursor(0)
 	}
+
+}
+func AddHistory(myHistory []string, path string) []string {
+	if len(myHistory) == 0 {
+		myHistory = append(myHistory, "0")
+	}
+	if len(myHistory) >= 20 {
+		myHistory = append(myHistory[:1], myHistory[2:]...)
+	}
+	myHistory = append(myHistory, path)
+
+	myHistory[0] = strconv.Itoa(len(myHistory) - 1)
+	// glippy.Set(fmt.Sprintf("%v", myHistory))
+	return myHistory
+}
+
+// goPreviousFoler
+func (d *Directory) GoPreviousFolder() {
+	if len(d.myHistory) == 0 || d.myHistory[1] == "1" {
+		return
+	}
+	myIndex, _ := strconv.Atoi(d.myHistory[0])
+	if 1 >= myIndex {
+		// glippy.Set(fmt.Sprintf("%v", d.myHistory))
+		return
+	} else {
+		myIndex--
+	}
+
+	path := d.myHistory[myIndex]
+	d.Chdir(path)
+	d.myHistory = d.myHistory[:len(d.myHistory)-1]
+	d.myHistory[0] = strconv.Itoa(myIndex)
+
+	// glippy.Set(fmt.Sprintf("%v", d.myHistory))
+}
+
+// goForwardFoler
+func (d *Directory) GoFowardFolder() {
+	myIndex, _ := strconv.Atoi(d.myHistory[0])
+	if myIndex >= len(d.myHistory)-1 {
+		// glippy.Set(fmt.Sprintf("%v", d.myHistory))
+		return
+	}
+	myIndex++
+
+	path := d.myHistory[myIndex]
+	d.Chdir(path)
+	d.myHistory = d.myHistory[:len(d.myHistory)-1]
+	d.myHistory[0] = strconv.Itoa(myIndex)
+
+	// glippy.Set(fmt.Sprintf("%v", d.myHistory))
 }
 
 // Glob sets a reader to matching pattern in the current directory.

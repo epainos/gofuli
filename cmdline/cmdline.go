@@ -249,7 +249,7 @@ func (h *History) update() {
 func (h *History) add() {
 	text := h.cmdline.String()
 	mode := h.cmdline.mode.String()
-
+	// glippy.Set(mode + " // " + text)
 	if text == "" || text[0] == ' ' {
 		return
 	}
@@ -266,6 +266,30 @@ func (h *History) add() {
 		history := []string{}
 		historyMap[mode] = append(history, text)
 	}
+	// glippy.Set(mode + " " + text)
+}
+
+func (h *History) add2() {
+	text := h.cmdline.String()
+	mode := h.cmdline.mode.String()
+	// glippy.Set(mode + " // " + text)
+	if text == "" || text[0] == ' ' {
+		return
+	}
+
+	if history, ok := historyMap[mode]; ok {
+		for i, hist := range history {
+			if hist == text {
+				history = append(history[:i], history[i+1:]...)
+				break
+			}
+		}
+		historyMap[mode] = append(history, text)
+	} else {
+		history := []string{}
+		historyMap[mode] = append(history, text)
+	}
+	// glippy.Set(mode + " " + text)
 }
 
 // Delete a history content on the cursor.

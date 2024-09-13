@@ -1,8 +1,10 @@
 module github.com/anmitsu/goful
 
+
 go 1.16
 
 require (
+	github.com/f1bonacc1/glippy v0.0.0-20230614190937-e7ca07f99f6f
 	github.com/gdamore/tcell/v2 v2.4.0
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect

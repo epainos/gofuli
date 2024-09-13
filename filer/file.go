@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/message"
@@ -117,6 +119,7 @@ func (f *FileStat) ToggleMark() {
 
 // Path returns the file path.
 func (f *FileStat) Path() string {
+	f.path = strings.Replace(f.path, `\`, "/", -1)
 	return f.path
 }
 
@@ -131,13 +134,30 @@ func (f *FileStat) Ext() string {
 	return ""
 }
 
+// ext is zip?
+func (f *FileStat) IsColorful() bool {
+	return true
+}
+
 // IsLink reports whether the symlink.
 func (f *FileStat) IsLink() bool {
 	return f.Mode()&os.ModeSymlink != 0
 }
 
+func (f *FileStat) IsDir4osx() bool {
+	if runtime.GOOS == "darwin" && f.stat.IsDir() && strings.HasSuffix(f.name, ".app") {
+		return false
+	}
+
+	return f.IsDir()
+}
+
 // IsExec reports whether the executable file.
 func (f *FileStat) IsExec() bool {
+	// if runtime.GOOS == "darwin" && f.stat.IsDir() && strings.HasSuffix(f.name, ".app") {
+	// 	return false
+	// }
+
 	return f.stat.Mode().Perm()&0111 != 0
 }
 
@@ -216,6 +236,9 @@ func (f *FileStat) look() tcell.Style {
 		return look.Directory()
 	case f.IsExec():
 		return look.Executable()
+	case f.IsColorful():
+		return look.MyColor(f.Ext())
+		// return look.MyColor(f.Ext())
 	default:
 		return look.Default()
 	}

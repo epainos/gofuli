@@ -60,12 +60,30 @@ func ShortenPath(path string, width int) string {
 	return path
 }
 
-// RemoveExt removes extension from the name.
+// RemoveExt: return filename. removes extension from the name.
 func RemoveExt(name string) string {
 	if ext := filepath.Ext(name); ext != name {
 		return name[:len(name)-len(ext)]
 	}
 	return name
+}
+
+// GetExt: returns extension only.
+func GetExt(name string) string {
+	if ext := filepath.Ext(name); ext != name {
+		return ext
+	}
+	return ""
+}
+
+// GetFullPath: returns full path.
+func GetFullPath(name string) string {
+	return name
+}
+
+// GetParentPath: returns parent path.
+func GetParentPath(name string) string {
+	return filepath.Dir(name)
 }
 
 // SplitWithSep splits string with separator.
@@ -92,7 +110,10 @@ func SplitWithSep(s, sep string) []string {
 
 // Quote encloses string double quotes and escapes by backslash if this string contains double quotes.
 func Quote(s string) string {
-	return fmt.Sprintf(`"%s"`, strings.Replace(s, `"`, `\"`, -1))
+	// return fmt.Sprintf(`"%s"`, strings.Replace(s, `"`, `\"`, -1))
+	// glippy.Set(fmt.Sprintf(`"%s"`, strings.Replace(s, `"`, `"`, -1)))
+	return fmt.Sprintf(`'%s'`, strings.Replace(strings.Replace(s, `\`, `/`, -1), `"`, `'`, -1)) //윈도우에서 역슬래시가 문제가 있음. 파워쉘은 그냥 슬래시도 가능
+
 }
 
 // FormatSize returns formated to SI prefix unit.

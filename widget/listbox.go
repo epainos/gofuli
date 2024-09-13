@@ -373,9 +373,11 @@ func (b *ListBox) ScrollRate() string {
 	}
 	p := float64(b.offset) / base * 100
 	if p == 0 {
-		return "Top"
+		// return "Top"
+		return "0%"
 	} else if p >= 100 {
-		return "Bot"
+		// return "Bottom"
+		return "100%"
 	} else {
 		return fmt.Sprintf("%d%s", int(p), "%")
 	}

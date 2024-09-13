@@ -14,6 +14,7 @@ import (
 	"github.com/anmitsu/goful/progress"
 	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
+	"github.com/f1bonacc1/glippy"
 )
 
 func (g *Goful) rename(src, dst string) {
@@ -23,9 +24,9 @@ func (g *Goful) rename(src, dst string) {
 			return
 		}
 	} else {
-		message := fmt.Sprintf("Overwrite? %s", dst)
+		message := fmt.Sprintf("Overwrite? %s", filepath.Base(dst))
 		switch g.dialog(message, "y", "n") {
-		case "y", "Y":
+		case "y", "Y", "":
 			break
 		default:
 			return
@@ -236,10 +237,11 @@ const (
 	overwriteYesAll
 	overwriteNoAll
 	overwriteCancel
+	backup
 )
 
 func (w *walker) confirm(message string) overWrite {
-	switch w.dialog(message, "y", "n", "Y", "N") {
+	switch w.dialog(message, "y", "n", "Y", "N", "b") {
 	case "y":
 		return overwriteYes
 	case "n":
@@ -248,6 +250,8 @@ func (w *walker) confirm(message string) overWrite {
 		return overwriteYesAll
 	case "N":
 		return overwriteNoAll
+	case "b":
+		return backup
 	default:
 		return overwriteCancel
 	}
@@ -265,12 +269,31 @@ func (w *walker) file2file(src, dst string) error {
 		case overwriteYesAll:
 			break
 		default:
-			w.fileConfirmed = w.confirm(fmt.Sprintf("Overwrite? exists %s", dst))
+			w.fileConfirmed = w.confirm(fmt.Sprintf("Overwrite? %s", filepath.Base(dst))) //w.confirm(fmt.Sprintf("Overwrite? exists %s", dst))
 			switch w.fileConfirmed {
 			case overwriteNo, overwriteNoAll:
 				return nil
 			case overwriteCancel:
 				return fmt.Errorf("canceled file operation")
+
+			case backup:
+				var name string
+				ext := filepath.Ext(dst)
+				if ext != dst {
+					name = dst[:len(dst)-len(ext)]
+				} else {
+					name = dst
+				}
+				for {
+					name = name + "_"
+					_, err := os.Stat(name + ext)
+					if os.IsNotExist(err) {
+						break
+					}
+				}
+				copyFile(src, name+ext)
+				return nil
+
 			}
 		}
 	}
@@ -279,6 +302,25 @@ func (w *walker) file2file(src, dst string) error {
 		return err
 	}
 	return nil
+}
+
+func duplicateFile(src, dst string) {
+	var name string
+	ext := filepath.Ext(dst)
+	if ext != dst {
+		name = dst[:len(dst)-len(ext)]
+	} else {
+		name = dst
+	}
+	for {
+		name = name + "_"
+		_, err := os.Stat(name + ext)
+		if os.IsNotExist(err) {
+			break
+		}
+	}
+	glippy.Set(fmt.Sprintf(`"%s"`, name+ext))
+	copyFile(src, name+ext)
 }
 
 func (w *walker) dir2dir(src, dst string) error {
@@ -297,7 +339,7 @@ func (w *walker) dir2dir(src, dst string) error {
 		case overwriteYesAll:
 			break
 		default:
-			w.dirConfirmed = w.confirm(fmt.Sprintf("Merge? exists %s", dst))
+			w.dirConfirmed = w.confirm(fmt.Sprintf("Merge? exists %s", filepath.Base(dst)))
 			switch w.dirConfirmed {
 			case overwriteNo, overwriteNoAll:
 				return nil
@@ -479,6 +521,37 @@ func copyFileAfterRemove(src, dst string) error {
 	}
 	return nil
 }
+
+// func duplicateFile(src, dst string) error {
+// 	if err := copyFile(src, dst); err != nil {
+// 		return err
+// 	}
+// 	if err := os.Remove(src); err != nil {
+// 		return err
+// 	}
+// 	return nil
+
+// 	if _, err := os.Lstat(dst); err != nil {
+// 		if !os.IsNotExist(err) {
+// 			message.Error(err)
+// 			return
+// 		}
+// 	} else {
+// 		message := fmt.Sprintf("Overwrite? %s", dst)
+// 		switch g.dialog(message, "Y", "n") {
+// 		case "y", "Y", "":
+// 			break
+// 		default:
+// 			return
+// 		}
+// 	}
+
+// 	if err := os.Rename(src, dst); err != nil {
+// 		message.Error(err)
+// 	} else {
+// 		message.Infof("Renamed %s -> %s", src, dst)
+// 	}
+// }
 
 func removeEmptyDir(src string) error {
 	srcdir, err := os.Open(src)

@@ -6,10 +6,12 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
+	// "github.com/f1bonacc1/glippy"
 )
 
 // Spawn a process by the shell or the terminal.
@@ -79,6 +81,7 @@ const (
 	macroEscape             = '\\' // \ is an escape sequence
 	macroNonQuote           = '~'  // %~ is expanded non quote
 	macroFile               = 'f'  // %f %~f are expanded a file name on the cursor
+	macroExtension          = 'e'  // %f %~f are expanded a file extension on the cursor
 	macroFilePath           = 'F'  // %F %~F are expanded a file path on the cursor
 	macroFileWithoutExt     = 'x'  // %x %~x are expanded a file name excluded the extension on the cursor
 	macroFileWithoutExtPath = 'X'  // %x %~X are expanded a file path excluded the extension on the cursor
@@ -87,6 +90,8 @@ const (
 	macroDir                = 'd'  // %d %~d are expanded a directory name on the cursor
 	macroDirPath            = 'D'  // %D %~D are expanded a directory path on the cursor
 	macroNextDir            = '2'  // %d2 %D2 %~d2 %~D2 are expanded the neighbor directory name or path
+	macroTimestampDay       = 'T'  // 20241231
+	macroTimestampHour      = 't'  // 154501
 	macroRunBackground      = '&'  // %& is a flag runned in background
 )
 
@@ -127,6 +132,12 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 			switch b {
 			case macroFile:
 				src = g.File().Name()
+				// glippy.Set(src)
+				if !nonQuote {
+					src = util.Quote(src)
+				}
+			case macroExtension:
+				src = g.File().Ext()
 				if !nonQuote {
 					src = util.Quote(src)
 				}
@@ -151,12 +162,15 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				} else {
 					src = strings.Join(g.Dir().MarkfileNames(), " ")
 				}
+				// glippy.Set((src))
 			case macroMarkfilePath:
 				if !nonQuote {
 					src = strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
 				} else {
 					src = strings.Join(g.Dir().MarkfilePaths(), " ")
 				}
+				// glippy.Set((src))
+
 			case macroDir:
 				if i != len(data)-1 && data[i+1] == macroNextDir {
 					src = g.Workspace().NextDir().Base()
@@ -177,6 +191,12 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				if !nonQuote {
 					src = util.Quote(src)
 				}
+			case macroTimestampHour:
+				timestamp := time.Now().Format("150405")
+				src = timestamp
+			case macroTimestampDay:
+				timestamp := time.Now().Format("241231")
+				src = timestamp
 			case macroRunBackground:
 				background = true
 			default:

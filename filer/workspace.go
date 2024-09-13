@@ -2,6 +2,7 @@ package filer
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/widget"
@@ -74,6 +75,10 @@ func (w *Workspace) CloseDir() {
 // ChdirNeighbor changes the focused path a neighbor directory path.
 func (w *Workspace) ChdirNeighbor() {
 	w.Dir().Chdir(w.NextDir().Path)
+}
+
+func (w *Workspace) ChdirNeighbor2This() {
+	w.NextDir().Chdir(w.Dir().Path)
 }
 
 func (w *Workspace) visible(visible bool) {
@@ -153,6 +158,11 @@ func (w *Workspace) SwapNextDir() {
 	w.allocate()
 }
 
+// ShowCurrentIndex returns the current index.
+func (w *Workspace) CurrentIndex() string {
+	return strconv.Itoa(w.Focus)
+}
+
 // SwapPrevDir swaps focus and previous directories.
 func (w *Workspace) SwapPrevDir() {
 	prev := w.prevIndex()
@@ -167,6 +177,9 @@ func (w *Workspace) nextIndex() int {
 		return 0
 	}
 	return i
+}
+func (w *Workspace) CurrentIndexm() int {
+	return w.Focus
 }
 
 func (w *Workspace) prevIndex() int {

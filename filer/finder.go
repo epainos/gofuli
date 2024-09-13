@@ -22,6 +22,10 @@ var finderHistory = make([]string, 0, 100)
 
 var finderKeymap func(*Finder) widget.Keymap
 
+func GetFinderHistory() string {
+	return strings.Join(finderHistory, ", ")
+}
+
 // ConfigFinder sets the finder keymap function.
 func ConfigFinder(config func(*Finder) widget.Keymap) {
 	finderKeymap = config
