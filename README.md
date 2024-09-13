@@ -260,17 +260,17 @@ Install after edit `my/goful/main.go`
 
     $ go install
 
-## Contributing
+### Contributing
 
 [Contributing Guide](.github/CONTRIBUTING.md)
 
 
 ### difference between https://github.com/anmitsu/goful
-#add fuction
+# add fuction
 * set color by extension 
 * add History. so you can go back to previous folder
 
-#some tweaks for windows user
+# some tweaks for windows user
 * quote symbol changed to ' not  ". windows have troubles using ". 
 * windows cmd changed to powershell
 * \ changed to /. so 'c:\users\bilbo' -> c:/users/bilbo'
