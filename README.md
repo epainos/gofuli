@@ -60,7 +60,7 @@ key                  | function
 `C-o`                | Create workspace
 `C-w`                | Close workspace
 `space`              | Toggle mark
-`M-=` ```               | Invert mark
+`M-=` '`'               | Invert mark
 `C-l`                | Reload
 `C-m` `o`            | Open
 `i`                  | Open by pager
