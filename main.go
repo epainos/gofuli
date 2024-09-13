@@ -651,6 +651,6 @@ func menuKeymap(w *menu.Menu) widget.Keymap {
 		"M-<":  func() { w.MoveTop() },
 		"C-m":  func() { w.Exec() },
 		"C-g":  func() { w.Exit() },
-		"C-[":  func() { w.Exit() },
+		"C-[":  func() { w.Exit() }, //// C-[ means ESC
 	}
 }
