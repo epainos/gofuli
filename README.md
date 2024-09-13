@@ -265,7 +265,8 @@ Install after edit `my/goful/main.go`
 [Contributing Guide](.github/CONTRIBUTING.md)
 
 
-### difference between https://github.com/anmitsu/goful
+## difference between https://github.com/anmitsu/goful
+
 # add fuction
 * set color by extension 
 * add History. so you can go back to previous folder
