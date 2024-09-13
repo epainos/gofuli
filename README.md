@@ -277,7 +277,9 @@ Install after edit `my/goful/main.go`
 * \ changed to /  ('c:\users\bilbo' -> c:/users/bilbo')
 * 7z is main archive manager. zip, tar files are compressed and unzipped with 7z. 
 * fastcopy(fcp) is copy manager in WINDOWS. so I let 7z.exe and fcp.exe to 'bin' folder. you can use it or download it by yourself
+
 7z: https://7-zip.org/a/7z2408-extra.7z
+
 fcp : https://forest.watch.impress.co.jp/library/software/fastcopy/download_11574.html
 
 
