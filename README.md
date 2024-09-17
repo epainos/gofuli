@@ -35,72 +35,72 @@ See [releases](https://github.com/anmitsu/goful/releases) or 'bin' folder
 
 ## Usage
 
-| key                                    | function                                       |
-| -------------------------------------- | ---------------------------------------------- |
-| `C-n` `down` `j`                 | Move cursor down                               |
-| `C-p` `up` `k`                   | Move cursor up                                 |
-| `C-a` `home` `^` `I`           | Move cursor top                                |
-| `C-e` `end` `$` `U`            | Move cursor bottom                             |
-| `C-f` `C-i` `right` `l`        | Move cursor right                              |
-| `C-b` `left` `h`                 | Move cursor left                               |
-| `C-d` `u`                          | More move cursor down                          |
-| `C-u` `i`                          | More move cursor up                            |
-| `C-v` `pgdn`                       | Page down                                      |
-| `M-v` `pgup`                       | Page up                                        |
-| `M-n`                                | Scroll down                                    |
-| `M-p`                                | Scroll up                                      |
-| `C-h` `backspace` `left` `h`   | Change to upper directory                      |
-| `C-m` `enter` `o` `l` `left` | open selected directory or file                |
-| `~`                                  | Change to home directory                       |
-| `\`                                  | Change to root directory                       |
-| `w`                                  | Change to neighbor directory to this one       |
-| `W`                                  | Change to this directory to neighbor's         |
-| `C-o`                                | Create directory window                        |
-| `C-w`                                | Close directory window                         |
-| `M-f` `tab`                        | Move next workspace                            |
-| `M-b`                                | Move previous workspace                        |
-| `C-o`                                | Create workspace                               |
-| `C-w`                                | Close workspace                                |
-| `t`                                  | change to next tab                             |
-| `T`                                  | open tab menu                                  |
-| `space`                              | Toggle mark                                    |
-| `M-=` `                             | Invert mark                                    |
-| `C-l`  `'`                         | refresh screen                                 |
-| `i`                                  | Open by pager                                  |
-| `s`                                  | Sort                                           |
-| `v`                                  | View                                           |
-| `b`                                  | Bookmark                                       |
-| `e`                                  | Editor                                         |
-| `x`                                  | open basic Command menu                        |
-| `X`                                  | open External command menu                     |
-| `f` `/`                            | Find                                           |
-| `;`                                  | Shell                                          |
-| `:`                                  | Shell suspend                                  |
-| `n`                                  | Make file                                      |
-| `K` `f7` `Xk`                    | Make directory                                 |
-| `c` `f5`                           | Copy                                           |
-| `C`                                  | duplicate                                      |
-| `m` `f6` `Xm`                    | Move                                           |
-| `r` `f2` `Xr`                    | Rename                                         |
-| `R`                                  | Bulk rename by regexp                          |
-| `D` `delete`                       | Remove                                         |
-| `d`                                  | Change directory                               |
-| `g`                                  | Glob                                           |
-| `G`                                  | Glob recursive                                 |
-| `C-g` `C-[`                        | Cancel                                         |
-| `q` `Q`                            | Quit                                           |
-| `B`                                  | go back to  previous directory                 |
-| `F`                                  | go to forward directory                        |
-| `y`                                  | yank(or copy) file to clipboard                |
-| `p`                                  | paste yanked file to this directory            |
-| `P`                                  | move yanked file to this directory             |
-| `Y`                                  | copy file(or directory) path to clipboard      |
-| `N`                                  | copy file(or directory) name only to clipboard |
-| `O`                                  | open this directory in finder, explorer...     |
-| `a`                                  | zip marked files, dirs to neighbor dir         |
-| `A`                                  | zip marked files, dirs to this dir             |
-| `z`                                  | unzip file to neighbor dir                     |
-| `Z`                                  | unzip file go this dir                         |
+| key                                    | function                                                                                  |
+| -------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `C-n` `down` `j`                 | Move cursor down                                                                          |
+| `C-p` `up` `k`                   | Move cursor up                                                                            |
+| `C-a` `home` `^` `I`           | Move cursor top                                                                           |
+| `C-e` `end` `$` `U`            | Move cursor bottom                                                                        |
+| `C-f` `C-i` `right` `l`        | Move cursor right                                                                         |
+| `C-b` `left` `h`                 | Move cursor left                                                                          |
+| `C-d` `u`                          | More move cursor down                                                                     |
+| `C-u` `i`                          | More move cursor up                                                                       |
+| `C-v` `pgdn`                       | Page down                                                                                 |
+| `M-v` `pgup`                       | Page up                                                                                   |
+| `M-n`                                | Scroll down                                                                               |
+| `M-p`                                | Scroll up                                                                                 |
+| `C-h` `backspace` `left` `h`   | Change to upper directory                                                                 |
+| `C-m` `enter` `o` `l` `left` | open selected directory or file                                                           |
+| `~`                                  | Change to home directory                                                                  |
+| `\`                                  | Change to root directory                                                                  |
+| `w`                                  | Change to neighbor directory to this one                                                  |
+| `W`                                  | Change to this directory to neighbor's                                                    |
+| `C-o`                                | Create directory window                                                                   |
+| `C-w`                                | Close directory window                                                                    |
+| `M-f` `tab`                        | Move next workspace                                                                       |
+| `M-b`                                | Move previous workspace                                                                   |
+| `C-o`                                | Create workspace                                                                          |
+| `C-w`                                | Close workspace                                                                           |
+| `t`                                  | change to next tab                                                                        |
+| `T`                                  | open tab menu                                                                             |
+| `space`                              | Toggle mark                                                                               |
+| `M-=` `                             | Invert mark                                                                               |
+| `C-l`  `'`                         | refresh screen                                                                            |
+| `i`                                  | Open by pager                                                                             |
+| `s`                                  | Sort                                                                                      |
+| `v`                                  | View                                                                                      |
+| `b`                                  | Bookmark                                                                                  |
+| `e`                                  | Editor                                                                                    |
+| `x`                                  | open basic Command menu                                                                   |
+| `X`                                  | open External command menu                                                                |
+| `f` `/`                            | Find                                                                                      |
+| `;`                                  | Shell                                                                                     |
+| `:`                                  | Shell suspend                                                                             |
+| `n`                                  | Make file                                                                                 |
+| `K` `f7` `Xk`                    | Make directory                                                                            |
+| `c` `f5`                           | Copy                                                                                      |
+| `C`                                  | duplicate                                                                                 |
+| `m` `f6` `Xm`                    | Move                                                                                      |
+| `r` `f2` `Xr`                    | Rename                                                                                    |
+| `R`                                  | Bulk rename by regexp                                                                     |
+| d `delete` `f8`                    | 'd' does remove files/folders permermently.<br />f8 does move files/folders to Recyle Bin |
+| `D`                                  | Change directory                                                                          |
+| `g`                                  | Glob                                                                                      |
+| `G`                                  | Glob recursive                                                                            |
+| `C-g` `C-[`                        | Cancel                                                                                    |
+| `q` `Q`                            | Quit                                                                                      |
+| `B`                                  | go back to  previous directory                                                            |
+| `F`                                  | go to forward directory                                                                   |
+| `y`                                  | yank(or copy) file to clipboard                                                           |
+| `p`                                  | paste yanked file to this directory                                                       |
+| `P`                                  | move yanked file to this directory                                                        |
+| `Y`                                  | copy file(or directory) path to clipboard                                                 |
+| `N`                                  | copy file(or directory) name only to clipboard                                            |
+| `O`                                  | open this directory in finder, explorer...                                                |
+| `a`                                  | zip marked files, dirs to neighbor dir                                                    |
+| `A`                                  | zip marked files, dirs to this dir                                                        |
+| `z`                                  | unzip file to neighbor dir                                                                |
+| `Z`                                  | unzip file go this dir                                                                    |
 
 **f2, f5, f6, f7 do External command(rename, copy, move, mkdir)
 external command is more fast and comfortable in some cases. but 'refresh screen' is needed because goful doesn't know it has been finished.
@@ -275,8 +275,13 @@ Install after edit `my/goful/main.go`
 * windows cmd changed to powershell
 * \ changed to /  ('c:\users\bilbo' -> c:/users/bilbo')
 * 7z is main archive manager. zip, tar files are compressed and unzipped with 7z.
-* fastcopy(fcp) is copy manager in WINDOWS. so I let 7z.exe and fcp.exe to 'bin' folder. you can use it or download it by yourself
+* fastcopy(fcp) is copy manager in WINDOWS. so I let 7z.exe and fcp.exe to 'bin' folder.
+* recycle.exe is using to  move files/folders to recycle bin
+* you can use above program in 'bin' folder or download it by yourself
 
 7z: https://7-zip.org/a/7z2408-extra.7z
 
 fcp : https://forest.watch.impress.co.jp/library/software/fastcopy/download_11574.html
+
+recycle: https://github.com/Zigatronz/Windows-recycle-bin-CLI-for-CMD
+
