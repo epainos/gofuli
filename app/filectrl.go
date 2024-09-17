@@ -109,6 +109,7 @@ func (g *Goful) touch(name string, mode os.FileMode) {
 }
 
 func (g *Goful) remove(files ...string) {
+
 	filesAbs := make([]string, len(files))
 	for i := 0; i < len(files); i++ {
 		filesAbs[i], _ = filepath.Abs(files[i])
@@ -122,6 +123,7 @@ func (g *Goful) remove(files ...string) {
 			message.Infof("Removed %s", files)
 		}
 	}()
+
 }
 
 func (g *Goful) copy(dst string, src ...string) {

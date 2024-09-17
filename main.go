@@ -494,7 +494,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"f6":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to=%D2`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }),
 		"f2":  ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
 		"f7":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
-		"f8":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=delete %M `, -7) }, func() { g.Remove() }),
+		"f8":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
 		"c":   func() { g.Copy() },
 		"C": ifElse(runtime.GOOS == "windows", func() {
 			g.Shell("Copy-Item -Recurse %F '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`)
