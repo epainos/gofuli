@@ -83,7 +83,7 @@ See [releases](https://github.com/anmitsu/goful/releases) or 'bin' folder
 | `m` `f6` `Xm`                    | Move                                                                                      |
 | `r` `f2` `Xr`                    | Rename                                                                                    |
 | `R`                                  | Bulk rename by regexp                                                                     |
-| d `delete` `f8`                    | 'd' does remove files/folders permermently.<br />f8 does move files/folders to Recyle Bin |
+| d `delete` `f8`                    | 'd' does remove files/folders permanently.<br />f8 does move files/folders to Recyle Bin |
 | `D`                                  | Change directory                                                                          |
 | `g`                                  | Glob                                                                                      |
 | `G`                                  | Glob recursive                                                                            |
