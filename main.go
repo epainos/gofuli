@@ -405,7 +405,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 	openerCurrentDir := "xdg-open %D %&"
 	switch runtime.GOOS {
 	case "windows":
-		openerCurrentDir = "explorer '%~D' %&"
+		openerCurrentDir = "explorer . %&"
 	case "darwin":
 		openerCurrentDir = "open %D %&"
 	}
