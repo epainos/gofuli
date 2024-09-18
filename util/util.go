@@ -125,9 +125,11 @@ func SplitWithSep(s, sep string) []string {
 
 // Quote encloses string double quotes and escapes by backslash if this string contains double quotes.
 func Quote(s string) string {
-	// return fmt.Sprintf(`"%s"`, strings.Replace(s, `"`, `\"`, -1))
-	// glippy.Set(fmt.Sprintf(`"%s"`, strings.Replace(s, `"`, `"`, -1)))
-	return fmt.Sprintf(`'%s'`, strings.Replace(strings.Replace(s, `\`, `/`, -1), `"`, `'`, -1)) //윈도우에서 역슬래시가 문제가 있음. 파워쉘은 그냥 슬래시도 가능
+	if runtime.GOOS == "windows" {
+		return fmt.Sprintf(`'%s'`, strings.Replace(strings.Replace(s, `\`, `/`, -1), `"`, `'`, -1)) //윈도우에서 역슬래시랑 따옴표가 문제가 있음. 파워쉘은 그냥 슬래시와 홑따옴표도 가능하니 그냥 싹바꾸는 것이 편함
+	} else {
+		return fmt.Sprintf(`'%s'`, strings.Replace(s, `"`, `\"`, -1)) //원래는 쌍따옴표인데, 그냥 홑따옴표로 통일함
+	}
 
 }
 
