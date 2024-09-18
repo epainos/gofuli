@@ -504,7 +504,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"m":      func() { g.Move() },
 		"r":      func() { g.Rename() },
 		"R":      func() { g.BulkRename() },
-		"d":      func() { g.Remove() },
+		"d":      ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
 		"delete": func() { g.Remove() },
 		"D":      func() { g.Chdir() },
 		"g":      func() { g.Glob() },
