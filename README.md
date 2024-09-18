@@ -280,7 +280,7 @@ Install after edit `my/goful/main.go`
 * recycle.exe is using to  move files/folders to recycle bin.
 * you can use above program in 'bin' folder or download it by yourself
 
-7z: https://7-zip.org/a/7z2408-extra.7z
+7z: https://www.7-zip.org/download.html
 
 fcp : https://forest.watch.impress.co.jp/library/software/fastcopy/download_11574.html
 
