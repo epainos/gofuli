@@ -22,6 +22,9 @@ func ExpandPath(name string) string {
 		home, _ := os.UserHomeDir()
 		return strings.Replace(name, "~", home, 1)
 	}
+	if runtime.GOOS == "windows" {
+		name = strings.Replace(strings.Replace(name, `\`, `/`, -1), `"`, `'`, -1)
+	}
 	return name
 }
 
@@ -31,6 +34,9 @@ func AbbrPath(name string) string {
 	lenhome := len(home)
 	if len(name) >= lenhome && name[:lenhome] == home {
 		return "~" + name[lenhome:]
+	}
+	if runtime.GOOS == "windows" {
+		name = strings.Replace(strings.Replace(name, `\`, `/`, -1), `"`, `'`, -1)
 	}
 	return name
 }
@@ -57,6 +63,9 @@ func ShortenPath(path string, width int) string {
 			}
 		}
 	}
+	if runtime.GOOS == "windows" {
+		path = strings.Replace(strings.Replace(path, `\`, `/`, -1), `"`, `'`, -1)
+	}
 	return path
 }
 
@@ -78,11 +87,17 @@ func GetExt(name string) string {
 
 // GetFullPath: returns full path.
 func GetFullPath(name string) string {
+	if runtime.GOOS == "windows" {
+		name = strings.Replace(strings.Replace(name, `\`, `/`, -1), `"`, `'`, -1)
+	}
 	return name
 }
 
 // GetParentPath: returns parent path.
 func GetParentPath(name string) string {
+	if runtime.GOOS == "windows" {
+		return strings.Replace(strings.Replace(filepath.Dir(name), `\`, `/`, -1), `"`, `'`, -1)
+	}
 	return filepath.Dir(name)
 }
 
