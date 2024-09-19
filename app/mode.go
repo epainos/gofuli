@@ -238,7 +238,7 @@ func (m *moveMode) Prompt() string {
 	if m.Dir().IsMark() {
 		return fmt.Sprintf("Move(이동) %d files -> ", m.Dir().MarkCount())
 	} else if m.src != "" {
-		return fmt.Sprintf("Move from %s -> ", m.src)
+		return fmt.Sprintf("Move(이동) %s -> ", m.src)
 	} else {
 		return "Move(이동) from "
 	}
@@ -375,7 +375,7 @@ func (m *mkdirMode) Prompt() string {
 	if m.path != "" {
 		return "Mode(권한) default 0755: "
 	}
-	return "Make directory(폴더만들기): "
+	return "Make directory(새폴더): "
 }
 func (m *mkdirMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *mkdirMode) Run(c *cmdline.Cmdline) {
@@ -560,7 +560,7 @@ type globdirMode struct {
 }
 
 func (m *globdirMode) String() string          { return "globdir" }
-func (m *globdirMode) Prompt() string          { return "Globdir pattern(더패턴): " }
+func (m *globdirMode) Prompt() string          { return "Globdir pattern(폴더패턴): " }
 func (m *globdirMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *globdirMode) Run(c *cmdline.Cmdline) {
 	if pattern := c.String(); pattern != "" {
