@@ -457,12 +457,12 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"up":   func() { g.Dir().MoveCursor(-1) },
 		"j":    func() { g.Dir().MoveCursor(1) },
 		"k":    func() { g.Dir().MoveCursor(-1) },
-		"C-d":  func() { g.Dir().MoveCursor(5) },
-		"C-u":  func() { g.Dir().MoveCursor(-5) },
-		"u":    func() { g.Dir().MoveCursor(5) },
-		"i":    func() { g.Dir().MoveCursor(-5) },
-		"U":    func() { g.Dir().MoveBottom() },
-		"I":    func() { g.Dir().MoveTop() },
+		// "C-d":  func() { g.Dir().MoveCursor(5) },
+		// "C-u":  func() { g.Dir().MoveCursor(-5) },
+		"u": func() { g.Dir().MoveCursor(5) },
+		"i": func() { g.Dir().MoveCursor(-5) },
+		"U": func() { g.Dir().MoveBottom() },
+		"I": func() { g.Dir().MoveTop() },
 		// "C-a":  func() { g.Dir().MoveTop() },
 		// "C-e":  func() { g.Dir().MoveBottom() },
 		"home": func() { g.Dir().MoveTop() },
@@ -471,13 +471,13 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"$":    func() { g.Dir().MoveBottom() },
 		// "M-n":  func() { g.Dir().Scroll(1) },
 		// "M-p":  func() { g.Dir().Scroll(-1) },
-		"C-v":  func() { g.Dir().PageDown() },
-		"M-v":  func() { g.Dir().PageUp() },
+		// "C-v":  func() { g.Dir().PageDown() },
+		// "M-v":  func() { g.Dir().PageUp() },
 		"pgdn": func() { g.Dir().PageDown() },
 		"pgup": func() { g.Dir().PageUp() },
 		" ":    func() { g.Dir().ToggleMark() },
-		"C- ":  func() { g.Dir().InvertMark() },
-		"`":    func() { g.Dir().InvertMark() },
+		// "C- ":  func() { g.Dir().InvertMark() },
+		"`": func() { g.Dir().InvertMark() },
 		// "C-g":  func() { g.Dir().Reset() },
 		"C-[": func() { g.Workspace().ReloadAll(); g.Dir().Reset() }, // C-[ means ESC
 		"f":   func() { g.Dir().Finder() },
@@ -528,9 +528,9 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			message.Info("Yanked file(파일 복사함)): " + myClip)
 		},
 		"p": //paste file 복사 파일 붙여넣기
-
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
+			value = strings.Replace(strings.Replace(strings.Replace(value, "\r\n", ` `, -1), `\`, `/`, -1), `"`, `'`, -1)
 			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
 		}, func() {
 			value, _ := glippy.Get()
@@ -538,9 +538,11 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			// message.Info("Pasted (복사 완료) ")
 
 		}),
+
 		"P": //move file 복사파일 이동함
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
+			value = strings.Replace(strings.Replace(strings.Replace(value, "\r\n", ` `, -1), `\`, `/`, -1), `"`, `'`, -1)
 			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
 		}, func() {
 			value, _ := glippy.Get()
@@ -583,21 +585,21 @@ func cmdlineKeymap(w *cmdline.Cmdline) widget.Keymap {
 		"C-m":       func() { w.Run() },
 		"C-g":       func() { w.Exit() },
 		"C-[":       func() { w.Exit() }, // C-[ means ESC
-		"C-n":       func() { w.History.CursorDown() },
-		"C-p":       func() { w.History.CursorUp() },
-		"down":      func() { w.History.CursorDown() },
-		"up":        func() { w.History.CursorUp() },
-		"C-v":       func() { w.History.PageDown() },
-		"M-v":       func() { w.History.PageUp() },
-		"pgdn":      func() { w.History.PageDown() },
-		"pgup":      func() { w.History.PageUp() },
-		"M-<":       func() { w.History.MoveTop() },
-		"M->":       func() { w.History.MoveBottom() },
-		"home":      func() { w.History.MoveTop() },
-		"end":       func() { w.History.MoveBottom() },
-		"M-n":       func() { w.History.Scroll(1) },
-		"M-p":       func() { w.History.Scroll(-1) },
-		"C-x":       func() { w.History.Delete() },
+		// "C-n":       func() { w.History.CursorDown() },
+		// "C-p":       func() { w.History.CursorUp() },
+		"down": func() { w.History.CursorDown() },
+		"up":   func() { w.History.CursorUp() },
+		// "C-v":       func() { w.History.PageDown() },
+		// "M-v":       func() { w.History.PageUp() },
+		"pgdn": func() { w.History.PageDown() },
+		"pgup": func() { w.History.PageUp() },
+		// "M-<":       func() { w.History.MoveTop() },
+		// "M->":       func() { w.History.MoveBottom() },
+		"home": func() { w.History.MoveTop() },
+		"end":  func() { w.History.MoveBottom() },
+		// "M-n":       func() { w.History.Scroll(1) },
+		// "M-p":       func() { w.History.Scroll(-1) },
+		"C-x": func() { w.History.Delete() },
 		// "C-r":       func() { w.History. },
 	}
 }
@@ -613,36 +615,36 @@ func completionKeymap(w *cmdline.Completion) widget.Keymap {
 		"right": func() { w.CursorToRight() },
 		"left":  func() { w.CursorToLeft() },
 		// "C-i":   func() { w.CursorToRight() }, //C-i = tab
-		"C-v":  func() { w.PageDown() },
-		"M-v":  func() { w.PageUp() },
+		// "C-v":  func() { w.PageDown() },
+		// "M-v":  func() { w.PageUp() },
 		"pgdn": func() { w.PageDown() },
 		"pgup": func() { w.PageUp() },
-		"M-<":  func() { w.MoveTop() },
-		"M->":  func() { w.MoveBottom() },
+		// "M-<":  func() { w.MoveTop() },
+		// "M->":  func() { w.MoveBottom() },
 		"home": func() { w.MoveTop() },
 		"end":  func() { w.MoveBottom() },
-		"M-n":  func() { w.Scroll(1) },
-		"M-p":  func() { w.Scroll(-1) },
-		"C-i":  func() { w.InsertCompletion() }, //C-i = tab
-		"C-m":  func() { w.InsertCompletion() },
-		"C-g":  func() { w.Exit() },
-		"C-[":  func() { w.Exit() },
+		// "M-n":  func() { w.Scroll(1) },
+		// "M-p":  func() { w.Scroll(-1) },
+		"C-i": func() { w.InsertCompletion() }, //C-i = tab
+		"C-m": func() { w.InsertCompletion() },
+		// "C-g":  func() { w.Exit() },
+		"C-[": func() { w.Exit() },
 		// "C-]":   func() { w.lo },
 	}
 }
 
 func menuKeymap(w *menu.Menu) widget.Keymap {
 	return widget.Keymap{
-		"C-n":  func() { w.MoveCursor(1) },
-		"C-p":  func() { w.MoveCursor(-1) },
+		// "C-n":  func() { w.MoveCursor(1) },
+		// "C-p":  func() { w.MoveCursor(-1) },
 		"down": func() { w.MoveCursor(1) },
 		"up":   func() { w.MoveCursor(-1) },
-		"C-v":  func() { w.PageDown() },
-		"M-v":  func() { w.PageUp() },
-		"M->":  func() { w.MoveBottom() },
-		"M-<":  func() { w.MoveTop() },
-		"C-m":  func() { w.Exec() },
-		"C-g":  func() { w.Exit() },
-		"C-[":  func() { w.Exit() }, //// C-[ means ESC //
+		// "C-v":  func() { w.PageDown() },
+		// "M-v":  func() { w.PageUp() },
+		// "M->":  func() { w.MoveBottom() },
+		// "M-<":  func() { w.MoveTop() },
+		"C-m": func() { w.Exec() }, //C-m = enter
+		"C-g": func() { w.Exit() },
+		"C-[": func() { w.Exit() }, //// C-[ means ESC //
 	}
 }

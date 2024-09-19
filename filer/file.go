@@ -119,7 +119,7 @@ func (f *FileStat) ToggleMark() {
 
 // Path returns the file path.
 func (f *FileStat) Path() string {
-	f.path = strings.Replace(f.path, `\`, "/", -1)
+	f.path = strings.Replace(f.path, `\`, `/`, -1)
 	return f.path
 }
 

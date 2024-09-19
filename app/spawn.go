@@ -141,31 +141,31 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 			switch b {
 			case macroFile:
 				src = g.File().Name()
-				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
 			case macroExtension:
 				src = g.File().Ext()
-				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
 			case macroFilePath:
 				src = g.File().Path()
-				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
 			case macroFileWithoutExt:
 				src = util.RemoveExt(g.File().Name())
-				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
 			case macroFileWithoutExtPath:
 				src = util.RemoveExt(g.File().Path())
-				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
@@ -175,16 +175,14 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				} else {
 					src = strings.Join(g.Dir().MarkfileNames(), " ")
 				}
-				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 
-				// glippy.Set((src))
 			case macroMarkfilePath:
 				if !nonQuote {
 					src = strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
 				} else {
 					src = strings.Join(g.Dir().MarkfilePaths(), " ")
 				}
-				// glippy.Set((src))
 
 			case macroDir:
 				if i != len(data)-1 && data[i+1] == macroNextDir {
@@ -196,7 +194,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				if !nonQuote {
 					src = util.Quote(src)
 				}
-				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 
 			case macroDirPath:
 				if i != len(data)-1 && data[i+1] == macroNextDir {
@@ -208,7 +206,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				if !nonQuote {
 					src = util.Quote(src)
 				}
-				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 
 			case macroTimestampHour:
 				timestamp := time.Now().Format("150405")

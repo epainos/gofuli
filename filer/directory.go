@@ -208,7 +208,6 @@ func (d *Directory) Reset() {
 // Chdir changes the current directory and reads a new path by the default reader.
 // Sets the cursor to the history name or to the previous directory name if parent destinats.
 func (d *Directory) Chdir(path string) {
-	// glippy.Set(fmt.Sprintf("%v", d.history))
 	path = util.ExpandPath(path)
 	path = filepath.Clean(path)
 
@@ -239,7 +238,6 @@ func (d *Directory) Chdir(path string) {
 	if name, ok := d.history[d.Path]; ok {
 		d.SetCursorByName(name)
 		d.SetOffsetCenteredCursor()
-		// glippy.Set(fmt.Sprintf("%v: %s: %s", d.history, d.Path, name))
 	} else if path == parent {
 		d.SetCursorByName(olddir)
 		d.SetOffsetCenteredCursor()
@@ -258,7 +256,6 @@ func AddHistory(myHistory []string, path string) []string {
 	myHistory = append(myHistory, path)
 
 	myHistory[0] = strconv.Itoa(len(myHistory) - 1)
-	// glippy.Set(fmt.Sprintf("%v", myHistory))
 	return myHistory
 }
 
@@ -269,7 +266,6 @@ func (d *Directory) GoPreviousFolder() {
 	}
 	myIndex, _ := strconv.Atoi(d.myHistory[0])
 	if 1 >= myIndex {
-		// glippy.Set(fmt.Sprintf("%v", d.myHistory))
 		return
 	} else {
 		myIndex--
@@ -280,14 +276,12 @@ func (d *Directory) GoPreviousFolder() {
 	d.myHistory = d.myHistory[:len(d.myHistory)-1]
 	d.myHistory[0] = strconv.Itoa(myIndex)
 
-	// glippy.Set(fmt.Sprintf("%v", d.myHistory))
 }
 
 // goForwardFoler
 func (d *Directory) GoFowardFolder() {
 	myIndex, _ := strconv.Atoi(d.myHistory[0])
 	if myIndex >= len(d.myHistory)-1 {
-		// glippy.Set(fmt.Sprintf("%v", d.myHistory))
 		return
 	}
 	myIndex++
@@ -297,7 +291,6 @@ func (d *Directory) GoFowardFolder() {
 	d.myHistory = d.myHistory[:len(d.myHistory)-1]
 	d.myHistory[0] = strconv.Itoa(myIndex)
 
-	// glippy.Set(fmt.Sprintf("%v", d.myHistory))
 }
 
 // Glob sets a reader to matching pattern in the current directory.
