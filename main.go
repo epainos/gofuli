@@ -534,6 +534,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
 		}, func() {
 			value, _ := glippy.Get()
+			value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'`
 			g.Shell(`cp -r -v `+value+` %D`, -7)
 			// message.Info("Pasted (복사 완료) ")
 
@@ -546,6 +547,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
 		}, func() {
 			value, _ := glippy.Get()
+			value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'`
 			g.Shell(`mv -f -v `+value+` %D`, -7)
 			// message.Info("Moved (이동 완료) ")
 
