@@ -80,12 +80,12 @@ func config(g *app.Goful, is_tmux bool) {
 
 	// Setup open command for C-m (when the enter key is pressed)
 	// The macro %f means expanded to a file name, for more see (spawn.go)
-	opener := "xdg-open %f %&"
+	opener := "xdg-open %m %&"
 	switch runtime.GOOS {
 	case "windows":
-		opener = "explorer '%~f' %&"
+		opener = "explorer '%~fm %&"
 	case "darwin":
-		opener = "open %f %&"
+		opener = "open %m %&"
 	}
 	g.MergeKeymap(widget.Keymap{
 		"C-m": func() { g.Spawn(opener) }, // C-m means Enter key
@@ -496,7 +496,10 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"f6":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }),
 		"f7":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
 		"f8":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
-		"c":   func() { g.Copy() },
+
+		"f9": ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
+
+		"c": func() { g.Copy() },
 		"C": ifElse(runtime.GOOS == "windows", func() {
 			g.Shell("Copy-Item -Recurse %F '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`)
 		}, func() {
