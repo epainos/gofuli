@@ -96,8 +96,8 @@ const (
 	macroRunBackground      = '&'  // %& is a flag runned in background
 )
 
-// ifElse 함수 정의
-func ifElse(condition bool, trueVal string, falseVal string) string {
+// ifElseSting 함수 정의
+func ifElseSting(condition bool, trueVal string, falseVal string) string {
 	if condition {
 		return trueVal
 	}
@@ -141,31 +141,31 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 			switch b {
 			case macroFile:
 				src = g.File().Name()
-				src = ifElse(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
 			case macroExtension:
 				src = g.File().Ext()
-				src = ifElse(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
 			case macroFilePath:
 				src = g.File().Path()
-				src = ifElse(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
 			case macroFileWithoutExt:
 				src = util.RemoveExt(g.File().Name())
-				src = ifElse(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
 			case macroFileWithoutExtPath:
 				src = util.RemoveExt(g.File().Path())
-				src = ifElse(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
 				if !nonQuote {
 					src = util.Quote(src)
 				}
@@ -175,7 +175,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				} else {
 					src = strings.Join(g.Dir().MarkfileNames(), " ")
 				}
-				src = ifElse(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
 
 				// glippy.Set((src))
 			case macroMarkfilePath:
@@ -196,7 +196,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				if !nonQuote {
 					src = util.Quote(src)
 				}
-				src = ifElse(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
 
 			case macroDirPath:
 				if i != len(data)-1 && data[i+1] == macroNextDir {
@@ -208,7 +208,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				if !nonQuote {
 					src = util.Quote(src)
 				}
-				src = ifElse(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, "\\", "/"), src)
 
 			case macroTimestampHour:
 				timestamp := time.Now().Format("150405")
