@@ -541,7 +541,7 @@ type globMode struct {
 }
 
 func (m *globMode) String() string          { return "glob" }
-func (m *globMode) Prompt() string          { return "Glob pattern(파일패턴): " }
+func (m *globMode) Prompt() string          { return "Glob pattern(검색): " }
 func (m *globMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *globMode) Run(c *cmdline.Cmdline) {
 	if pattern := c.String(); pattern != "" {
@@ -560,7 +560,7 @@ type globdirMode struct {
 }
 
 func (m *globdirMode) String() string          { return "globdir" }
-func (m *globdirMode) Prompt() string          { return "Globdir pattern(폴더패턴): " }
+func (m *globdirMode) Prompt() string          { return "GlobDir pattern(하부검색): " }
 func (m *globdirMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *globdirMode) Run(c *cmdline.Cmdline) {
 	if pattern := c.String(); pattern != "" {

@@ -116,7 +116,7 @@ func (s defaultReader) Read(callback func(string)) {
 type globPattern string
 
 func (s globPattern) String() string {
-	return fmt.Sprintf("Glob:(%s)", string(s))
+	return fmt.Sprintf("Glob(검색):(%s)", string(s))
 }
 
 func (s globPattern) Read(callback func(name string)) {
@@ -136,7 +136,7 @@ func (s globPattern) Read(callback func(name string)) {
 type globDirPattern string
 
 func (s globDirPattern) String() string {
-	return fmt.Sprintf("Globdir:(%s)", string(s))
+	return fmt.Sprintf("Globdir(하부검색):(%s)", string(s))
 }
 
 func (s globDirPattern) Read(callback func(string)) {
