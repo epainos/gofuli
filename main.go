@@ -165,7 +165,7 @@ func config(g *app.Goful, is_tmux bool) {
 		"E", "sort ext decending  확장자역수", func() { g.Dir().SortExtDec() },
 		".", "toggle priority     폴더를 따로 정렬   ", func() { filer.TogglePriority(); g.Workspace().ReloadAll() },
 	)
-	g.AddKeymap("s", func() { g.Menu("sort") })
+	g.AddKeymap("s", func() { g.Workspace().ReloadAll(); g.Menu("sort") })
 
 	menu.Add("view",
 		"s", "stat menu                 상태메뉴   ", func() { g.Menu("stat") },
@@ -174,7 +174,7 @@ func config(g *app.Goful, is_tmux bool) {
 		"t", "tab menu                  탭메뉴     ", func() { g.Menu("tab") },
 		".", "toggle show hidden files  숨김파일 켬/끔", func() { filer.ToggleShowHiddens(); g.Workspace().ReloadAll() },
 	)
-	g.AddKeymap("v", func() { g.Menu("view") })
+	g.AddKeymap("v", func() { g.Workspace().ReloadAll(); g.Menu("view") })
 
 	menu.Add("layout",
 		"t", "tile         왼쪽에 하나", func() { g.Workspace().LayoutTile() },
@@ -220,14 +220,14 @@ func config(g *app.Goful, is_tmux bool) {
 		"b", "(B) go pre dir      폴더 뒤로 가기", func() { g.Dir().GoPreviousFolder() },
 		"f", "(F) go forward dir  폴더 앞으로 가기", func() { g.Dir().GoFowardFolder() },
 	)
-	g.AddKeymap("x", func() { g.Menu("command") })
+	g.AddKeymap("x", func() { g.Workspace().ReloadAll(); g.Menu("command") })
 
 	if runtime.GOOS == "windows" {
 		menu.Add("external-command",
-			"c", "(f5) copy %m to %D2   복사", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to=%D2`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell(`fcp /cmd=diff '%~F' /to='%~D2'`) },
-			"m", "(f6) move %m to %D2   이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to=%D2`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }),
+			"c", "(f5) copy %m to %D2   복사", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell(`fcp /cmd=diff '%~F' /to='%~D2'`) },
+			"m", "(f6) move %m to %D2   이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }),
 			"k", "(f7) make directory   새폴더", ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'./` + util.RemoveExt(g.File().Name()) + `'`) }),
-			"d", "(f8) del /s %M        삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=delete %M `, -7) }, func() { g.Remove() }),
+			"d", "(f8) del /s %M        삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
 			// "D", "rd /s /q %~m     폴더 삭제", func() { g.Shell("rd /s /q %~m") },
 			"n", "(n)  create newfile   새파일", func() { g.Shell("copy nul ") },
 			"r", "(r)  move (rename) %f 이름변경", ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
@@ -237,10 +237,10 @@ func config(g *app.Goful, is_tmux bool) {
 		)
 	} else {
 		menu.Add("external-command",
-			"c", "(f5) copy %m to %D2      복사", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to=%D2`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell("cp -vai %m %D2") },
-			"m", "(f6) move %m to %D2      이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to=%D2`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell("mv -vi %m %D2") },
+			"c", "(f5) copy %m to %D2      복사", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell("cp -vai %m %D2") },
+			"m", "(f6) move %m to %D2      이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell("mv -vi %m %D2") },
 			"k", "(f7) make directory      새폴더", ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'./` + util.RemoveExt(g.File().Name()) + `'`) }),
-			"D", "(f8) remove %m files     삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=delete %M `, -7) }, func() { g.Remove() }),
+			"D", "(f8) remove %m files     삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
 			"n", "(n)  create newfile      새파일", func() { g.Shell("touch './" + g.File().Name() + `'`) },
 			"T", "     time copy %f to %m  시간복사", func() { g.Shell("touch -r %f %m") },
 			"M", "(m)  change mode %m      권한변경", func() { g.Shell("chmod 644 %m", -3) },
@@ -250,7 +250,7 @@ func config(g *app.Goful, is_tmux bool) {
 			// "A", "archives menu     ", func() { g.Menu("archive") },
 		)
 	}
-	g.AddKeymap("X", func() { g.Menu("external-command") })
+	g.AddKeymap("X", func() { g.Workspace().ReloadAll(); g.Menu("external-command") })
 
 	menu.Add("tab",
 		"n", "(c-t)   New tab T       새탭        ", func() { g.CreateWorkspace(); g.MoveWorkspace(1) },
@@ -265,7 +265,7 @@ func config(g *app.Goful, is_tmux bool) {
 		"o", "(c-o)   Open new dir    창 추가       ", func() { g.Workspace().CreateDir() },
 		"O", "(c-w)   clOse dir       창 닫기       ", func() { g.Workspace().CloseDir() },
 	)
-	g.AddKeymap("T", func() { g.Menu("tab") })
+	g.AddKeymap("T", func() { g.Workspace().ReloadAll(); g.Menu("tab") })
 
 	// menu.Add("archive",
 	// 	"z", "zip     ", func() { g.Shell(`zip -roD %x.zip %m`, -7) },
@@ -315,7 +315,7 @@ func config(g *app.Goful, is_tmux bool) {
 			"x", "/media ", func() { g.Dir().Chdir("/media") },
 		)
 	}
-	g.AddKeymap("b", func() { g.Menu("bookmark") })
+	g.AddKeymap("b", func() { g.Workspace().ReloadAll(); g.Menu("bookmark") })
 
 	menu.Add("editor",
 		"e", "vscodE       코드 ", func() { g.Spawn("code %f %&") },
@@ -324,7 +324,7 @@ func config(g *app.Goful, is_tmux bool) {
 		"x", "eXcel        엑셀", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Microsoft Office/root/Office16/excel.exe' '"%~F"'`) }, func() { g.Spawn(`open -a "Microsoft Excel"  %f %&`) }),
 		"c", "Chrome       크롬", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Google/Chrome/Application/chrome' '"%~F"'`) }, func() { g.Spawn(`open -a "Google Chrome" %f %&`) }),
 	)
-	g.AddKeymap("e", func() { g.Menu("editor") })
+	g.AddKeymap("e", func() { g.Workspace().ReloadAll(); g.Menu("editor") })
 
 	menu.Add("image",
 		"x", "default    기본열기", func() { g.Spawn(opener) },
@@ -341,22 +341,22 @@ func config(g *app.Goful, is_tmux bool) {
 	var associate widget.Keymap
 
 	associate = widget.Keymap{
-		".dir":  func() { g.Dir().EnterDir() },
+		".dir":  func() { g.Dir().EnterDir(); g.Workspace().ReloadAll() },
 		".exec": func() { g.Shell(" ./" + g.File().Name()) },
 
-		".zip": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) },
-		".tar": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvf %f -C %D`) },
-		".gz":  func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfz %f -C %D`) },
-		".tgz": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfz %f -C %D`) },
-		".bz2": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfj %f -C %D`) },
-		".xz":  func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfJ %f -C %D`) },
-		".txz": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfJ %f -C %D`) },
-		".rar": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`unrar x %f -C %D`) },
+		".zip": func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D/%~x'`) },
+		".tar": func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvf %f -C %D`) },
+		".gz":  func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfz %f -C %D`) },
+		".tgz": func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfz %f -C %D`) },
+		".bz2": func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfj %f -C %D`) },
+		".xz":  func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfJ %f -C %D`) },
+		".txz": func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfJ %f -C %D`) },
+		".rar": func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`unrar x %f -C %D`) },
 
-		".go": func() { g.Shell(`go run %f`) },
-		".py": func() { g.Shell(`python %f`) },
-		".rb": func() { g.Shell(`ruby %f`) },
-		".js": func() { g.Shell(`node %f`) },
+		".go": func() { g.Workspace().ReloadAll(); g.Shell(`go run %f`) },
+		".py": func() { g.Workspace().ReloadAll(); g.Shell(`python %f`) },
+		".rb": func() { g.Workspace().ReloadAll(); g.Shell(`ruby %f`) },
+		".js": func() { g.Workspace().ReloadAll(); g.Shell(`node %f`) },
 
 		// ".jpg":  func() { g.Menu("image") },
 		// ".jpeg": func() { g.Menu("image") },
@@ -410,23 +410,23 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		openerCurrentDir = "open %D %&"
 	}
 	return widget.Keymap{
-		"M-C-o": func() { g.CreateWorkspace() },
-		"M-C-w": func() { g.CloseWorkspace() },
-		"M-f":   func() { g.MoveWorkspace(1) },
-		"M-b":   func() { g.MoveWorkspace(-1) },
-		"C-o":   func() { g.Workspace().CreateDir() },
-		"C-w":   func() { g.Workspace().CloseDir() },
+		"M-C-o": func() { g.Workspace().ReloadAll(); g.CreateWorkspace() },
+		"M-C-w": func() { g.Workspace().ReloadAll(); g.CloseWorkspace() },
+		"M-f":   func() { g.Workspace().ReloadAll(); g.MoveWorkspace(1) },
+		"M-b":   func() { g.Workspace().ReloadAll(); g.MoveWorkspace(-1) },
+		"C-o":   func() { g.Workspace().ReloadAll(); g.Workspace().CreateDir() },
+		"C-w":   func() { g.Workspace().ReloadAll(); g.Workspace().CloseDir() },
 		"C-l":   func() { g.Workspace().ReloadAll() },
 		"'":     func() { g.Dir().Reset(); g.Workspace().ReloadAll() },
-		"A":     func() { g.Shell(`7z a '%~d.zip' %M`, -7) },                                 //같은 창에 압축파일 생성
-		"a":     func() { g.Shell(`7z a '%~D2/%~d.zip' %M`, -7); g.Workspace().ReloadAll() }, //반대쪽 창에 압축파일 생성
+		"A":     func() { g.Workspace().ReloadAll(); g.Shell(`7z a '%~d.zip' %M`, -7) },      //같은 창에 압축파일 생성
+		"a":     func() { g.Workspace().ReloadAll(); g.Shell(`7z a '%~D2/%~d.zip' %M`, -7) }, //반대쪽 창에 압축파일 생성
 
-		"Z": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) },
-		"z": func() { g.Shell(`7z x '%~F' -o'%~D2/%~x'`) },
+		"Z": func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D/%~x'`) },
+		"z": func() { g.Workspace().ReloadAll(); g.Shell(`7z x '%~F' -o'%~D2/%~x'`) },
 		// "z":   ifElse(runtime.GOOS == "windows", func() { g.Shell("unzip %~f -d %~D2\\\\temp") }, func() { g.Shell("unzip %f -d %D2/temp") }),
 		// "Z":   ifElse(runtime.GOOS == "windows", func() { g.Shell("unzip %~f -d %~D\\\\temp") }, func() { g.Shell("unzip %f -d %D/temp") }),
-		"C-f": func() { g.Workspace().MoveFocus(1) },
-		"C-b": func() { g.Workspace().MoveFocus(-1) },
+		"C-f": func() { g.Workspace().ReloadAll(); g.Workspace().MoveFocus(1) },
+		"C-b": func() { g.Workspace().ReloadAll(); g.Workspace().MoveFocus(-1) },
 
 		// "right": func() { g.Workspace().MoveFocus(1) },
 		// "left":  func() { g.Workspace().MoveFocus(-1) },
@@ -434,24 +434,24 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"C-i":  func() { g.Workspace().MoveFocus(1) }, //C-i = tab
 		// "l":         func() { g.Workspace().MoveFocus(1) },
 
-		"h": func() { g.Dir().Chdir("..") },
-		"Q": func() { g.Workspace().SwapNextDir() },
+		"h": func() { g.Workspace().ReloadAll(); g.Dir().Chdir("..") },
+		"Q": func() { g.Workspace().ReloadAll(); g.Workspace().SwapNextDir() },
 		// "F": func() { g.Workspace().SwapNextDir() },
 		// "B": func() { g.Workspace().SwapPrevDir() },
-		"w": func() { g.Workspace().ChdirNeighbor2This() },
-		"W": func() { g.Workspace().ChdirNeighbor() },
+		"w": func() { g.Workspace().ReloadAll(); g.Workspace().ChdirNeighbor2This() },
+		"W": func() { g.Workspace().ReloadAll(); g.Workspace().ChdirNeighbor() },
 		// "t": func() { message.Info("t  입력 "); g.ChangeWorkspaceTitle() }
 
 		// "C-h":       func() { g.Dir().Chdir("..") },
-		"backspace": func() { g.Dir().Chdir("..") },
+		"backspace": func() { g.Workspace().ReloadAll(); g.Dir().Chdir("..") },
 		// "u":         func() { g.Dir().Chdir("..") },
-		"~":  func() { g.Dir().Chdir("~") },
-		"\\": func() { g.Dir().Chdir("/") },
-		"B":  func() { g.Workspace().Dir().GoPreviousFolder() },
-		"F":  func() { g.Workspace().Dir().GoFowardFolder() },
+		"~":  func() { g.Workspace().ReloadAll(); g.Dir().Chdir("~") },
+		"\\": func() { g.Workspace().ReloadAll(); g.Dir().Chdir("/") },
+		"B":  func() { g.Workspace().ReloadAll(); g.Workspace().Dir().GoPreviousFolder() },
+		"F":  func() { g.Workspace().ReloadAll(); g.Workspace().Dir().GoFowardFolder() },
 
-		"C-n":  func() { g.Dir().MoveCursor(1) },
-		"C-p":  func() { g.Dir().MoveCursor(-1) },
+		// "C-n":  func() { g.Workspace().ReloadAll(); g.Dir().MoveCursor(1) },
+		// "C-p":  func() { g.Workspace().ReloadAll(); g.Dir().MoveCursor(-1) },
 		"down": func() { g.Dir().MoveCursor(1) },
 		"up":   func() { g.Dir().MoveCursor(-1) },
 		"j":    func() { g.Dir().MoveCursor(1) },
@@ -477,51 +477,56 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		" ":     func() { g.Dir().ToggleMark() },
 		"C- ":   func() { g.Dir().InvertMark() },
 		"`":     func() { g.Dir().InvertMark() },
-		"C-g":   func() { g.Dir().Reset() },
-		"C-[":   func() { g.Dir().Reset() }, // C-[ means ESC
-		"f":     func() { g.Dir().Finder() },
-		"/":     func() { g.Dir().Finder() },
-		"q":     func() { g.Quit() },
-		";":     func() { g.Shell("") },
-		":":     func() { g.ShellSuspend("") },
-		"M-C-t": func() { g.CloseWorkspace() },
+		"C-g":   func() { g.Workspace().ReloadAll(); g.Dir().Reset() },
+		"C-[":   func() { g.Workspace().ReloadAll(); g.Dir().Reset() }, // C-[ means ESC
+		"f":     func() { g.Workspace().ReloadAll(); g.Dir().Finder() },
+		"/":     func() { g.Workspace().ReloadAll(); g.Dir().Finder() },
+		"q":     func() { g.Workspace().ReloadAll(); g.Quit() },
+		";":     func() { g.Workspace().ReloadAll(); g.Shell("") },
+		":":     func() { g.Workspace().ReloadAll(); g.ShellSuspend("") },
+		"M-C-t": func() { g.Workspace().ReloadAll(); g.CloseWorkspace(); g.Dir().Reset(); g.Workspace().ReloadAll() },
 		// "T":     func() { g.ChangeWorkspaceTitle() },
-		"C-t": func() { g.CreateWorkspace() },
-		"t":   func() { g.MoveWorkspace(1) },
-		"n":   func() { g.Touch() },
-		"K":   func() { g.Mkdir() },
-		"f5":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to=%D2`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }),
-		"f6":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to=%D2`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }),
-		"f2":  ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
-		"f7":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
-		"f8":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
-		"c":   func() { g.Copy() },
+		"C-t": func() { g.Workspace().ReloadAll(); g.CreateWorkspace(); g.Dir().Reset(); g.Workspace().ReloadAll() },
+		"t":   func() { g.Workspace().ReloadAll(); g.MoveWorkspace(1); g.Dir().Reset(); g.Workspace().ReloadAll() },
+		"n":   func() { g.Workspace().ReloadAll(); g.Touch() },
+		"K":   func() { g.Workspace().ReloadAll(); g.Mkdir() },
+		"f5":  ifElse(runtime.GOOS == "windows", func() { g.Workspace().ReloadAll(); g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Workspace().ReloadAll(); g.Shell(`cp -r -v %M %D2`, -7) }),
+		"f6":  ifElse(runtime.GOOS == "windows", func() { g.Workspace().ReloadAll(); g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Workspace().ReloadAll(); g.Shell(`mv -f -v %M %D2`, -7) }),
+		"f2":  ifElse(runtime.GOOS == "windows", func() { g.Workspace().ReloadAll(); g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Workspace().ReloadAll(); g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
+		"f7":  ifElse(runtime.GOOS == "windows", func() { g.Workspace().ReloadAll(); g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Workspace().ReloadAll(); g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
+		"f8":  ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Workspace().ReloadAll(); g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Workspace().ReloadAll(); g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
+		"c":   func() { g.Workspace().ReloadAll(); g.Copy() },
 		"C": ifElse(runtime.GOOS == "windows", func() {
+			g.Workspace().ReloadAll()
 			g.Shell("Copy-Item -Recurse %F '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`)
 		}, func() {
+			g.Workspace().ReloadAll()
 			g.Shell("cp -r %f '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`)
 		}),
-		"m":      func() { g.Move() },
-		"r":      func() { g.Rename() },
-		"R":      func() { g.BulkRename() },
-		"d":      ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
-		"delete": func() { g.Remove() },
-		"D":      func() { g.Chdir() },
-		"g":      func() { g.Glob() },
-		"G":      func() { g.Globdir() },
-		"o":      func() { g.Spawn(opener) },
-		"O":      func() { g.Spawn(openerCurrentDir) },
+		"m":      func() { g.Workspace().ReloadAll(); g.Move() },
+		"r":      func() { g.Workspace().ReloadAll(); g.Rename() },
+		"R":      func() { g.Workspace().ReloadAll(); g.BulkRename() },
+		"d":      ifElse(runtime.GOOS == "windows", func() { g.Workspace().ReloadAll(); g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Workspace().ReloadAll(); g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Workspace().ReloadAll(); g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
+		"delete": func() { g.Workspace().ReloadAll(); g.Remove() },
+		"D":      func() { g.Workspace().ReloadAll(); g.Chdir() },
+		"g":      func() { g.Workspace().ReloadAll(); g.Glob() },
+		"G":      func() { g.Workspace().ReloadAll(); g.Globdir() },
+		"o":      func() { g.Workspace().ReloadAll(); g.Spawn(opener) },
+		"O":      func() { g.Workspace().ReloadAll(); g.Spawn(openerCurrentDir) },
 		"N": func() { //file Name copy 파일명 복사
+			g.Workspace().ReloadAll()
 			myClip := util.RemoveExt(g.File().Name())
 			glippy.Set(myClip)
 			message.Info("file Name copied(파일명 복사함): " + myClip)
 		},
 		"Y": func() { //Path copy 경로 복사
+			g.Workspace().ReloadAll()
 			myClip := util.RemoveExt(g.File().Path())
 			glippy.Set(myClip)
 			message.Info("path copied(경로 복사함): " + myClip)
 		},
 		"y": func() { //file copy 파일 복사
+			g.Workspace().ReloadAll()
 			myClip := strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
 			glippy.Set(myClip)
 			message.Info("Yanked file(파일 복사함)): " + myClip)
@@ -529,11 +534,14 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			g.Workspace().ReloadAll()
 		},
 		"p": //paste file 복사 파일 붙여넣기
+
 		ifElse(runtime.GOOS == "windows", func() {
+			g.Workspace().ReloadAll()
 			value, _ := glippy.Get()
-			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D'`, -7)
+			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
 			g.Workspace().ReloadAll()
 		}, func() {
+			g.Workspace().ReloadAll()
 			value, _ := glippy.Get()
 			g.Shell(`cp -r -v `+value+` %D`, -7)
 			g.Dir().Reset()
@@ -543,10 +551,12 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		}),
 		"P": //move file 복사파일 이동함
 		ifElse(runtime.GOOS == "windows", func() {
+			g.Workspace().ReloadAll()
 			value, _ := glippy.Get()
-			g.Shell(`fcp /cmd=Move `+value+` /to='%~D'`, -7)
+			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
 			g.Workspace().ReloadAll()
 		}, func() {
+			g.Workspace().ReloadAll()
 			value, _ := glippy.Get()
 			g.Shell(`mv -f -v `+value+` %D`, -7)
 			g.Dir().Reset()
@@ -561,8 +571,6 @@ func finderKeymap(w *filer.Finder) widget.Keymap {
 	return widget.Keymap{
 		"C-h":       func() { w.DeleteBackwardChar() },
 		"backspace": func() { w.DeleteBackwardChar() },
-		"C-7":       func() { w.MoveHistory(1); message.Info("C-=") },
-		"C-8":       func() { w.MoveHistory(-1); message.Info("C--") },
 		"C-g":       func() { w.Exit() },
 		"C-[":       func() { w.Exit() },
 	}
