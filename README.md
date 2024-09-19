@@ -103,8 +103,9 @@ See [releases](https://github.com/anmitsu/goful/releases) or 'bin' folder
 | `z`                                  | unzip file to neighbor dir                                                                |
 | `Z`                                  | unzip file go this dir                                                                    |
 
-**f2, f5, f6, f7 do External command(rename, copy, move, mkdir)
+**f2, f5, f6, f7, f8 do External command(rename, copy, move, mkdir, remove)
 external command is more fast and comfortable in some cases. but 'refresh screen' is needed because goful doesn't know it has been finished.
+(default copy and move command shows the Progress bar, and refresh view after it. so default copy/move command is good for small size files.) 
 
 For more see [main.go](main.go)
 
@@ -275,10 +276,10 @@ Install after edit `my/goful/main.go`
 * quote symbol changed to ' not  ". windows have troubles using ".
 * windows cmd changed to powershell.
 * \ changed to /  ('c:\users\bilbo' -> c:/users/bilbo').
-* 7z is main archive manager. zip, tar files are compressed and unzipped with 7z.
-* fastcopy(fcp) is copy manager in WINDOWS. so I let 7z.exe and fcp.exe to 'bin' folder.
-* recycle.exe is using to  move files/folders to recycle bin.
-* you can use above program in 'bin' folder or download it by yourself
+* 7z is main archive manager. zip, rar, tar, gz... rfiles are compressed and unzipped with 7z. 
+* fastcopy(fcp) is copy manager. f5, f6 or External command use fcp. default copy or move is slower than fcp. (default copy and move command shows the Progress bar, and refresh view after it. so default copy/move command is good for small size files.) 
+* recycle.exe moves files(and folders) to recycle bin for safely delete. 'delete' key removes files(and folder) permanently.
+* you can use above program in 'bin' folder or download it by yourself. and place it PATH in Environment variables. if you don't know about PATH variables, just copy goful, 7z, fcp, recycle to c:\windows\system32 folder.
 
 7z: https://www.7-zip.org/download.html
 
