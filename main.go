@@ -392,7 +392,7 @@ func ifElse(condition bool, trueVal func(), falseVal func()) func() {
 	return falseVal
 }
 
-func arrangeWindowsFilePath(str string) string {
+func arrangeFilePathForWindows(str string) string {
 	if strings.Contains(str, `"`) { //case for copied file path.
 		//"C:\Windows"
 		//"C:\Users"
@@ -405,14 +405,47 @@ func arrangeWindowsFilePath(str string) string {
 		} else {
 			str = strings.Replace(str, `\`, `/`, -1)
 			var indices []int
-			for i := 0; i < len(str); i++ {
+			indices = append(indices, 0)
+			for i := 1; i < len(str); i++ {
 				if str[i] == ':' { //find ':' and add index
 					indices = append(indices, i-2) //
 				}
 			}
-			indices[0] = 0
 			indices = append(indices, len(str))
 			returnString := ``
+			for i := 0; i < len(indices)-1; i++ { //add ' ' between strings
+				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
+			}
+			return returnString
+		}
+	}
+}
+
+func arrangeFilePathForMac(str string) string {
+	//case for copied file path.
+	// 	/Users
+	// /System
+	// /Applications -> '/Users' '/System' '/Applications'
+	if strings.Contains(str, "\n") {
+
+		return `'` + strings.Replace(str, "\n", `' '`, -1) + `'`
+	} else {
+		//case for copied file
+		// /Users /System /Applications -> '/Users' '/System' '/Applications'
+		if str == "" {
+			return `==PLEASE COPY FILE PATH BY 'cmd + opt + c' in finder===`
+		} else {
+			var indices []int
+
+			indices = append(indices, 0)
+			for i := 1; i < len(str); i++ {
+				if str[i-1] == ' ' && str[i] == '/' { //find ':' and add index
+					indices = append(indices, i-1) //
+				}
+			}
+			indices = append(indices, len(str))
+
+			returnString := ""
 			for i := 0; i < len(indices)-1; i++ { //add ' ' between strings
 				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
 			}
@@ -492,29 +525,32 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"p": //paste file 복사 파일 붙여넣기
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
-			value = arrangeWindowsFilePath(value)
+			value = arrangeFilePathForWindows(value)
 			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
+		}, ifElse(runtime.GOOS == "darwin", func() {
+			value, _ := glippy.Get()
+			value = arrangeFilePathForMac(value)
+			g.Shell(`cp -r -v `+value+` %D`, -7)
 		}, func() {
 			value, _ := glippy.Get()
-			if strings.Contains(value, "\n") {
-				value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'` //coped file name from finder has \n and doesn't have '. so add ' and replace \n to ' '
-			}
+			// value = arrangeFilePathForMac(value)
 			g.Shell(`cp -r -v `+value+` %D`, -7)
-		}),
+		})),
 
 		"P": //move file 복사파일 이동함
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
-			value = arrangeWindowsFilePath(value)
+			value = arrangeFilePathForWindows(value)
 			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
+		}, ifElse(runtime.GOOS == "darwin", func() {
+			value, _ := glippy.Get()
+			value = arrangeFilePathForMac(value)
+			g.Shell(`mv -f -v `+value+` %D`, -7)
 		}, func() {
 			value, _ := glippy.Get()
-			if strings.Contains(value, "\n") {
-				value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'`
-			}
+			// value = arrangeFilePathForMac(value)
 			g.Shell(`mv -f -v `+value+` %D`, -7)
-
-		}),
+		})),
 
 		"q": func() { g.Quit() },
 		"Q": func() { g.Workspace().SwapNextDir() },
