@@ -509,8 +509,8 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"K": func() { g.Mkdir() },              //make directory
 		// "l":  open file with default application
 		//"L":
-		"m": func() { g.Move() }, //move file
-		//"M":
+		"m": func() { g.Move() },                                                                                               //move file
+		"M": ifElse(runtime.GOOS == "windows", func() { message.Info(`Windows doesn't need to chmod`) }, func() { g.Chmod() }), //change file permission
 		//C-M means enter. open file with default application
 
 		"n": func() { g.Touch() }, //new file

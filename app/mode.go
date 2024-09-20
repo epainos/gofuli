@@ -195,9 +195,10 @@ func (m *copyMode) Prompt() string {
 	if m.Dir().IsMark() {
 		return fmt.Sprintf("Copy(복사) %d files -> ", m.Dir().MarkCount())
 	} else if m.src != "" {
-		return fmt.Sprintf("Copy(복사) %s -> ", m.src)
+		return ("Copy(복사) -> ")
+		// return fmt.Sprintf("Copy(복사) %s -> ", m.src)
 	} else {
-		return "Copy(복사) from "
+		return "Copy(복사) : "
 	}
 }
 func (m *copyMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
@@ -238,9 +239,10 @@ func (m *moveMode) Prompt() string {
 	if m.Dir().IsMark() {
 		return fmt.Sprintf("Move(이동) %d files -> ", m.Dir().MarkCount())
 	} else if m.src != "" {
-		return fmt.Sprintf("Move(이동) %s -> ", m.src)
+		return ("Move(이동) -> ")
+		// return fmt.Sprintf("Move(이동) %s -> ", m.src)
 	} else {
-		return "Move(이동) from "
+		return "Move(이동) : "
 	}
 }
 func (m *moveMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
@@ -274,8 +276,10 @@ type renameMode struct {
 	src string
 }
 
-func (m *renameMode) String() string          { return "rename" }
-func (m *renameMode) Prompt() string          { return fmt.Sprintf("Rename(이름변경) %s -> ", m.src) }
+func (m *renameMode) String() string { return "rename" }
+func (m *renameMode) Prompt() string { return "Rename(이름변경) -> " }
+
+// func (m *renameMode) Prompt() string          { return fmt.Sprintf("Rename(이름변경) %s -> ", m.src) }
 func (m *renameMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *renameMode) Run(c *cmdline.Cmdline) {
 	dst := c.String()
