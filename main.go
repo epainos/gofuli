@@ -427,8 +427,7 @@ func arrangeFilePathForMac(str string) string {
 	// /System
 	// /Applications -> '/Users' '/System' '/Applications'
 	if strings.Contains(str, "\n") {
-
-		return `'` + strings.Replace(str, "\n", `' '`, -1) + `'`
+		return strings.ReplaceAll(`'`+strings.Replace(str, "\n", `' '`, -1)+`'`, `''`, `'`)
 	} else {
 		//case for copied file
 		// /Users /System /Applications -> '/Users' '/System' '/Applications'
@@ -449,7 +448,7 @@ func arrangeFilePathForMac(str string) string {
 			for i := 0; i < len(indices)-1; i++ { //add ' ' between strings
 				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
 			}
-			return returnString
+			return strings.ReplaceAll(returnString, `''`, `'`)
 		}
 	}
 }
