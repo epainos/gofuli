@@ -456,7 +456,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"D": func() { g.Workspace().ReloadAll(); g.Chdir() }, //change directory
 
 		//"e"   : func() { g.Shell("xdg-open %f") },	//open with default application
-		//"E"   :
+		//  "E": func() { message.Info(clipboard.Get()) },	//open with default application
 
 		"f": func() { g.Dir().Finder() }, //search file
 		"/": func() { g.Dir().Finder() }, //search file

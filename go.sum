@@ -1,3 +1,7 @@
+github.com/atotto/clipboard v0.1.4 h1:EH0zSVneZPSuFR11BlR9YppQTVDbh5+16AmcJi4g1z4=
+github.com/atotto/clipboard v0.1.4/go.mod h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=
+github.com/conformal/gotk3 v0.0.0-20140908210829-7a6ce3ecbc88 h1:8FB43M26pXTNJBlCyNHFbFJyGYqhcDocSmxvJWhvGMw=
+github.com/conformal/gotk3 v0.0.0-20140908210829-7a6ce3ecbc88/go.mod h1:gwMcxmuW0AW7Im/LVgKVQvHXBMx972no0WOA8BRYRMI=
 github.com/f1bonacc1/glippy v0.0.0-20230614190937-e7ca07f99f6f h1:8KqHyOl+UXnjMWHRdwqvvaapPWH8Nxf69jg5DLh2FAE=
 github.com/f1bonacc1/glippy v0.0.0-20230614190937-e7ca07f99f6f/go.mod h1:4FvlEkhBa/BJMEuMGVlocGYDJAvO7FwhJhHH9MY6vaM=
 github.com/gdamore/encoding v1.0.0 h1:+7OoQ1Bc6eTm5niUzBa0Ctsh6JbMW6Ra+YNuAtDBdko=
@@ -17,6 +21,10 @@ github.com/mattn/go-runewidth v0.0.13/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
+github.com/tjgq/clipboard v0.0.0-20140914215156-35a41f2605b7 h1:zIobKQnK3QYs/Xc88D3dGYN/wUYJnZOmIcPDsUmkyhY=
+github.com/tjgq/clipboard v0.0.0-20140914215156-35a41f2605b7/go.mod h1:K4RmHew8d+Z4DypGmP8N16tuMAXrMEoFELDmwbi+8rU=
+github.com/tjgq/ticker v0.0.0-20140913211110-8b4870134629 h1:8D/3TnZoDVrg04njlEpU6hyEb9dEd8uD7GhtTd8jFGQ=
+github.com/tjgq/ticker v0.0.0-20140913211110-8b4870134629/go.mod h1:h1gytvaaDPqPR0zMPUU6XZnneqVVBG1ELYHGZ5Ybw6o=
 golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 h1:TyHqChC80pFkXWraUUf6RuB5IqFdQieMLwwCJokV2pc=
