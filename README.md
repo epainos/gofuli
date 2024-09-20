@@ -91,9 +91,7 @@ See [releases](https://github.com/anmitsu/goful/releases) or 'bin' folder
 | `B`                                  | go back to  previous directory                                                            |
 | `F`                                  | go to forward directory                                                                   |
 | `y`                                  | yank(or copy) file to clipboard                                                           |
-| `p`                                  | paste yanked file to this directory
-(if you copy your file's PATH, you can paste it in goful)
-(Copy path: (windows) shift+rightClick+a     (mac) cmd+opt+c )                                                       |
+| `p`                                  | paste yanked file to this directory (if you copy your file's PATH, you can paste it in goful (Copy path: (windows) shift+rightClick+a     (mac) cmd+opt+c ))                                                       |
 | `P`                                  | move yanked file to this directory                                                        |
 | `Y`                                  | copy file(or directory) path to clipboard                                                 |
 | `N`                                  | copy file(or directory) name only to clipboard                                            |
