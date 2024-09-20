@@ -392,6 +392,35 @@ func ifElse(condition bool, trueVal func(), falseVal func()) func() {
 	return falseVal
 }
 
+func arrangeWindowsFilePath(str string) string {
+	if strings.Contains(str, `"`) { //case for copied file path.
+		//"C:\Windows"
+		//"C:\Users"
+		//      -> 'C:/Windows' 'C:/Users'
+		return strings.Replace(strings.Replace(strings.Replace(str, "\r\n", ` `, -1), `\`, `/`, -1), `"`, `'`, -1)
+	} else { //case for copied file
+		// c:\Users c:\Windows -> 'c:/Users' 'c:/Windows'
+		if str == "" {
+			return `==PLEASE COPY FILE PATH BY 'shift + rightClick + a'===`
+		} else {
+			str = strings.Replace(str, `\`, `/`, -1)
+			var indices []int
+			for i := 0; i < len(str); i++ {
+				if str[i] == ':' { //find ':' and add index
+					indices = append(indices, i-2) //
+				}
+			}
+			indices[0] = 0
+			indices = append(indices, len(str))
+			returnString := ``
+			for i := 0; i < len(indices)-1; i++ { //add ' ' between strings
+				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
+			}
+			return returnString
+		}
+	}
+}
+
 // Widget keymap functions.
 
 func filerKeymap(g *app.Goful) widget.Keymap {
@@ -463,7 +492,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"p": //paste file 복사 파일 붙여넣기
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
-			value = strings.Replace(strings.Replace(strings.Replace(value, "\r\n", ` `, -1), `\`, `/`, -1), `"`, `'`, -1) //space in file name is not working without '
+			value = arrangeWindowsFilePath(value)
 			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
 		}, func() {
 			value, _ := glippy.Get()
@@ -476,7 +505,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"P": //move file 복사파일 이동함
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
-			value = strings.Replace(strings.Replace(strings.Replace(value, "\r\n", ` `, -1), `\`, `/`, -1), `"`, `'`, -1)
+			value = arrangeWindowsFilePath(value)
 			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
 		}, func() {
 			value, _ := glippy.Get()
