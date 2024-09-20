@@ -76,20 +76,21 @@ func config(g *app.Goful, is_tmux bool) {
 	menu.Config(menuKeymap)
 
 	filer.SetStatView(true, false, false) // size, permission and time
-	filer.SetTimeFormat("06-01-02 15:04") // ex: "Jan _2 15:04"
+	filer.SetTimeFormat("060102_15:04")   // ex: "Jan _2 15:04"
 
 	// Setup open command for C-m (when the enter key is pressed)
 	// The macro %f means expanded to a file name, for more see (spawn.go)
 	opener := "xdg-open %m %&"
 	switch runtime.GOOS {
 	case "windows":
-		opener = "explorer '%~fm %&"
+		opener = "Invoke-Item  %c %&"
+		// opener = "explorer '%~f' %&" //windows
 	case "darwin":
 		opener = "open %m %&"
 	}
 	g.MergeKeymap(widget.Keymap{
-		"C-m": func() { g.Spawn(opener) }, // C-m means Enter key
-		// "o":     func() { g.Spawn(opener) },
+		"C-m":   func() { g.Spawn(opener) }, // C-m means Enter key
+		"o":     func() { g.Spawn(opener) },
 		"l":     func() { g.Spawn(opener) },
 		"right": func() { g.Spawn(opener) },
 	})
@@ -396,20 +397,7 @@ func ifElse(condition bool, trueVal func(), falseVal func()) func() {
 func filerKeymap(g *app.Goful) widget.Keymap {
 	// Setup open command for C-m (when the enter key is pressed)
 	// The macro %f means expanded to a file name, for more see (spawn.go)
-	opener := "xdg-open %f %&"
-	switch runtime.GOOS {
-	case "windows":
-		opener = "explorer '%~f' %&"
-	case "darwin":
-		opener = "open %f %&"
-	}
-	openerCurrentDir := "xdg-open %D %&"
-	switch runtime.GOOS {
-	case "windows":
-		openerCurrentDir = "explorer . %&"
-	case "darwin":
-		openerCurrentDir = "open %D %&"
-	}
+
 	return widget.Keymap{
 		// "M-C-o": func() { g.CreateWorkspace() },
 		// "M-C-w": func() { g.CloseWorkspace() },
@@ -513,8 +501,9 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"D":      func() { g.Workspace().ReloadAll(); g.Chdir() },
 		"g":      func() { g.Glob() },
 		"G":      func() { g.Globdir() },
-		"o":      func() { g.Spawn(opener) },
-		"O":      func() { g.Spawn(openerCurrentDir) },
+		// "o":      func() { g.Spawn(opener) },
+		// "O":      func() { g.Spawn(openerCurrentDir) },
+		"O": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`explorer . %&`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn(`open %D %&`) }, func() { g.Spawn(`xdg-open %D %&`) })),
 		"N": func() { //file Name copy 파일명 복사
 			myClip := util.RemoveExt(g.File().Name())
 			glippy.Set(myClip)
@@ -533,14 +522,12 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"p": //paste file 복사 파일 붙여넣기
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
-			value = strings.Replace(strings.Replace(strings.Replace(value, "\r\n", ` `, -1), `\`, `/`, -1), `"`, `'`, -1)
+			value = strings.Replace(strings.Replace(strings.Replace(value, "\r\n", ` `, -1), `\`, `/`, -1), `"`, `'`, -1) //space in file name is not working without '
 			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
 		}, func() {
 			value, _ := glippy.Get()
 			value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'`
 			g.Shell(`cp -r -v `+value+` %D`, -7)
-			// message.Info("Pasted (복사 완료) ")
-
 		}),
 
 		"P": //move file 복사파일 이동함
@@ -552,7 +539,6 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			value, _ := glippy.Get()
 			value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'`
 			g.Shell(`mv -f -v `+value+` %D`, -7)
-			// message.Info("Moved (이동 완료) ")
 
 		}),
 	}

@@ -48,7 +48,8 @@ See [releases](https://github.com/anmitsu/goful/releases) or 'bin' folder
 | `pgdn`                               | Page down                                                                                 |
 | `pgup`                               | Page up                                                                                   |
 | `backspace` `left` `h`               | Change to upper directory                                                                 |
-| `C-m` = `enter` `o` `l` `left`       | open selected directory or file                                                           |
+| `C-m` = `enter` `l` `left`           | open directory or file on cursor                                                          |
+| `o`                                  | open every marked directorys and files                                                    |
 | `~`                                  | Change to home directory                                                                  |
 | `\`                                  | Change to root directory                                                                  |
 | `w`                                  | Change to neighbor directory to this one                                                  |
@@ -207,15 +208,16 @@ If goful is running in tmux, it creates a new window and executes the command.
 
 | macro           | expanded string                                                            |
 | --------------- | -------------------------------------------------------------------------- |
-| `%f` `%F`   | File name/path on cursor                                                   |
-| `%x` `%X`   | File name/path without extension on cursor                                 |
-| `%e`          | File extension only on cursor                                              |
-| `%m` `%M`   | Marked file names/paths joined by spaces                                   |
-| `%d` `%D`   | Directory name/path on cursor                                              |
-| `%d2` `%D2` | Neighbor directory name/path                                               |
-| `%~f` ...     | Expand by non quote. that means every macro will be quoted by ' without ~. |
-| `%T` `%t`   | yearMonthDay, hourMinuteSecond                                             |
-| `%&`          | Flag to run command in background                                          |
+| `%f` `%F`   | File name/path on cursor                                                       |
+| `%x` `%X`   | File name/path without extension on cursor                                     |
+| `%e`        | File extension only on cursor                                                  |
+| `%m` `%M`   | Marked file names/paths joined by spaces                                       |
+| `%c` `%C`   | Marked file names/paths joined by spaces + singleQuore + comma                 |
+| `%d` `%D`   | Directory name/path on cursor                                                  |
+| `%d2` `%D2` | Neighbor directory name/path                                                   |
+| `%~f` ...   | Expand by non quote. that means every macro will be quoted by ' without ~.     |
+| `%T` `%t`   | yearMonthDay, hourMinuteSecond                                                 |
+| `%&`        | Flag to run command in background                                              |
 
 The macro is useful if do not want to specify a file name when run the shell.
 

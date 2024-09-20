@@ -78,22 +78,24 @@ func (g *Goful) SpawnSuspend(cmd string) {
 }
 
 const (
-	macroPrefix             = '%'
-	macroEscape             = '\\' // \ is an escape sequence
-	macroNonQuote           = '~'  // %~ is expanded non quote
-	macroFile               = 'f'  // %f %~f are expanded a file name on the cursor
-	macroExtension          = 'e'  // %f %~f are expanded a file extension on the cursor
-	macroFilePath           = 'F'  // %F %~F are expanded a file path on the cursor
-	macroFileWithoutExt     = 'x'  // %x %~x are expanded a file name excluded the extension on the cursor
-	macroFileWithoutExtPath = 'X'  // %x %~X are expanded a file path excluded the extension on the cursor
-	macroMarkfile           = 'm'  // %m %~m are expanded mark file names joined by spaces
-	macroMarkfilePath       = 'M'  // %M %~M are expanded mark file paths joined by spaces
-	macroDir                = 'd'  // %d %~d are expanded a directory name on the cursor
-	macroDirPath            = 'D'  // %D %~D are expanded a directory path on the cursor
-	macroNextDir            = '2'  // %d2 %D2 %~d2 %~D2 are expanded the neighbor directory name or path
-	macroTimestampDay       = 'T'  // 20241231
-	macroTimestampHour      = 't'  // 154501
-	macroRunBackground      = '&'  // %& is a flag runned in background
+	macroPrefix                = '%'
+	macroEscape                = '\\' // \ is an escape sequence
+	macroNonQuote              = '~'  // %~ is expanded non quote
+	macroFile                  = 'f'  // %f %~f are expanded a file name on the cursor
+	macroExtension             = 'e'  // %f %~f are expanded a file extension on the cursor
+	macroFilePath              = 'F'  // %F %~F are expanded a file path on the cursor
+	macroFileWithoutExt        = 'x'  // %x %~x are expanded a file name excluded the extension on the cursor
+	macroFileWithoutExtPath    = 'X'  // %x %~X are expanded a file path excluded the extension on the cursor
+	macroMarkfile              = 'm'  // %m %~m are expanded mark file names joined by spaces
+	macroMarkfileWithComma     = 'c'  // %m %~m are expanded mark file names joined by spaces
+	macroMarkfilePath          = 'M'  // %M %~M are expanded mark file paths joined by spaces
+	macroMarkfilePathWithComma = 'C'  // %M %~M are expanded mark file paths joined by spaces
+	macroDir                   = 'd'  // %d %~d are expanded a directory name on the cursor
+	macroDirPath               = 'D'  // %D %~D are expanded a directory path on the cursor
+	macroNextDir               = '2'  // %d2 %D2 %~d2 %~D2 are expanded the neighbor directory name or path
+	macroTimestampDay          = 'T'  // 20241231
+	macroTimestampHour         = 't'  // 154501
+	macroRunBackground         = '&'  // %& is a flag runned in background
 )
 
 // ifElseSting 함수 정의
@@ -176,12 +178,25 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 					src = strings.Join(g.Dir().MarkfileNames(), " ")
 				}
 				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
+			case macroMarkfileWithComma:
+				if !nonQuote {
+					src = `'` + strings.Join(g.Dir().MarkfileNames(), `', '`) + `'`
+				} else {
+					src = `'` + strings.Join(g.Dir().MarkfileNames(), `', '`) + `'` //windows needs single quote for everey path. nonQuote is not needed
+				}
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 
 			case macroMarkfilePath:
 				if !nonQuote {
 					src = strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
 				} else {
 					src = strings.Join(g.Dir().MarkfilePaths(), " ")
+				}
+			case macroMarkfilePathWithComma:
+				if !nonQuote {
+					src = `'` + strings.Join(g.Dir().MarkfilePaths(), `', '`) + `'`
+				} else {
+					src = `'` + strings.Join(g.Dir().MarkfilePaths(), `', '`) + `'` //windows needs single quote for everey path. nonQuote is not needed
 				}
 
 			case macroDir:
