@@ -493,10 +493,11 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		}, func() {
 			g.Shell("cp -r %f '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`)
 		}),
-		"m":      func() { g.Move() },
-		"r":      func() { g.Rename() },
-		"R":      func() { g.BulkRename() },
-		"d":      ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
+		"m": func() { g.Move() },
+		"r": func() { g.Rename() },
+		"R": func() { g.BulkRename() },
+		"d": ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
+		// "d":      ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
 		"delete": func() { g.Remove() },
 		"D":      func() { g.Workspace().ReloadAll(); g.Chdir() },
 		"g":      func() { g.Glob() },
@@ -526,7 +527,9 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
 		}, func() {
 			value, _ := glippy.Get()
-			value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'`
+			if strings.Contains(value, "\n") {
+				value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'` //coped file name from finder has \n and doesn't have '. so add ' and replace \n to ' '
+			}
 			g.Shell(`cp -r -v `+value+` %D`, -7)
 		}),
 
@@ -537,7 +540,9 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
 		}, func() {
 			value, _ := glippy.Get()
-			value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'`
+			if strings.Contains(value, "\n") {
+				value = `'` + strings.Replace(value, "\n", `' '`, -1) + `'`
+			}
 			g.Shell(`mv -f -v `+value+` %D`, -7)
 
 		}),

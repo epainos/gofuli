@@ -96,6 +96,7 @@ const (
 	macroTimestampDay          = 'T'  // 20241231
 	macroTimestampHour         = 't'  // 154501
 	macroRunBackground         = '&'  // %& is a flag runned in background
+	macroDeleteFileForMac      = '|'  // %& is a flag runned in background
 )
 
 // ifElseSting 함수 정의
@@ -195,6 +196,12 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 			case macroMarkfilePathWithComma:
 				if !nonQuote {
 					src = `'` + strings.Join(g.Dir().MarkfilePaths(), `', '`) + `'`
+				} else {
+					src = `'` + strings.Join(g.Dir().MarkfilePaths(), `', '`) + `'` //windows needs single quote for everey path. nonQuote is not needed
+				}
+			case macroDeleteFileForMac:
+				if !nonQuote {
+					src = `osascript -e "tell application \"Finder\" to delete POSIX file \"` + strings.Join(g.Dir().MarkfilePaths(), `\"" ; osascript -e "tell application \"Finder\" to delete POSIX file \"`) + `\"" ` //mac needs this command to trash MULTIPLE files
 				} else {
 					src = `'` + strings.Join(g.Dir().MarkfilePaths(), `', '`) + `'` //windows needs single quote for everey path. nonQuote is not needed
 				}
