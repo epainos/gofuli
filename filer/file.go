@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 
@@ -52,6 +53,16 @@ type FileStat struct {
 	marked      bool        // marked whether
 }
 
+// 확장자 확인
+func hasExtension(text string, extensions []string) bool {
+	// 정규 표현식 생성
+	regexStr := "^.*\\.(" + strings.Join(extensions, "|") + ")$"
+	re := regexp.MustCompile(regexStr)
+
+	// 정규 표현식 매칭
+	return re.MatchString(text)
+}
+
 // NewFileStat creates a new file stat of the file in the directory.
 func NewFileStat(dir string, name string) *FileStat {
 	path := filepath.Join(dir, name)
@@ -68,9 +79,32 @@ func NewFileStat(dir string, name string) *FileStat {
 
 	var display string
 	if stat.IsDir() {
-		display = name
+		display = "📁 " + name
 	} else {
 		display = util.RemoveExt(name)
+		ext := filepath.Ext(name)
+		if hasExtension(ext, []string{"zip", "gz", "tar", "tgz", "bx2", "xz", "txz", "rar"}) { //압축파일
+			display = "📦 " + display
+		} else if hasExtension(ext, []string{"doc", "docx", "ppt", "pptx", "xls", "xlsx", "hwp", "hwpx"}) { //오피스파일
+			display = "📄 " + display
+		} else if hasExtension(ext, []string{"pdf", ""}) { //pdf파일
+			display = "📜 " + display
+		} else if hasExtension(ext, []string{"jpg", "png", "jpeg", "gif", "bmp"}) { //이미지 파일
+			display = "🖼️ " + display
+		} else if hasExtension(ext, []string{"mp4", "mov"}) { //영상 파일
+			display = "🎦 " + display //🎬
+		} else if hasExtension(ext, []string{"html", "htm"}) { //인터넷 파일
+			display = "🌐 " + display
+		} else if hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //실행 파일
+			display = "🚀 " + display
+		} else if hasExtension(ext, []string{"iso", "dmg"}) { //이미지 파일
+			display = "💿 " + display
+		} else if hasExtension(ext, []string{"dwg", "dxg", "dgn"}) { //캐드파일
+			display = "📐 " + display
+		} else {
+			display = "🗎 " + display
+		}
+
 	}
 
 	return &FileStat{

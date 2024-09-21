@@ -25,8 +25,7 @@ type Directory struct {
 	Path      string   `json:"path"`
 	Sort      sortType `json:"sort_kind"`
 	myHistory []string // 첫번째는 현재위치 인덱스(previous, forward로 왔다갔다 하는 이정표).  두번째부터는 이동했었던 주소
-	// myHistoryLeft  []string
-	// myHistoryRight []string
+
 }
 
 // NewDirectory creates a new directory based on specified size and coordinates.
