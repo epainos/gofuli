@@ -102,7 +102,7 @@ func NewFileStat(dir string, name string) *FileStat {
 		} else if hasExtension(ext, []string{"doc", "docx", "ppt", "pptx", "xls", "xlsx", "hwp", "hwpx"}) { //오피스파일
 			display = "📘 " + display
 			myColor = d.Foreground(tcell.ColorSkyblue) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"txt", "rtf", "me", "rd"}) { //오피스파일
+		} else if hasExtension(ext, []string{"txt", "rtf", "me", "md"}) { //오피스파일
 			display = "📜 " + display
 			myColor = d.Foreground(tcell.ColorOlive) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"pdf", ""}) { //pdf파일
