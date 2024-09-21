@@ -102,16 +102,16 @@ func NewFileStat(dir string, name string) *FileStat {
 		} else if hasExtension(ext, []string{"doc", "docx", "ppt", "pptx", "xls", "xlsx", "hwp", "hwpx"}) { //오피스파일
 			display = "📘 " + display
 			myColor = d.Foreground(tcell.ColorSkyblue) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"txt", "rtf", "me", "md", "csv", "json", "yaml"}) { //오피스파일
+		} else if hasExtension(ext, []string{"txt", "rtf", "me", "md", "csv"}) { //오피스파일
 			display = "📜 " + display
 			myColor = d.Foreground(tcell.ColorOlive) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"pdf"}) { //pdf파일
+		} else if hasExtension(ext, []string{"pdf", "json"}) { //pdf파일
 			display = "📙 " + display
 			myColor = d.Foreground(tcell.ColorCadetBlue) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"jpg", "png", "jpeg", "gif", "bmp"}) { //이미지 파일
+		} else if hasExtension(ext, []string{"jpg", "png", "jpeg", "gif", "bmp", "psd"}) { //이미지 파일
 			display = "🎨 " + display
 			myColor = d.Foreground(tcell.ColorGreenYellow) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"mp4", "mov"}) { //영상 파일
+		} else if hasExtension(ext, []string{"mp4", "mov", "avi", "mkv"}) { //영상 파일
 			display = "🎬 " + display                       //🎬🎦🎥📽🎞
 			myColor = d.Foreground(tcell.ColorYellowGreen) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"html", "htm", "css", "cshtml", "xlm"}) { //인터넷 파일
@@ -123,10 +123,10 @@ func NewFileStat(dir string, name string) *FileStat {
 		} else if hasExtension(ext, []string{"iso", "dmg"}) { //이미지 파일
 			display = "💿 " + display                //💽💿
 			myColor = d.Foreground(tcell.ColorPeru) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"dwg", "dxg", "dgn"}) { //캐드파일
+		} else if hasExtension(ext, []string{"dwg", "dxg", "dgn", "svg", "esp"}) { //캐드파일
 			display = "📐 " + display
 			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"cfg"}) { //설정파일
+		} else if hasExtension(ext, []string{"cfg", "yaml", "plist", "properties"}) { //설정파일
 			display = "🛠 " + display
 			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"py", "c", "cs", "go", "swift", "js", "jave", "dart"}) { //코드파일
