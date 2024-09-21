@@ -97,15 +97,15 @@ func NewFileStat(dir string, name string) *FileStat {
 		//💾📙📘⚛⛯☢🧲🐬⚒🄰⚙⛭🛠🔧🧭🛜🛡🖨🕸🌐📏🎨🎧🎬🎮🎴💳🗂🗃🪧▶🦥🚯🍥⛔🐴✉📩🕹🗒🗓📄🏠🏡🏘️🏗️🏢🏛⛏🪛🪪🔆🪙⏹⏹️🪟🆒🌞☀️⛱🌬🌬️
 
 		if stat.Mode().Perm()&0111 != 0 || hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //exec file is treated one more metoth
-			display = "🌞 " + display //⏹
-			myColor = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorYellow).Bold(true), d.Foreground(tcell.ColorSkyblue).Background((tcell.ColorDarkSlateGray)).Bold(true))
+			display = "🌞 " + display                             //⏹
+			myColor = d.Foreground(tcell.ColorYellow).Bold(true) //  ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorYellow).Bold(true), d.Foreground(tcell.ColorSkyblue).Background((tcell.ColorDarkSlateGray)).Bold(true))
 		} else if hasExtension(ext, []string{"doc", "docx", "ppt", "pptx", "xls", "xlsx", "hwp", "hwpx"}) { //오피스파일
 			display = "📘 " + display
 			myColor = d.Foreground(tcell.ColorSkyblue) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"txt", "rtf", "me", "md"}) { //오피스파일
+		} else if hasExtension(ext, []string{"txt", "rtf", "me", "md", "csv", "json", "yaml"}) { //오피스파일
 			display = "📜 " + display
 			myColor = d.Foreground(tcell.ColorOlive) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"pdf", ""}) { //pdf파일
+		} else if hasExtension(ext, []string{"pdf"}) { //pdf파일
 			display = "📙 " + display
 			myColor = d.Foreground(tcell.ColorCadetBlue) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"jpg", "png", "jpeg", "gif", "bmp"}) { //이미지 파일
@@ -114,7 +114,7 @@ func NewFileStat(dir string, name string) *FileStat {
 		} else if hasExtension(ext, []string{"mp4", "mov"}) { //영상 파일
 			display = "🎬 " + display                       //🎬🎦🎥📽🎞
 			myColor = d.Foreground(tcell.ColorYellowGreen) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"html", "htm", "css", "cshtml"}) { //인터넷 파일
+		} else if hasExtension(ext, []string{"html", "htm", "css", "cshtml", "xlm"}) { //인터넷 파일
 			display = "🌐 " + display
 			myColor = d.Foreground(tcell.ColorDodgerBlue) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"zip", "gz", "tar", "tgz", "bx2", "xz", "txz", "rar"}) { //압축파일
@@ -126,10 +126,10 @@ func NewFileStat(dir string, name string) *FileStat {
 		} else if hasExtension(ext, []string{"dwg", "dxg", "dgn"}) { //캐드파일
 			display = "📐 " + display
 			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"cfg", "ini", "dgn"}) { //설정파일
+		} else if hasExtension(ext, []string{"cfg"}) { //설정파일
 			display = "🛠 " + display
 			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"py", "c", "cs", "go"}) { //코드파일
+		} else if hasExtension(ext, []string{"py", "c", "cs", "go", "swift", "js", "jave", "dart"}) { //코드파일
 			display = "📙 " + display
 			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
 		} else {
