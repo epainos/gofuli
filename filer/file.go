@@ -51,6 +51,15 @@ type FileStat struct {
 	name        string      // base name of path or ".." as upper directory
 	display     string      // display name for draw
 	marked      bool        // marked whether
+	myColor     tcell.Style
+}
+
+// ifElse 함수 정의
+func ifElse(condition bool, trueVal, falseVal tcell.Style) tcell.Style {
+	if condition {
+		return trueVal
+	}
+	return falseVal
 }
 
 // 확장자 확인
@@ -78,31 +87,53 @@ func NewFileStat(dir string, name string) *FileStat {
 	}
 
 	var display string
+	d := tcell.StyleDefault
+	myColor := d.Foreground(tcell.ColorGray)
 	if stat.IsDir() {
-		display = "📁 " + name
+		display = "📂 " + name //📁
 	} else {
 		display = util.RemoveExt(name)
 		ext := filepath.Ext(name)
-		if hasExtension(ext, []string{"zip", "gz", "tar", "tgz", "bx2", "xz", "txz", "rar"}) { //압축파일
-			display = "📦 " + display
+		//💾📙📘⚛⛯☢🧲🐬⚒🄰⚙⛭🛠🔧🧭🛜🛡🖨🕸🌐📏🎨🎧🎬🎮🎴💳🗂🗃🪧▶🦥🚯🍥⛔🐴✉📩🕹🗒🗓📄🏠🏡🏘️🏗️🏢🏛⛏🪛🪪🔆🪙⏹⏹️🪟🆒🌞☀️⛱🌬🌬️
+
+		if stat.Mode().Perm()&0111 != 0 || hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //exec file is treated one more metoth
+			display = "🌞 " + display //⏹
+			myColor = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorYellow).Bold(true), d.Foreground(tcell.ColorSkyblue).Background((tcell.ColorDarkSlateGray)).Bold(true))
 		} else if hasExtension(ext, []string{"doc", "docx", "ppt", "pptx", "xls", "xlsx", "hwp", "hwpx"}) { //오피스파일
-			display = "📄 " + display
-		} else if hasExtension(ext, []string{"pdf", ""}) { //pdf파일
+			display = "📘 " + display
+			myColor = d.Foreground(tcell.ColorSkyblue) //.Background((tcell.ColorGreen))
+		} else if hasExtension(ext, []string{"txt", "rtf", "me", "rd"}) { //오피스파일
 			display = "📜 " + display
+			myColor = d.Foreground(tcell.ColorOlive) //.Background((tcell.ColorGreen))
+		} else if hasExtension(ext, []string{"pdf", ""}) { //pdf파일
+			display = "📙 " + display
+			myColor = d.Foreground(tcell.ColorCadetBlue) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"jpg", "png", "jpeg", "gif", "bmp"}) { //이미지 파일
-			display = "🖼️ " + display
+			display = "🎨 " + display
+			myColor = d.Foreground(tcell.ColorGreenYellow) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"mp4", "mov"}) { //영상 파일
-			display = "🎦 " + display //🎬
-		} else if hasExtension(ext, []string{"html", "htm"}) { //인터넷 파일
+			display = "🎬 " + display                       //🎬🎦🎥📽🎞
+			myColor = d.Foreground(tcell.ColorYellowGreen) //.Background((tcell.ColorGreen))
+		} else if hasExtension(ext, []string{"html", "htm", "css", "cshtml"}) { //인터넷 파일
 			display = "🌐 " + display
-		} else if hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //실행 파일
-			display = "🚀 " + display
+			myColor = d.Foreground(tcell.ColorDodgerBlue) //.Background((tcell.ColorGreen))
+		} else if hasExtension(ext, []string{"zip", "gz", "tar", "tgz", "bx2", "xz", "txz", "rar"}) { //압축파일
+			display = "📦 " + display //📥📦
+			myColor = d.Foreground(tcell.ColorBurlyWood)
 		} else if hasExtension(ext, []string{"iso", "dmg"}) { //이미지 파일
-			display = "💿 " + display
+			display = "💿 " + display                //💽💿
+			myColor = d.Foreground(tcell.ColorPeru) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"dwg", "dxg", "dgn"}) { //캐드파일
 			display = "📐 " + display
+			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
+		} else if hasExtension(ext, []string{"cfg", "ini", "dgn"}) { //설정파일
+			display = "🛠 " + display
+			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
+		} else if hasExtension(ext, []string{"py", "c", "cs", "go"}) { //코드파일
+			display = "📙 " + display
+			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
 		} else {
-			display = "🗎 " + display
+			display = "📄 " + display
 		}
 
 	}
@@ -114,6 +145,7 @@ func NewFileStat(dir string, name string) *FileStat {
 		name:     name,
 		display:  display,
 		marked:   false,
+		myColor:  myColor,
 	}
 }
 
@@ -191,7 +223,6 @@ func (f *FileStat) IsExec() bool {
 	// if runtime.GOOS == "darwin" && f.stat.IsDir() && strings.HasSuffix(f.name, ".app") {
 	// 	return false
 	// }
-
 	return f.stat.Mode().Perm()&0111 != 0
 }
 
@@ -268,11 +299,10 @@ func (f *FileStat) look() tcell.Style {
 		return look.Symlink()
 	case f.IsDir():
 		return look.Directory()
-	case f.IsExec():
-		return look.Executable()
+	// case f.IsExec():
+	// 	return look.Executable()
 	case f.IsColorful():
-		return look.MyColor(f.Ext())
-		// return look.MyColor(f.Ext())
+		return look.SetMyColor(f.myColor)
 	default:
 		return look.Default()
 	}

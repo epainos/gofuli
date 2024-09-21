@@ -129,43 +129,8 @@ func hasExtension(text string, extensions []string) bool {
 	return re.MatchString(text)
 }
 
-// Executable is an executable file look.
-func MyColor(ext string) tcell.Style {
-	if ext == "" {
-		return myColor
-	}
-
-	d := tcell.StyleDefault
-
-	if hasExtension(ext, []string{"zip", "gz", "tar", "tgz", "bx2", "xz", "txz", "rar"}) { //압축파일
-		myColor = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorBurlyWood), d.Foreground(tcell.ColorBurlyWood)) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"doc", "docx", "ppt", "pptx", "xls", "xlsx", "hwp", "hwpx"}) { //오피스파일
-		myColor = d.Foreground(tcell.ColorSkyblue) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"pdf", ""}) { //pdf파일
-		myColor = d.Foreground(tcell.ColorCadetBlue) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"jpg", "png", "jpeg", "gif", "bmp"}) { //이미지 파일
-		myColor = d.Foreground(tcell.ColorGreenYellow) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"mp4", "mov"}) { //영상 파일
-		myColor = d.Foreground(tcell.ColorYellowGreen) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"html", "htm"}) { //인터넷 파일
-		myColor = d.Foreground(tcell.ColorDodgerBlue) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //실행 파일
-		myColor = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorYellow).Bold(true), d.Foreground(tcell.ColorSkyblue).Background((tcell.ColorDarkSlateGray)).Bold(true))
-	} else if hasExtension(ext, []string{"iso", "dmg"}) { //이미지 파일
-		myColor = d.Foreground(tcell.ColorPeru) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"dwg", "dxg", "dgn"}) { //캐드파일
-		myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
-	} else if hasExtension(ext, []string{"", ""}) { //
-		myColor = d.Foreground(tcell.ColorCadetBlue) //.Background((tcell.ColorGreen))
-	} else {
-		//기본 색상
-		myColor = d.Foreground(tcell.ColorGray) //.Bold(true)
-	}
-	return myColor
-}
-
 // SetExecutable sets an executable file look.
-func SetMyColor(s tcell.Style) { myColor = s }
+func SetMyColor(s tcell.Style) tcell.Style { myColor = s; return myColor }
 
 // Marked is a marked file look.
 func Marked() tcell.Style { return marked }
@@ -227,7 +192,7 @@ func setDefault() {
 	symlink = d.Foreground(tcell.ColorFuchsia)
 	symlinkDir = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorWhite).Background(tcell.ColorOrangeRed).Bold(true), d.Foreground(tcell.ColorWhite).Background(tcell.ColorDarkRed).Bold(true))
 	directory = ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorWhite).Background(tcell.ColorOrangeRed).Bold(true), d.Foreground(tcell.ColorWhite).Background(tcell.ColorDarkRed).Bold(true))
-	executable = d.Foreground(tcell.ColorGreen).Bold(true)
+	// executable = d.Foreground(tcell.ColorGreen).Bold(true)
 	marked = d.Foreground(tcell.ColorBlack).Background(tcell.ColorYellow).Bold(true)
 	finder = d.Foreground(tcell.ColorBlack).Background(tcell.ColorAqua)
 	progress = d.Background(tcell.ColorNavy)

@@ -241,7 +241,7 @@ Examples of customizing:
 * Change terminal and shell
 * Change file opener (editor, pager and more)
 * Adding bookmarks
-* Setting colors and looks(edit look.go)
+* Setting colors and looks('filer-file.go')
 
 Recommend remain original `main.go` and copy to own `main.go` for example:
 
@@ -267,7 +267,7 @@ Install after edit `my/goful/main.go`
 
 ### add fuction
 
-* set color by extension
+* set icon + color by extension 
 * History. so you can go back to previous folder you've been
 * yank and paste
 
