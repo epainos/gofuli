@@ -596,7 +596,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 
 		// function keys do External command
 		"f2": ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
-		"f3": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { message.Info("===Linux preview is not ready yet===") }, func() {})),
+		"f3": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() { message.Info("===Linux preview is not ready yet===") })),
 
 		"f5": ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }),
 		"f6": ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }),
@@ -625,7 +625,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"pgup": func() { g.Dir().PageUp() },     //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 
 		" ":       func() { g.Dir().ToggleMark() }, //space key
-		"C-space": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { message.Info("===Linux preview is not ready yet===") }, func() {})),
+		"C-space": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() { message.Info("===Linux preview is not ready yet===") })),
 
 		"`": func() { g.Dir().InvertMark() },
 

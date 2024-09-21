@@ -101,7 +101,7 @@ See [releases](https://github.com/anmitsu/goful/releases) or 'bin' folder
 | `A`                                  | zip marked files, dirs to this dir                                                        |
 | `z`                                  | unzip file to neighbor dir                                                                |
 | `Z`                                  | unzip file go this dir                                                                    |
-https://github.com/QL-Win/QuickLook/releases
+
 **f2, f5, f6, f7, f8 do External command(rename, copy, move, mkdir, remove)
 external command is more fast and comfortable in some cases. but 'refresh screen' is needed because goful doesn't know it has been finished.
 (default copy and move command shows the Progress bar, and refresh view after it. so default copy/move command is good for small size files.) 
