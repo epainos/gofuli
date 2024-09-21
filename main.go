@@ -596,6 +596,8 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 
 		// function keys do External command
 		"f2": ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
+		"f3": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { message.Info("===Linux preview is not ready yet===") }, func() {})),
+
 		"f5": ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }),
 		"f6": ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }),
 		"f7": ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
@@ -622,7 +624,9 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"pgdn": func() { g.Dir().PageDown() },   //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 		"pgup": func() { g.Dir().PageUp() },     //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 
-		" ": func() { g.Dir().ToggleMark() }, //space key
+		" ":       func() { g.Dir().ToggleMark() }, //space key
+		"C-space": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { message.Info("===Linux preview is not ready yet===") }, func() {})),
+
 		"`": func() { g.Dir().InvertMark() },
 
 		";": func() { g.Workspace().ReloadAll(); g.Shell("") },
