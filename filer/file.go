@@ -94,7 +94,7 @@ func NewFileStat(dir string, name string) *FileStat {
 	} else {
 		display = util.RemoveExt(name)
 		ext := filepath.Ext(name)
-		//💾📙📘⚛⛯☢🧲🐬⚒🄰⚙⛭🛠🔧🧭🛜🛡🖨🕸🌐📏🎨🎧🎬🎮🎴💳🗂🗃🪧▶🦥🚯🍥⛔🐴✉📩🕹🗒🗓📄🏠🏡🏘️🏗️🏢🏛⛏🪛🪪🔆🪙⏹⏹️🪟🆒🌞☀️⛱🌬🌬️
+		//💾📙📘⚛⛯☢🧲🐬⚒🄰⚙⛭🛠🔧🧭🛜🛡🖨🕸🌐📏🎨🎧🎬🎮🎴💳🗂🗃🪧▶🦥🚯🍥⛔🐴✉📩🕹🗒🗓📄🏠🏡🏘️🏗️🏢🏛⛏🪛🪪🔆🪙⏹⏹️🪟🆒🌞☀️⛱🌬🌬️🧰🖥💻⚓🔍🔎🔥🔨🔩
 
 		if stat.Mode().Perm()&0111 != 0 || hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //exec file is treated one more metoth
 			display = "🌞 " + display                             //⏹
@@ -127,7 +127,7 @@ func NewFileStat(dir string, name string) *FileStat {
 			display = "📐 " + display
 			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"cfg", "yaml", "plist", "properties"}) { //설정파일
-			display = "🛠 " + display
+			display = "💻 " + display
 			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"py", "c", "cs", "go", "swift", "js", "jave", "dart"}) { //코드파일
 			display = "📙 " + display
