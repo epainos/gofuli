@@ -114,7 +114,7 @@ func NewFileStat(dir string, name string) *FileStat {
 		} else if hasExtension(ext, []string{"mp4", "mov", "avi", "mkv"}) { //영상 파일
 			display = "🎬 " + display                       //🎬🎦🎥📽🎞
 			myColor = d.Foreground(tcell.ColorYellowGreen) //.Background((tcell.ColorGreen))
-		} else if hasExtension(ext, []string{"html", "htm", "css", "cshtml", "xlm"}) { //인터넷 파일
+		} else if hasExtension(ext, []string{"html", "htm", "css", "cshtml", "xml"}) { //인터넷 파일
 			display = "🌐 " + display
 			myColor = d.Foreground(tcell.ColorDodgerBlue) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"zip", "gz", "tar", "tgz", "bx2", "xz", "txz", "rar"}) { //압축파일
