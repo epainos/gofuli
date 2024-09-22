@@ -125,10 +125,10 @@ func NewFileStat(dir string, name string) *FileStat {
 			myColor = d.Foreground(tcell.ColorPeru) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"dwg", "dxg", "dgn", "svg", "esp"}) { //캐드파일
 			display = "📐 " + display
-			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
+			myColor = d.Foreground(tcell.ColorSteelBlue) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"cfg", "yaml", "plist", "properties"}) { //설정파일
 			display = "💻 " + display
-			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
+			myColor = d.Foreground(tcell.ColorKhaki) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"py", "c", "cs", "go", "swift", "js", "jave", "dart"}) { //코드파일
 			display = "📙 " + display
 			myColor = d.Foreground(tcell.ColorDarkOrange) //.Background((tcell.ColorGreen))
