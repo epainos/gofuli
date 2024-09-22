@@ -270,7 +270,8 @@ Install after edit `my/goful/main.go`
 
 * set icon + color by extension 
 * History. so you can go back to previous folder you've been
-* yank and paste
+* yank and paste files/dirs
+* preview 
 
 ### some tweaks for windows user
 
