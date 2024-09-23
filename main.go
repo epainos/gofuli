@@ -143,7 +143,7 @@ func config(g *app.Goful, is_tmux bool) {
 		})
 		g.ConfigTerminal(func(cmd string) []string {
 			// for not close the terminal when the shell finishes running
-			const tail = `;read -p "HIT ENTER KEY"`
+			const tail =  ""//`;read -p "HIT ENTER KEY"`
 
 			if is_tmux { // such as screen and tmux
 				return []string{"tmux", "new-window", "-n", cmd, cmd + tail}
@@ -483,7 +483,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 
 		"d": ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, //move file(s) to recycle bin
 			ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) },
-				func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
+				func() { g.Shell(`mv %M ~/.local/share/Trash/files`, -7) })),
 		// "d":      ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
 		"D": func() { g.Workspace().ReloadAll(); g.Chdir() }, //change directory
 
@@ -596,12 +596,14 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 
 		// function keys do External command
 		"f2": ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
-		"f3": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() { message.Info("===Linux preview is not ready yet===") })),
+		"f3": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() {g.Spawn(" sushi " +g.File().Path()) })),
 
 		"f5": ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }),
 		"f6": ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }),
 		"f7": ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
-		"f8": ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
+		"f8": ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, //move file(s) to recycle bin
+			ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) },
+				func() { g.Shell(`mv %M ~/.local/share/Trash/files`, -7) })),
 		"f9": ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
 
 		"delete": func() { g.Remove() }, //delete
@@ -625,7 +627,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"pgup": func() { g.Dir().PageUp() },     //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 
 		" ":       func() { g.Dir().ToggleMark() }, //space key
-		"C-space": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() { message.Info("===Linux preview is not ready yet===") })),
+		"C-space": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() {g.Spawn(" sushi " +g.File().Path()) })),
 
 		"`": func() { g.Dir().InvertMark() },
 
