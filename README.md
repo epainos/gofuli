@@ -34,17 +34,27 @@ See [releases](https://github.com/anmitsu/goful/releases) or 'bin' folder
     $ goful
 
 ### users for Linux 
-Linux user need to install these things
-*gnome-terminal for shell: sudo apt install gnome-terminal
-*gnoem-sushi for preview : sudo apt install gnome-sushi
+Linux user need to install gnome-terminal for shell and gnoem-sushi for preview
+
+    sudo apt install gnome-terminal
+    sudo apt install gnome-sushi
+
 
 ### users for Windows  
-Windows user need to rename files(in 'bin' folder) goful.ex_, 7z.ex_, fcp.ex_, recycle.ex_ to goful.exe, 7z.exe, fcp.exe, recycle.exe. and copy it to c:\windows\system32 folder.
+
+1. in 'bin' folder, rename files
+
+   goful.ex_, 7z.ex_, fcp.ex_, recycle.ex_  ->  
+   goful.exe, 7z.exe, fcp.exe, recycle.exe
+
+2. copy it to c:\windows\system32 folder.
 
 or you can compile goful by 'go install' in goful folder. and rest things are here. you can download it by yourself.
-7z: https://www.7-zip.org/download.html
-fcp : https://forest.watch.impress.co.jp/library/software/fastcopy/download_11574.html
-recycle: https://github.com/Zigatronz/Windows-recycle-bin-CLI-for-CMD 
+* 7z: https://www.7-zip.org/download.html
+* fcp : https://forest.watch.impress.co.jp/library/software/fastcopy/download_11574.html
+* recycle: https://github.com/Zigatronz/Windows-recycle-bin-CLI-for-CMD 
+
+
 
 
 
