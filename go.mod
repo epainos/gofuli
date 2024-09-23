@@ -1,4 +1,4 @@
-module github.com/anmitsu/goful
+module github.com/epainos/gofuli
 
 go 1.16
 

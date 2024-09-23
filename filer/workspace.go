@@ -4,8 +4,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/widget"
+	"github.com/epainos/gofuli/message"
+	"github.com/epainos/gofuli/widget"
 )
 
 type layoutType int

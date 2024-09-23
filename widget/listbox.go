@@ -3,8 +3,8 @@ package widget
 import (
 	"fmt"
 
-	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/util"
+	"github.com/epainos/gofuli/look"
+	"github.com/epainos/gofuli/util"
 	"github.com/mattn/go-runewidth"
 )
 

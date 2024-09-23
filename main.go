@@ -5,14 +5,14 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/anmitsu/goful/app"
-	"github.com/anmitsu/goful/cmdline"
-	"github.com/anmitsu/goful/filer"
-	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/menu"
-	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/util"
-	"github.com/anmitsu/goful/widget"
+	"github.com/epainos/gofuli/app"
+	"github.com/epainos/gofuli/cmdline"
+	"github.com/epainos/gofuli/filer"
+	"github.com/epainos/gofuli/look"
+	"github.com/epainos/gofuli/menu"
+	"github.com/epainos/gofuli/message"
+	"github.com/epainos/gofuli/util"
+	"github.com/epainos/gofuli/widget"
 	"github.com/f1bonacc1/glippy"
 	"github.com/mattn/go-runewidth"
 )
@@ -143,7 +143,7 @@ func config(g *app.Goful, is_tmux bool) {
 		})
 		g.ConfigTerminal(func(cmd string) []string {
 			// for not close the terminal when the shell finishes running
-			const tail =  ""//`;read -p "HIT ENTER KEY"`
+			const tail = "" //`;read -p "HIT ENTER KEY"`
 
 			if is_tmux { // such as screen and tmux
 				return []string{"tmux", "new-window", "-n", cmd, cmd + tail}
@@ -596,7 +596,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 
 		// function keys do External command
 		"f2": ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
-		"f3": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() {g.Spawn(" sushi " +g.File().Path()) })),
+		"f3": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() { g.Spawn(" sushi " + g.File().Path()) })),
 
 		"f5": ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }),
 		"f6": ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }),
@@ -627,7 +627,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"pgup": func() { g.Dir().PageUp() },     //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 
 		" ":       func() { g.Dir().ToggleMark() }, //space key
-		"C-space": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() {g.Spawn(" sushi " +g.File().Path()) })),
+		"C-space": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() { g.Spawn(" sushi " + g.File().Path()) })),
 
 		"`": func() { g.Dir().InvertMark() },
 

@@ -2,7 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/anmitsu/goful)](https://goreportcard.com/report/github.com/anmitsu/goful)
 [![Go Reference](https://pkg.go.dev/badge/github.com/anmitsu/goful.svg)](https://pkg.go.dev/github.com/anmitsu/goful)
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/anmitsu/goful/blob/master/LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/epainos/gofuli/blob/master/LICENSE)
 
 Goful is a CUI file manager written in Go.
 
@@ -19,7 +19,7 @@ Goful is a CUI file manager written in Go.
 
 ### Pre-build binaries
 
-See [releases](https://github.com/anmitsu/goful/releases) or 'bin' folder
+See [releases](https://github.com/epainos/gofuli/releases) or 'bin' folder
 
 ### Go version >= 1.16
 
@@ -42,18 +42,14 @@ Linux user need to install gnome-terminal for shell and gnoem-sushi for preview
 
 ### users for Windows  
 
-1. in 'bin' folder, rename files
-
-   goful.ex_, 7z.ex_, fcp.ex_, recycle.ex_  ->  
-   goful.exe, 7z.exe, fcp.exe, recycle.exe
-
-2. copy it to c:\windows\system32 folder.
+1. in 'bin' folder, unzip 'windowsExe.zip' to c:\windows\system32 folder.
+2. install quickLook for preview https://github.com/QL-Win/QuickLook/releases
 
 or you can compile goful by 'go install' in goful folder. and rest things are here. you can download it by yourself.
 * 7z: https://www.7-zip.org/download.html
 * fcp : https://forest.watch.impress.co.jp/library/software/fastcopy/download_11574.html
 * recycle: https://github.com/Zigatronz/Windows-recycle-bin-CLI-for-CMD 
-
+* quickLook: https://github.com/QL-Win/QuickLook/releases
 
 
 
@@ -306,9 +302,6 @@ Install after edit `my/goful/main.go`
 * 7z is main archive manager. zip, rar, tar, gz... rfiles are compressed and unzipped with 7z. 
 * fastcopy(fcp) is copy manager. f5, f6 or External command use fcp. default copy or move is slower than fcp. (default copy and move command shows the Progress bar, and refresh view after it. so default copy/move command is good for small size files.) 
 * recycle.exe moves files(and folders) to recycle bin for safely delete. 'delete' key removes files(and folder) permanently.
-* you can use above program in 'bin' folder or download it by yourself. and place it PATH in Environment variables. if you don't know about PATH variables, just copy goful, 7z, fcp, recycle to c:\windows\system32 folder.
 
-7z: https://www.7-zip.org/download.html
-fcp : https://forest.watch.impress.co.jp/library/software/fastcopy/download_11574.html
-recycle: https://github.com/Zigatronz/Windows-recycle-bin-CLI-for-CMD
+
 

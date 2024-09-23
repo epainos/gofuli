@@ -4,7 +4,7 @@ package info
 import (
 	"os"
 
-	"github.com/anmitsu/goful/widget"
+	"github.com/epainos/gofuli/widget"
 )
 
 var info *infoWindow

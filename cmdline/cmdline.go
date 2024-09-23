@@ -9,9 +9,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/util"
-	"github.com/anmitsu/goful/widget"
+	"github.com/epainos/gofuli/look"
+	"github.com/epainos/gofuli/util"
+	"github.com/epainos/gofuli/widget"
 	"github.com/mattn/go-runewidth"
 )
 

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/util"
-	"github.com/anmitsu/goful/widget"
+	"github.com/epainos/gofuli/message"
+	"github.com/epainos/gofuli/util"
+	"github.com/epainos/gofuli/widget"
 	// "github.com/f1bonacc1/glippy"
 )
 

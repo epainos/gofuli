@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/anmitsu/goful/widget"
+	"github.com/epainos/gofuli/widget"
 	"github.com/gdamore/tcell/v2"
 )
 
