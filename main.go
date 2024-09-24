@@ -322,7 +322,7 @@ func config(g *app.Goful, is_tmux bool) {
 	menu.Add("editor",
 		"e", "vscodE       코드 ", func() { g.Spawn("code %f %&") },
 		"E", "Emacs client 이맥스 ", func() { g.Spawn("emacsclient -n %f %&") },
-		"v", "Vim          빔 ", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`gvim '"%~F"'`) }, func() { g.Spawn("vim %f") }),
+		"v", "Vim          빔 ", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`gvim '"%~F"'`) }, func() { g.Spawn("vi %f") }),
 		"x", "eXcel        엑셀", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Microsoft Office/root/Office16/excel.exe' '"%~F"'`) }, func() { g.Spawn(`open -a "Microsoft Excel"  %f %&`) }),
 		"c", "Chrome       크롬", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Google/Chrome/Application/chrome' '"%~F"'`) }, func() { g.Spawn(`open -a "Google Chrome" %f %&`) }),
 	)
