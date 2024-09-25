@@ -322,7 +322,7 @@ func config(g *app.Goful, is_tmux bool) {
 	menu.Add("editor",
 		"e", "vscodE       코드 ", func() { g.Spawn("code %f %&") },
 		"E", "Emacs client 이맥스 ", func() { g.Spawn("emacsclient -n %f %&") },
-		"v", "Vim          빔 ", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`gvim '"%~F"'`) }, func() { g.Spawn("vi %f") }),
+		"v", "Vim          빔 ", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`gvim '"%~F"'`) }, func() { g.Spawn("vim %f") }),
 		"x", "eXcel        엑셀", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Microsoft Office/root/Office16/excel.exe' '"%~F"'`) }, func() { g.Spawn(`open -a "Microsoft Excel"  %f %&`) }),
 		"c", "Chrome       크롬", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Google/Chrome/Application/chrome' '"%~F"'`) }, func() { g.Spawn(`open -a "Google Chrome" %f %&`) }),
 	)
@@ -393,7 +393,7 @@ func ifElse(condition bool, trueVal func(), falseVal func()) func() {
 }
 
 func arrangeFilePathForWindows(str string) string {
-	if strings.Contains(str, `"`) { //case for copied file path.
+	if strings.Contains(str, `"`) || strings.Contains(str, `'`) { //case for copied file path.
 		//"C:\Windows"
 		//"C:\Users"
 		//      -> 'C:/Windows' 'C:/Users'
@@ -416,7 +416,7 @@ func arrangeFilePathForWindows(str string) string {
 			for i := 0; i < len(indices)-1; i++ { //add ' ' between strings
 				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
 			}
-			return returnString
+			return strings.ReplaceAll(returnString, `''`, `'`)
 		}
 	}
 }
@@ -453,7 +453,6 @@ func arrangeFilePathForMac(str string) string {
 	}
 }
 
-
 func arrangeFilePathForLin(str string) string {
 	//case for copied file path.
 	// 	/Users
@@ -485,7 +484,6 @@ func arrangeFilePathForLin(str string) string {
 		}
 	}
 }
-
 
 // Widget keymap functions.
 
@@ -681,8 +679,10 @@ func finderKeymap(w *filer.Finder) widget.Keymap {
 
 func cmdlineKeymap(w *cmdline.Cmdline) widget.Keymap {
 	return widget.Keymap{
-		"C-a": func() { w.MoveTop() },
-		"C-e": func() { w.MoveBottom() },
+		"C-a":  func() { w.MoveTop() },
+		"C-e":  func() { w.MoveBottom() },
+		"home": func() { w.MoveTop() },
+		"end":  func() { w.MoveBottom() },
 		// "C-f":       func() { w.ForwardChar() },
 		// "C-b":       func() { w.BackwardChar() },
 		"right":     func() { w.ForwardChar() },
@@ -702,20 +702,20 @@ func cmdlineKeymap(w *cmdline.Cmdline) widget.Keymap {
 		"C-m":       func() { w.Run() },
 		"C-g":       func() { w.Exit() },
 		"C-[":       func() { w.Exit() }, // C-[ means ESC
-		// "C-n":       func() { w.History.CursorDown() },
-		// "C-p":       func() { w.History.CursorUp() },
-		"down": func() { w.History.CursorDown() },
-		"up":   func() { w.History.CursorUp() },
-		// "C-v":       func() { w.History.PageDown() },
-		// "M-v":       func() { w.History.PageUp() },
-		"pgdn": func() { w.History.PageDown() },
-		"pgup": func() { w.History.PageUp() },
-		// "M-<":       func() { w.History.MoveTop() },
-		// "M->":       func() { w.History.MoveBottom() },
-		"home": func() { w.History.MoveTop() },
-		"end":  func() { w.History.MoveBottom() },
-		// "M-n":       func() { w.History.Scroll(1) },
-		// "M-p":       func() { w.History.Scroll(-1) },
+		"C-n":       func() { w.History.CursorDown() },
+		"C-p":       func() { w.History.CursorUp() },
+		"down":      func() { w.History.CursorDown() },
+		"up":        func() { w.History.CursorUp() },
+		"C-v":       func() { w.History.PageDown() },
+		"M-v":       func() { w.History.PageUp() },
+		"pgdn":      func() { w.History.PageDown() },
+		"pgup":      func() { w.History.PageUp() },
+		"M-<":       func() { w.History.MoveTop() },
+		"M->":       func() { w.History.MoveBottom() },
+		// "home": func() { w.History.MoveTop() },
+		// "end":  func() { w.History.MoveBottom() },
+		"M-n": func() { w.History.Scroll(1) },
+		"M-p": func() { w.History.Scroll(-1) },
 		"C-x": func() { w.History.Delete() },
 		// "C-r":       func() { w.History. },
 	}
@@ -731,21 +731,21 @@ func completionKeymap(w *cmdline.Completion) widget.Keymap {
 		"C-b":   func() { w.CursorToLeft() },
 		"right": func() { w.CursorToRight() },
 		"left":  func() { w.CursorToLeft() },
-		// "C-i":   func() { w.CursorToRight() }, //C-i = tab
-		// "C-v":  func() { w.PageDown() },
-		// "M-v":  func() { w.PageUp() },
+		// "home":  func() { w.MoveCursor(-30) },
+		// "end":   func() { w.MoveCursor(+30) },
+
+		"C-v":  func() { w.PageDown() },
+		"M-v":  func() { w.PageUp() },
 		"pgdn": func() { w.PageDown() },
 		"pgup": func() { w.PageUp() },
-		// "M-<":  func() { w.MoveTop() },
-		// "M->":  func() { w.MoveBottom() },
-		"home": func() { w.MoveTop() },
-		"end":  func() { w.MoveBottom() },
-		// "M-n":  func() { w.Scroll(1) },
-		// "M-p":  func() { w.Scroll(-1) },
-		"C-i": func() { w.InsertCompletion() }, //C-i = tab
-		"C-m": func() { w.InsertCompletion() },
-		// "C-g":  func() { w.Exit() },
-		"C-[": func() { w.Exit() },
+		"M-<":  func() { w.MoveTop() },
+		"M->":  func() { w.MoveBottom() },
+		"M-n":  func() { w.Scroll(1) },
+		"M-p":  func() { w.Scroll(-1) },
+		"C-i":  func() { w.InsertCompletion() }, //C-i = tab
+		"C-m":  func() { w.InsertCompletion() },
+		"C-g":  func() { w.Exit() },
+		"C-[":  func() { w.Exit() },
 	}
 }
 
@@ -755,12 +755,12 @@ func menuKeymap(w *menu.Menu) widget.Keymap {
 		// "C-p":  func() { w.MoveCursor(-1) },
 		"down": func() { w.MoveCursor(1) },
 		"up":   func() { w.MoveCursor(-1) },
-		// "C-v":  func() { w.PageDown() },
-		// "M-v":  func() { w.PageUp() },
-		// "M->":  func() { w.MoveBottom() },
-		// "M-<":  func() { w.MoveTop() },
-		"C-m": func() { w.Exec() }, //C-m = enter
-		"C-g": func() { w.Exit() },
-		"C-[": func() { w.Exit() }, //// C-[ means ESC //
+		"C-v":  func() { w.PageDown() },
+		"M-v":  func() { w.PageUp() },
+		"M->":  func() { w.MoveBottom() },
+		"M-<":  func() { w.MoveTop() },
+		"C-m":  func() { w.Exec() }, //C-m = enter
+		"C-g":  func() { w.Exit() },
+		"C-[":  func() { w.Exit() }, //// C-[ means ESC //
 	}
 }

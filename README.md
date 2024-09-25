@@ -34,10 +34,11 @@ See [releases](https://github.com/epainos/gofuli/releases) or 'bin' folder
     $ goful
 
 ### users for Linux 
-Linux user need to install gnome-terminal for shell and gnoem-sushi for preview
+Linux user need to install gnome-terminal for shell and gnoem-sushi for preview, and vim
 
     sudo apt install gnome-terminal
     sudo apt install gnome-sushi
+    sudo apt install vim
 
 
 ### users for Windows  
