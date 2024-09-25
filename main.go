@@ -453,6 +453,40 @@ func arrangeFilePathForMac(str string) string {
 	}
 }
 
+
+func arrangeFilePathForLin(str string) string {
+	//case for copied file path.
+	// 	/Users
+	// /System
+	// /Applications -> '/Users' '/System' '/Applications'
+	if strings.Contains(str, "\n") {
+		return strings.ReplaceAll(`'`+strings.Replace(str, "\n", `' '`, -1)+`'`, `''`, `'`)
+	} else {
+		//case for copied file
+		// /Users /System /Applications -> '/Users' '/System' '/Applications'
+		if str == "" {
+			return `===your path is EMPTY ===`
+		} else {
+			var indices []int
+
+			indices = append(indices, 0)
+			for i := 1; i < len(str); i++ {
+				if str[i-1] == ' ' && str[i] == '/' { //find ':' and add index
+					indices = append(indices, i-1) //
+				}
+			}
+			indices = append(indices, len(str))
+
+			returnString := ""
+			for i := 0; i < len(indices)-1; i++ { //add ' ' between strings
+				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
+			}
+			return strings.ReplaceAll(returnString, `''`, `'`)
+		}
+	}
+}
+
+
 // Widget keymap functions.
 
 func filerKeymap(g *app.Goful) widget.Keymap {
@@ -532,7 +566,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			g.Shell(`cp -r -v `+value+` %D`, -7)
 		}, func() {
 			value, _ := glippy.Get()
-			// value = arrangeFilePathForMac(value)
+			value = arrangeFilePathForLin(value)
 			g.Shell(`cp -r -v `+value+` %D`, -7)
 		})),
 
@@ -547,7 +581,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			g.Shell(`mv -f -v `+value+` %D`, -7)
 		}, func() {
 			value, _ := glippy.Get()
-			// value = arrangeFilePathForMac(value)
+			value = arrangeFilePathForLin(value)
 			g.Shell(`mv -f -v `+value+` %D`, -7)
 		})),
 
