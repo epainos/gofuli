@@ -226,9 +226,9 @@ func config(g *app.Goful, is_tmux bool) {
 	if runtime.GOOS == "windows" {
 		menu.Add("external-command",
 			"c", "(f5) copy %m to %D2   복사", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell(`fcp /cmd=diff '%~F' /to='%~D2'`) },
-			"m", "(f6) move %m to %D2   이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }),
+			"m", "(f6) move %m to %D2   이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }),
 			"k", "(f7) make directory   새폴더", ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'./` + util.RemoveExt(g.File().Name()) + `'`) }),
-			"d", "(f8) del /s %M        삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
+			"d", "(f8) del /s %M        삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv -f -v %M ~/.local/share/Trash`, -7) })),
 			// "D", "rd /s /q %~m     폴더 삭제", func() { g.Shell("rd /s /q %~m") },
 			"n", "(n)  create newfile   새파일", func() { g.Shell("copy nul ") },
 			"r", "(r)  move (rename) %f 이름변경", ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
@@ -239,9 +239,9 @@ func config(g *app.Goful, is_tmux bool) {
 	} else {
 		menu.Add("external-command",
 			"c", "(f5) copy %m to %D2      복사", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell("cp -vai %m %D2") },
-			"m", "(f6) move %m to %D2      이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell("mv -vi %m %D2") },
+			"m", "(f6) move %m to %D2      이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }), //func() { g.Shell("mv -vi %m %D2") },
 			"k", "(f7) make directory      새폴더", ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'./` + util.RemoveExt(g.File().Name()) + `'`) }),
-			"D", "(f8) remove %m files     삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
+			"D", "(f8) remove %m files     삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv -f -v %M ~/.local/share/Trash`, -7) })),
 			"n", "(n)  create newfile      새파일", func() { g.Shell("touch './" + g.File().Name() + `'`) },
 			"T", "     time copy %f to %m  시간복사", func() { g.Shell("touch -r %f %m") },
 			"M", "(m)  change mode %m      권한변경", func() { g.Shell("chmod 644 %m", -3) },
@@ -515,7 +515,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 
 		"d": ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, //move file(s) to recycle bin
 			ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) },
-				func() { g.Shell(`mv %M ~/.local/share/Trash/files`, -7) })),
+				func() { g.Shell(`mv -f -v %M ~/.local/share/Trash/files`, -7) })),
 		// "d":      ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
 		"D": func() { g.Workspace().ReloadAll(); g.Chdir() }, //change directory
 
