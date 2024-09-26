@@ -94,7 +94,7 @@ func NewFileStat(dir string, name string) *FileStat {
 	} else {
 		display = util.RemoveExt(name)
 		ext := filepath.Ext(name)
-		//💾📙📘⚛⛯☢🧲🐬⚒🄰⚙⛭🛠🔧🧭🛜🛡🖨🕸🌐📏🎨🎧🎬🎮🎴💳🗂🗃🪧▶🦥🚯🍥⛔🐴✉📩🕹🗒🗓📄🏠🏡🏘️🏗️🏢🏛⛏🪛🪪🔆🪙⏹⏹️🪟🆒🌞☀️⛱🌬🌬️🧰🖥💻⚓🔍🔎🔥🔨🔩
+		//💾📙📘⚛⛯☢🧲🐬⚒🄰⚙⛭🛠🔧🧭🛜🛡🖨🕸🌐📏🎨🎧🎬🎮🎴💳🗂🗃🪧▶🦥🚯🍥⛔🐴✉📩🕹🗒🗓📄🏠⛪♿☕☀🌞🌅🌄🎴🏡🏘️🏗️🏢🏛⛏🪛🪪🔆🪙⏹⏹️🪟🆒🌞☀️⛱🌬🌬️🧰🖥💻⚓🔍🔎🔥🔨🔩
 
 		if stat.Mode().Perm()&0111 != 0 || hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //exec file is treated one more metoth
 			display = "🌞 " + display                             //⏹
@@ -120,6 +120,9 @@ func NewFileStat(dir string, name string) *FileStat {
 		} else if hasExtension(ext, []string{"zip", "gz", "tar", "tgz", "bx2", "xz", "txz", "rar"}) { //압축파일
 			display = "📦 " + display //📥📦
 			myColor = d.Foreground(tcell.ColorBurlyWood)
+		} else if hasExtension(ext, []string{"msi", "deb", "rpm"}) { //압축파일
+			display = "🧰 " + display //📥📦
+			myColor = d.Foreground(tcell.ColorOrange)
 		} else if hasExtension(ext, []string{"iso", "dmg"}) { //이미지 파일
 			display = "💿 " + display                //💽💿
 			myColor = d.Foreground(tcell.ColorPeru) //.Background((tcell.ColorGreen))

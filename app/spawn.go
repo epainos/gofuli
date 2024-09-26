@@ -185,7 +185,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				} else {
 					src = `'` + strings.Join(g.Dir().MarkfileNames(), `', '`) + `'` //windows needs single quote for everey path. nonQuote is not needed
 				}
-				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(src, "[", "`["), "]", "`]"), `\`, `/`), src)
 
 			case macroMarkfilePath:
 				if !nonQuote {
@@ -199,6 +199,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				} else {
 					src = `'` + strings.Join(g.Dir().MarkfilePaths(), `', '`) + `'` //windows needs single quote for everey path. nonQuote is not needed
 				}
+				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 			case macroDeleteFileForMac:
 				if !nonQuote {
 					src = `osascript -e "tell application \"Finder\" to delete POSIX file \"` + strings.Join(g.Dir().MarkfilePaths(), `\"" ; osascript -e "tell application \"Finder\" to delete POSIX file \"`) + `\"" ` //mac needs this command to trash MULTIPLE files

@@ -83,8 +83,8 @@ func config(g *app.Goful, is_tmux bool) {
 	opener := "xdg-open %m %&"
 	switch runtime.GOOS {
 	case "windows":
-		opener = "Invoke-Item  %c %&"
-		// opener = "explorer '%~f' %&" //windows
+		opener = "Invoke-Item  %c %&" //windows // open selected files // fileName having '[ ]' does not work with Invoke-Item.
+		// opener = "explorer '%~f' %&" //windows //open olny one file
 	case "darwin":
 		opener = "open %m %&"
 	}
@@ -508,7 +508,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"c": func() { g.Copy() }, //copy
 
 		"C": ifElse(runtime.GOOS == "windows", func() { //Duplicate
-			g.Shell("Copy-Item -Recurse %F '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`)
+			g.Shell("Copy-Item -Recurse  '" + strings.ReplaceAll(strings.ReplaceAll(g.File().Name(), "[", "`["), "]", "`]") + "' '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`) // WTF?? // fileName having '[ ]' does not work with Invoke-Item.
 		}, func() {
 			g.Shell("cp -r %f '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`)
 		}),
