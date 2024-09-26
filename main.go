@@ -293,9 +293,9 @@ func config(g *app.Goful, is_tmux bool) {
 	// )
 
 	menu.Add("bookmark",
-		"d", "~/            홈", func() { g.Dir().Chdir("~") },
+		"b", "~/            홈", func() { g.Dir().Chdir("~") },
 		"k", "~/Desktop     바탕화면 ", func() { g.Dir().Chdir("~/Desktop") },
-		"c", "~/Documents   내문서", func() { g.Dir().Chdir("~/Documents") },
+		"d", "~/Documents   내문서", func() { g.Dir().Chdir("~/Documents") },
 		"l", "~/Downloads   다운로드", func() { g.Dir().Chdir("~/Downloads") },
 	)
 	if runtime.GOOS == "windows" {
@@ -329,13 +329,13 @@ func config(g *app.Goful, is_tmux bool) {
 	g.AddKeymap("e", func() { g.Menu("editor") })
 
 	menu.Add("image",
-		"x", "default    기본열기", func() { g.Spawn(opener) },
+		"o", "default    기본열기", func() { g.Spawn(opener) },
 		"e", "eog        ", func() { g.Spawn("eog '%~f' %&") },
 		"g", "gimp       ", func() { g.Spawn("gimp %m %&") },
 	)
 
 	menu.Add("media",
-		"x", "default   기본열기", func() { g.Spawn(opener) },
+		"o", "default   기본열기", func() { g.Spawn(opener) },
 		"m", "mpv               ", func() { g.Spawn("mpv %f") },
 		"v", "vlc               ", func() { g.Spawn("vlc %f %&") },
 	)
