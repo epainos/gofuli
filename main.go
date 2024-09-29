@@ -330,7 +330,7 @@ func config(g *app.Goful, is_tmux bool) {
 
 	menu.Add("myApp",
 		"+", "add MyApp   사용자앱 추가 ", func() { g.AddMyAapp() },
-		"-", "del MyApp   사용자앱 제거 (you can do this by DELETE key )", func() { g.DelMyAapp() },
+		"-", "del MyApp   사용자앱 제거 ( DELETE key also can delete app on cursor  )", func() { g.DelMyAapp() },
 	)
 	g.AddKeymap("E", func() { g.Menu("myApp") })
 
