@@ -578,12 +578,8 @@ func (m *globdirMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// addMyAappƒ
-
+// addMyAapp add my app added by user
 func (g *Goful) AddMyAapp() {
-	// c := cmdline.New(&move2Mode{g, ""}, g)
-	// c.SetText(g.File().Name() + ifElseSting((runtime.GOOS == "windows"), ` '%f'`, ` %f`))
-	// g.next = c
 
 	src := ifElseSting((runtime.GOOS == "windows"), `start `, ifElseSting((runtime.GOOS == "darwin"), `open -a`, "")) + ` '` + g.File().Path() + `' ` + ifElseSting((runtime.GOOS == "windows"), ` '%F'`, ` %F`)
 	c := cmdline.New(&addMyAappMode{
@@ -596,11 +592,6 @@ func (g *Goful) AddMyAapp() {
 	c.SetText(src)
 	g.next = c
 }
-
-// c := cmdline.New(&addMyAappMode{g, src}, g)
-// c.SetText(src)
-// // c.MoveCursor(-len(filepath.Ext(src)))
-// g.next = c
 
 type addMyAappMode struct {
 	*Goful
@@ -699,6 +690,7 @@ func (g *Goful) DelMyAapp() {
 		Goful:                g,
 		myShortCut:           "",
 		myShortCutAndAppName: make(map[string]string),
+		isInList:             false,
 	}, g)
 	c.SetText("")
 	g.next = c
@@ -708,61 +700,61 @@ type dellMyAppMode struct {
 	*Goful
 	myShortCut           string
 	myShortCutAndAppName map[string]string
+	isInList             bool
 }
 
 func (m *dellMyAppMode) String() string { return "dellMyApp" }
 func (m *dellMyAppMode) Prompt() string {
 	shortcutList := []string{""}
 	shortcutList, m.myShortCutAndAppName = loadMyShortcuts(myMyAppFile)
+
+	if len(shortcutList) > 10 {
+		shortcutList = shortcutList[:10]
+		shortcutList[9] = "..."
+	}
 	src := strings.Join(shortcutList, ", ")
 	if m.myShortCut == "" {
-		return "your Aapp Shortcut to Delete (지울 단축키): " + src + " : "
+		return "App Shortcut to Delete (지울 단축키): " + src + " : "
+		// } else if m.myShortCutAndAppName[m.myShortCut] == "" {
+		// 	return "Shortcut is NOT found. 단축키를 확인해주세요."
 	} else {
-		return "del your app? " + m.myShortCutAndAppName[m.myShortCut] + " [Y, n] : " + m.myShortCut
+		return "del your app? '" + m.myShortCutAndAppName[m.myShortCut] + "' [Y, n] : "
 	}
 }
 
 // func (m *dellMyAppMode) Prompt() string          { return fmt.Sprintf("dellMyApp(이름변경) %s -> ", m.src) }
 func (m *dellMyAppMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *dellMyAppMode) Run(c *cmdline.Cmdline) {
-
-	if m.myShortCut == "" {
+	if m.myShortCutAndAppName[c.String()] != "" {
+		m.isInList = true
+	}
+	if len(m.myShortCutAndAppName) == 0 {
+		message.Info("No app to delete")
+		c.Exit()
+	} else if m.isInList == false && m.myShortCutAndAppName[c.String()] == "" {
+		message.Errorf("Shortcut is NOT found. 단축키를 확인해주세요.")
+		// m.myShortCut = c.String()
+		c.SetText("")
+	} else if m.myShortCut == "" {
 		m.myShortCut = c.String()
+		c.SetText("y")
 
 	} else {
 		if c.String() == "Y" || c.String() == "y" || c.String() == "" {
-			delMyAppList(myMyAppFile, m.myShortCut)
+
+			menu.DelMyAppFromListFile(myMyAppFile, m.myShortCut)
 			message.Info("Deleted: " + m.myShortCut + " (" + m.myShortCutAndAppName[m.myShortCut] + ") ")
-			m.Workspace().ReloadAll()
+			menu.Remove("myApp", m.myShortCut)
+			// m.Workspace().ReloadAll()
+			// m.OpenMyAppList("")
 			c.Exit()
+			// }
 		} else {
 			message.Info("canceled: " + m.myShortCut + " (" + m.myShortCutAndAppName[m.myShortCut] + ") ")
 			c.Exit()
 		}
 	}
 }
-
-// func loadMyShortcuts(path string) []string {
-// 	var firstChars []string
-
-// 	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDONLY, os.FileMode(0644))
-// 	if err != nil {
-// 		return nil
-// 	}
-// 	defer file.Close()
-
-// 	scanner := bufio.NewScanner(file)
-// 	for scanner.Scan() && len(firstChars) < 10 {
-// 		line := scanner.Text()
-// 		firstChars = append(firstChars, string(line[0]))
-// 	}
-
-// 	if len(firstChars) >= 10 { // 10개 이상이면 마지막 항목을 ...으로 정리 후 마무리
-// 		firstChars[9] = "..."
-// 		return firstChars
-// 	}
-// 	return firstChars
-// }
 
 func loadMyShortcuts(path string) ([]string, map[string]string) {
 	var myShortCutList []string
@@ -793,27 +785,4 @@ func loadMyShortcuts(path string) ([]string, map[string]string) {
 	}
 
 	return myShortCutList, mapForShortcutAndAppName
-}
-
-func delMyAppList(path string, shortcutToDel string) {
-	if path == "" {
-		path = "~/.goful/myApp"
-	}
-	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDWR, 0644)
-	if err != nil {
-		fmt.Println("파일 열기 실패:", err)
-		return
-	}
-	defer file.Close()
-
-	var temp []byte
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if !strings.HasPrefix(line, shortcutToDel) {
-			temp = append(temp, line...)
-			temp = append(temp, '\n')
-		}
-	}
-
 }
