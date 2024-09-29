@@ -2,8 +2,13 @@
 package menu
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 
+	"github.com/epainos/gofuli/message"
+	"github.com/epainos/gofuli/util"
 	"github.com/epainos/gofuli/widget"
 )
 
@@ -23,6 +28,43 @@ func Add(name string, a ...interface{}) {
 		items = append(items, &menuItem{accel, label, callback})
 	}
 	menusMap[name] = items
+}
+
+// Remove a menu item by its acceleration key
+func Remove(name string, accel string) {
+	items := menusMap[name]
+	for i, item := range items {
+		if item.accel == accel {
+			// print(i)
+			// Remove the item by copying the slice without the element at index i
+			if i == len(items)-1 {
+				items = items[:i]
+			} else {
+				items = append(items[:i], items[i+1:]...)
+			}
+			break
+		}
+	}
+	menusMap[name] = items
+}
+func (w *Menu) RemoveMenuInWindow() {
+	title := w.Title()
+	accel := menusMap[w.Title()][w.Cursor()].accel
+	appName := menusMap[w.Title()][w.Cursor()].label
+
+	if title != "myApp" {
+		message.Errorf("Default menu cannot be removed... 기본 메뉴는 삭제할 수 없어요.")
+		return
+	} else if accel == "+" || accel == "-" {
+		message.Errorf("Default menu cannot be removed... 기본 메뉴는 삭제할 수 없어요.")
+	} else {
+		// glippy.Set("menu:" + w.Title() + ":" + accel)
+		DelMyAppFromListFile(title, accel)
+		message.Info("삭제 완료: " + appName)
+
+		Remove(title, accel)
+		w.Exit()
+	}
 }
 
 var keymap func(*Menu) widget.Keymap
@@ -80,6 +122,7 @@ func (w *Menu) Resize(x, y, width, height int) {
 func (w *Menu) Exec() {
 	w.Exit()
 	menusMap[w.Title()][w.Cursor()].callback()
+	// glippy.Set("menu:" + w.Title() + ":" + menusMap[w.Title()][w.Cursor()].accel)
 }
 
 // Input to the list box or execute a menu item with the acceleration key.
@@ -105,3 +148,58 @@ func (w *Menu) Next() widget.Widget { return widget.Nil() }
 
 // Disconnect implements widget.Widget.
 func (w *Menu) Disconnect() {}
+
+// DelMyAppFromListFile is a function to delete a shortcut from the myApp file.
+func DelMyAppFromListFile(path string, shortcutToDel string) {
+	if path == "" {
+		path = "~/.goful/myApp"
+	}
+	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDWR, 0644)
+	if err != nil {
+		fmt.Println("파일 열기 실패:", err)
+		return
+	}
+	defer file.Close()
+
+	fileInfo, err := os.Stat(util.ExpandPath(path))
+	if err != nil {
+		fmt.Println("파일 정보 가져오기 실패:", err)
+		return
+	}
+
+	if fileInfo.Size() == 0 {
+		fmt.Println("파일이 비어있습니다.")
+		return
+	}
+
+	var temp []byte
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if !strings.HasPrefix(line, shortcutToDel) {
+			temp = append(temp, line...)
+			temp = append(temp, '\n')
+		}
+	}
+
+	if scanner.Err() != nil {
+		fmt.Println("파일 읽기 오류:", scanner.Err())
+		return
+	}
+
+	// 파일 크기 조절
+	if err := file.Truncate(0); err != nil {
+		fmt.Println("파일 크기 조절 실패:", err)
+		return
+	}
+
+	// 파일 처음부터 다시 쓰기
+	_, err = file.WriteAt(temp, 0)
+	if err != nil {
+		fmt.Println("파일 쓰기 실패:", err)
+		return
+	}
+
+	fmt.Println("삭제 완료")
+
+}
