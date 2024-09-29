@@ -1,18 +1,23 @@
 package app
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 
+	// "github.com/epainos/gofuli/app" // Removed to fix import cycle and missing metadata issues
 	"github.com/epainos/gofuli/cmdline"
 	"github.com/epainos/gofuli/look"
+	"github.com/epainos/gofuli/menu"
 	"github.com/epainos/gofuli/message"
 	"github.com/epainos/gofuli/util"
 	"github.com/epainos/gofuli/widget"
+	"github.com/f1bonacc1/glippy"
 )
 
 // match shell separators, macros, options and spaces.
@@ -377,7 +382,7 @@ type mkdirMode struct {
 func (m *mkdirMode) String() string { return "mkdir" }
 func (m *mkdirMode) Prompt() string {
 	if m.path != "" {
-		return "Mode(권한) default 0755: "
+		return "Mode(권한) default 755: "
 	}
 	return "Make directory(새폴더): "
 }
@@ -571,4 +576,122 @@ func (m *globdirMode) Run(c *cmdline.Cmdline) {
 		m.Dir().Globdir(pattern)
 		c.Exit()
 	}
+}
+
+// addMyAappƒ
+
+func (g *Goful) AddMyAapp() {
+	// c := cmdline.New(&move2Mode{g, ""}, g)
+	// c.SetText(g.File().Name() + ifElseSting((runtime.GOOS == "windows"), ` '%f'`, ` %f`))
+	// g.next = c
+
+	src := ifElseSting((runtime.GOOS == "windows"), `start `, ifElseSting((runtime.GOOS == "darwin"), `open -a`, "")) + ` '` + g.File().Path() + `' ` + ifElseSting((runtime.GOOS == "windows"), ` '%F'`, ` %F`)
+	c := cmdline.New(&addMyAappMode{
+		Goful:              g,
+		myShortCut:         "",
+		myAppName:          "",
+		myAppCommand:       src,
+		isDoneMyAppCommand: false,
+	}, g)
+	c.SetText(src)
+	g.next = c
+}
+
+// c := cmdline.New(&addMyAappMode{g, src}, g)
+// c.SetText(src)
+// // c.MoveCursor(-len(filepath.Ext(src)))
+// g.next = c
+
+type addMyAappMode struct {
+	*Goful
+	myShortCut         string
+	myAppName          string
+	myAppCommand       string
+	isDoneMyAppCommand bool
+}
+
+func (m *addMyAappMode) String() string { return "addMyAapp" }
+func (m *addMyAappMode) Prompt() string {
+
+	if !m.isDoneMyAppCommand {
+		return "addMyAapp 사용자앱 추가:"
+	} else if m.myAppName == "" {
+		return "appName 앱이름: "
+	} else {
+		return "shortCut for '" + m.myAppName + "' " + m.myShortCut + " 단축키: "
+	}
+}
+
+// func (m *addMyAappMode) Prompt() string          { return fmt.Sprintf("addMyAapp(이름변경) %s -> ", m.src) }
+func (m *addMyAappMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
+func (m *addMyAappMode) Run(c *cmdline.Cmdline) {
+	if !m.isDoneMyAppCommand {
+		m.myAppCommand = c.String()
+		m.isDoneMyAppCommand = true
+		c.SetText("")
+	} else if m.myAppName == "" {
+		m.myAppName = c.String()
+		c.SetText("")
+	} else {
+		m.myShortCut = c.String()
+		if len(m.myShortCut) == 1 {
+			myfWriteFile(myMyAppFile, m.myShortCut+" <||> "+m.myAppName+" <||> "+m.myAppCommand+"\n")
+			menu.Add("myApp", m.myShortCut, m.myAppName, func() { m.Spawn(m.myAppCommand) })
+			m.Workspace().ReloadAll()
+			c.Exit()
+		} else {
+			m.myShortCut = ": (type one character, please)"
+			c.SetText("")
+		}
+	}
+}
+
+const myMyAppFile = "~/.goful/myApp"
+
+func myfWriteFile(path string, content string) {
+
+	// file, err := os.Create(util.ExpandPath(path))
+	file, err := os.OpenFile(util.ExpandPath(path), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		glippy.Set("생성e실패: " + err.Error())
+
+		return
+	}
+	defer file.Close()
+
+	// 파일 끝에 내용 추가
+	if _, err := file.WriteString(content); err != nil {
+		glippy.Set("쓰기실패: " + err.Error())
+		return
+	}
+
+}
+
+func (m *addMyAappMode) myfOpenMyAppList(path string) {
+	if path == "" {
+		path = "~/.goful/myApp"
+	}
+
+	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDONLY, os.FileMode(0644))
+	if err != nil {
+		fmt.Println("파일 열기 실패:", err)
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		items := strings.Split(line, " <||> ")
+		if len(items) == 3 {
+			menu.Add("myApp", items[0], items[1], func() { m.Spawn(items[2]) })
+			// fmt.Printf("항목1: %s, 항목2: %s, 항목3: %s\n", items[0], items[1], items[2])
+		} else {
+			// fmt.Println("잘못된 형식의 줄:", line)
+		}
+	}
+
+	// if err := scanner.Err(); err != nil {
+	// 	fmt.Println("파일 읽기 중 오류 발생:", err)
+	// }
 }
