@@ -653,7 +653,7 @@ func writeMyAppToFile(path string, content string) {
 	// file, err := os.Create(util.ExpandPath(path))
 	file, err := os.OpenFile(util.ExpandPath(path), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		glippy.Set("생성e실패: " + err.Error())
+		glippy.Set("생성실패: " + err.Error())
 
 		return
 	}
@@ -691,12 +691,114 @@ func (g *Goful) OpenMyAppList(path string) {
 		}
 	}
 
-	// if err := scanner.Err(); err != nil {
-	// 	fmt.Println("파일 읽기 중 오류 발생:", err)
-	// }
 }
 
-func (g *Goful) DelMyapp(path string, shortcutToDel string) {
+// DelMyAapp delete my app added by user
+func (g *Goful) DelMyAapp() {
+	c := cmdline.New(&dellMyAppMode{
+		Goful:                g,
+		myShortCut:           "",
+		myShortCutAndAppName: make(map[string]string),
+	}, g)
+	c.SetText("")
+	g.next = c
+}
+
+type dellMyAppMode struct {
+	*Goful
+	myShortCut           string
+	myShortCutAndAppName map[string]string
+}
+
+func (m *dellMyAppMode) String() string { return "dellMyApp" }
+func (m *dellMyAppMode) Prompt() string {
+	shortcutList := []string{""}
+	shortcutList, m.myShortCutAndAppName = loadMyShortcuts(myMyAppFile)
+	src := strings.Join(shortcutList, ", ")
+	if m.myShortCut == "" {
+		return "your Aapp Shortcut to Delete (지울 단축키): " + src + " : "
+	} else {
+		return "del your app? " + m.myShortCutAndAppName[m.myShortCut] + " [Y, n] : " + m.myShortCut
+	}
+}
+
+// func (m *dellMyAppMode) Prompt() string          { return fmt.Sprintf("dellMyApp(이름변경) %s -> ", m.src) }
+func (m *dellMyAppMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
+func (m *dellMyAppMode) Run(c *cmdline.Cmdline) {
+
+	if m.myShortCut == "" {
+		m.myShortCut = c.String()
+
+	} else {
+		if c.String() == "Y" || c.String() == "y" || c.String() == "" {
+			delMyAppList(myMyAppFile, m.myShortCut)
+			message.Info("Deleted: " + m.myShortCut + " (" + m.myShortCutAndAppName[m.myShortCut] + ") ")
+			m.Workspace().ReloadAll()
+			c.Exit()
+		} else {
+			message.Info("canceled: " + m.myShortCut + " (" + m.myShortCutAndAppName[m.myShortCut] + ") ")
+			c.Exit()
+		}
+	}
+}
+
+// func loadMyShortcuts(path string) []string {
+// 	var firstChars []string
+
+// 	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDONLY, os.FileMode(0644))
+// 	if err != nil {
+// 		return nil
+// 	}
+// 	defer file.Close()
+
+// 	scanner := bufio.NewScanner(file)
+// 	for scanner.Scan() && len(firstChars) < 10 {
+// 		line := scanner.Text()
+// 		firstChars = append(firstChars, string(line[0]))
+// 	}
+
+// 	if len(firstChars) >= 10 { // 10개 이상이면 마지막 항목을 ...으로 정리 후 마무리
+// 		firstChars[9] = "..."
+// 		return firstChars
+// 	}
+// 	return firstChars
+// }
+
+func loadMyShortcuts(path string) ([]string, map[string]string) {
+	var myShortCutList []string
+	mapForShortcutAndAppName := make(map[string]string)
+
+	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDONLY, os.FileMode(0644))
+	if err != nil {
+		return nil, mapForShortcutAndAppName
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.Split(line, " <||> ")
+		// println(parts[0], `:`, parts[1], `:`, parts[2])
+		if len(parts) == 3 {
+			myShortCutList = append(myShortCutList, parts[0])
+			key, value := parts[0], parts[1]
+			mapForShortcutAndAppName[key] = value
+		} else {
+			fmt.Println("잘못된 형식의 줄:", line)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return myShortCutList, mapForShortcutAndAppName
+	}
+
+	return myShortCutList, mapForShortcutAndAppName
+}
+
+func delMyAppList(path string, shortcutToDel string) {
+	if path == "" {
+		path = "~/.goful/myApp"
+	}
 	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDWR, 0644)
 	if err != nil {
 		fmt.Println("파일 열기 실패:", err)
