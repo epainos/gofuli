@@ -37,11 +37,11 @@ func main() {
 
 	const state = "~/.goful/state.json"
 	const history = "~/.goful/history/shell"
-	const history4Dir = "~/.goful/history/dir"
 
 	goful := app.NewGoful(state)
 	config(goful, is_tmux)
 	_ = cmdline.LoadHistory(history)
+	goful.OpenMyAppList("") // myfOpenMyAppList 메서드 호출
 
 	goful.Run()
 
@@ -66,7 +66,7 @@ func config(g *app.Goful, is_tmux bool) {
 
 	message.SetInfoLog("~/.goful/log/info.log")   // "" is not logging
 	message.SetErrorLog("~/.goful/log/error.log") // "" is not logging
-	message.Sec(5)                                // display second for a message
+	message.Sec(3)                                // display second for a message
 
 	// Setup widget keymaps.
 	g.ConfigFiler(filerKeymap)
@@ -137,7 +137,7 @@ func config(g *app.Goful, is_tmux bool) {
 			return []string{"zsh", "-c", title + cmd + tail}
 		})
 
-	} else {
+	} else { //linux
 		g.ConfigShell(func(cmd string) []string {
 			return []string{"bash", "-c", cmd}
 		})
@@ -327,6 +327,12 @@ func config(g *app.Goful, is_tmux bool) {
 		"c", "Chrome       크롬", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Google/Chrome/Application/chrome' '"%~F"'`) }, func() { g.Spawn(`open -a "Google Chrome" %f %&`) }),
 	)
 	g.AddKeymap("e", func() { g.Menu("editor") })
+
+	menu.Add("myApp",
+		"+", "add MyApp   사용자앱 추가 ", func() { g.AddMyAapp() },
+		"-", "del MyApp   사용자앱 제거 (you can do this by DELETE key )", func() { g.DelMyAapp() },
+	)
+	g.AddKeymap("E", func() { g.Menu("myApp") })
 
 	menu.Add("image",
 		"o", "default    기본열기", func() { g.Spawn(opener) },
@@ -519,8 +525,8 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		// "d":      ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
 		"D": func() { g.Workspace().ReloadAll(); g.Chdir() }, //change directory
 
-		//"e"   : func() { g.Shell("xdg-open %f") },	//open with default application
-		//  "E": func() { message.Info(clipboard.Get()) },	//open with default application
+		//"e"   : //open with editor application
+		// "E"  : //oenp whtih custom apllication
 
 		"f": func() { g.Dir().Finder() }, //search file
 		"/": func() { g.Dir().Finder() }, //search file
@@ -753,14 +759,16 @@ func menuKeymap(w *menu.Menu) widget.Keymap {
 	return widget.Keymap{
 		// "C-n":  func() { w.MoveCursor(1) },
 		// "C-p":  func() { w.MoveCursor(-1) },
-		"down": func() { w.MoveCursor(1) },
-		"up":   func() { w.MoveCursor(-1) },
-		"C-v":  func() { w.PageDown() },
-		"M-v":  func() { w.PageUp() },
-		"M->":  func() { w.MoveBottom() },
-		"M-<":  func() { w.MoveTop() },
-		"C-m":  func() { w.Exec() }, //C-m = enter
-		"C-g":  func() { w.Exit() },
-		"C-[":  func() { w.Exit() }, //// C-[ means ESC //
+		"down":      func() { w.MoveCursor(1) },
+		"up":        func() { w.MoveCursor(-1) },
+		"C-v":       func() { w.PageDown() },
+		"M-v":       func() { w.PageUp() },
+		"M->":       func() { w.MoveBottom() },
+		"M-<":       func() { w.MoveTop() },
+		"delete":    func() { w.RemoveMenuInWindow() },
+		"backspace": func() { w.RemoveMenuInWindow() },
+		"C-m":       func() { w.Exec() }, //C-m = enter
+		"C-g":       func() { w.Exit() },
+		"C-[":       func() { w.Exit() }, //// C-[ means ESC //
 	}
 }
