@@ -635,7 +635,7 @@ func (m *addMyAappMode) Run(c *cmdline.Cmdline) {
 	} else {
 		m.myShortCut = c.String()
 		if len(m.myShortCut) == 1 {
-			myfWriteFile(myMyAppFile, m.myShortCut+" <||> "+m.myAppName+" <||> "+m.myAppCommand+"\n")
+			writeMyAppToFile(myMyAppFile, m.myShortCut+" <||> "+m.myAppName+" <||> "+m.myAppCommand+"\n")
 			menu.Add("myApp", m.myShortCut, m.myAppName, func() { m.Spawn(m.myAppCommand) })
 			m.Workspace().ReloadAll()
 			c.Exit()
@@ -648,7 +648,7 @@ func (m *addMyAappMode) Run(c *cmdline.Cmdline) {
 
 const myMyAppFile = "~/.goful/myApp"
 
-func myfWriteFile(path string, content string) {
+func writeMyAppToFile(path string, content string) {
 
 	// file, err := os.Create(util.ExpandPath(path))
 	file, err := os.OpenFile(util.ExpandPath(path), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -667,7 +667,7 @@ func myfWriteFile(path string, content string) {
 
 }
 
-func (m *addMyAappMode) myfOpenMyAppList(path string) {
+func (g *Goful) OpenMyAppList(path string) {
 	if path == "" {
 		path = "~/.goful/myApp"
 	}
@@ -684,7 +684,7 @@ func (m *addMyAappMode) myfOpenMyAppList(path string) {
 		line := scanner.Text()
 		items := strings.Split(line, " <||> ")
 		if len(items) == 3 {
-			menu.Add("myApp", items[0], items[1], func() { m.Spawn(items[2]) })
+			menu.Add("myApp", items[0], items[1], func() { g.Spawn(items[2]) })
 			// fmt.Printf("항목1: %s, 항목2: %s, 항목3: %s\n", items[0], items[1], items[2])
 		} else {
 			// fmt.Println("잘못된 형식의 줄:", line)
@@ -694,4 +694,24 @@ func (m *addMyAappMode) myfOpenMyAppList(path string) {
 	// if err := scanner.Err(); err != nil {
 	// 	fmt.Println("파일 읽기 중 오류 발생:", err)
 	// }
+}
+
+func (g *Goful) DelMyapp(path string, shortcutToDel string) {
+	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDWR, 0644)
+	if err != nil {
+		fmt.Println("파일 열기 실패:", err)
+		return
+	}
+	defer file.Close()
+
+	var temp []byte
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if !strings.HasPrefix(line, shortcutToDel) {
+			temp = append(temp, line...)
+			temp = append(temp, '\n')
+		}
+	}
+
 }
