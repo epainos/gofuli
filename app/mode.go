@@ -581,7 +581,7 @@ func (m *globdirMode) Run(c *cmdline.Cmdline) {
 // addMyAapp add my app added by user
 func (g *Goful) AddMyAapp() {
 
-	src := ifElseSting((runtime.GOOS == "windows"), `start `, ifElseSting((runtime.GOOS == "darwin"), `open -a`, "")) + ` '` + g.File().Path() + `' ` + ifElseSting((runtime.GOOS == "windows"), ` '%F'`, ` %F`)
+	src := ifElseSting((runtime.GOOS == "windows"), `start `, ifElseSting((runtime.GOOS == "darwin"), `open -a`, "")) + ` '` + g.File().Path() + `' ` + ` %F`
 	c := cmdline.New(&addMyAappMode{
 		Goful:              g,
 		myShortCut:         "",
