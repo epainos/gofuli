@@ -548,7 +548,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		//"L":
 		"m": func() { g.Move() },                                                                                               //move file
 		"M": ifElse(runtime.GOOS == "windows", func() { message.Info(`Windows doesn't need to chmod`) }, func() { g.Chmod() }), //change file permission
-		//C-M means enter. open file with default application
+		//C-M means enter. open file with default applicationmm
 
 		"n": func() { g.Touch() }, //new file
 		"N": func() { //file Name copy 파일명 복사
