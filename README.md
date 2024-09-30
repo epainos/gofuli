@@ -318,9 +318,9 @@ Install after edit `my/goful/main.go`
 ### add fuction
 
 * set icon + color by extension 
-* History. so you can go back to previous folder you've been
-* yank and paste files/dirs
-* preview 
+* History. so you can go back to previous folder you've been ('B' = go back,'F' = go forward)
+* yank('y') and paste('p') files/dirs
+* preview ('f3')
 * trash bin(rm, mv is to dangerous. trash bin is more safe)
 * regist your App by 'E' Key
 
