@@ -521,7 +521,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 
 		"d": ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, //move file(s) to recycle bin
 			ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) },
-				func() { g.Shell(`mv -f -v %M ~/.local/share/Trash/files`, -7) })),
+				func() { g.Shell(`trash %m`, -7) })),
 		// "d":      ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
 		"D": func() { g.Workspace().ReloadAll(); g.Chdir() }, //change directory
 
@@ -557,7 +557,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			message.Info("file Name copied(파일명 복사함): " + myClip)
 		},
 		//"o":  open file with default application
-		"O": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`explorer . %&`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn(`open %D %&`) }, func() { g.Spawn(`xdg-open %D %&`) })), //open folder with file manager
+		"O": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`explorer . %&`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn(`open %D %&`) }, func() { g.Spawn(`xdg-open %D `) })), //open folder with file manager
 
 		"p": //paste file 복사 파일 붙여넣기
 		ifElse(runtime.GOOS == "windows", func() {

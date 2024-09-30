@@ -99,7 +99,7 @@ func NewFileStat(dir string, name string) *FileStat {
 		if stat.Mode().Perm()&0111 != 0 || hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //exec file is treated one more metoth
 			display = "🌞 " + display                             //⏹
 			myColor = d.Foreground(tcell.ColorYellow).Bold(true) //  ifElse(runtime.GOOS == "windows", d.Foreground(tcell.ColorYellow).Bold(true), d.Foreground(tcell.ColorSkyblue).Background((tcell.ColorDarkSlateGray)).Bold(true))
-		} else if hasExtension(ext, []string{"doc", "docx", "ppt", "pptx", "xls", "xlsx", "hwp", "hwpx"}) { //오피스파일
+		} else if hasExtension(ext, []string{"doc", "docx", "ppt", "pptx", "xls", "xlsx", "xlsm", "hwp", "hwpx"}) { //오피스파일
 			display = "📘 " + display
 			myColor = d.Foreground(tcell.ColorSkyblue) //.Background((tcell.ColorGreen))
 		} else if hasExtension(ext, []string{"txt", "rtf", "me", "md", "csv"}) { //오피스파일

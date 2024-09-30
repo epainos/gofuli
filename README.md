@@ -34,10 +34,11 @@ See [releases](https://github.com/epainos/gofuli/releases) or 'bin' folder
     $ goful
 
 ### users for Linux 
-Linux user need to install gnome-terminal for shell and gnoem-sushi for preview, and vim
+Linux user need to install gnome-terminal for shell and gnoem-sushi for preview, trash for safe delete and vim
 
     sudo apt install gnome-terminal
     sudo apt install gnome-sushi
+    sudo apt install trash-cli
     sudo apt install vim
 
 
@@ -92,6 +93,7 @@ or you can compile goful by 'go install' in goful folder. and rest things are he
 | `v`                                  | View                                                                                      |
 | `b`                                  | Bookmark                                                                                  |
 | `e`                                  | open other app                                                                            |
+| `E`                                  | open user app                                                                             |
 | `x`                                  | open basic Command menu                                                                   |
 | `X`                                  | open External command menu                                                                |
 | `f` `/`                              | Find                                                                                      |
@@ -282,6 +284,31 @@ Install after edit `my/goful/main.go`
 
     $ go install
 
+### add your app to "E" key, and remove it by "Delete" key
+
+* add
+    1. place cursor to app you want
+    2. open menu by "E" key and press '+' to regist
+    3. goful show defult command
+        ex. excel in windows "start excel '%~f'"
+        ex. safari in OSX "open safari %f"
+        if multi file input is supported by the app, you've better to change %f to %m
+    4. name your app. 
+    5. regist your SHORTCUT. 
+    6. Done!
+
+* remove
+    1. open menu by "E" key and press '-' to remove
+    2. type SHORTCUT you want to remove
+    3. Done!
+
+* another easy way to remove
+    1. open menu by "E" key and press '-' to remove
+    2. place cursor to app you want to remove. and press "Delete" key
+    3. Done!
+
+
+
 ### Contributing
 
 [Contributing Guide](.github/CONTRIBUTING.md)
@@ -294,6 +321,8 @@ Install after edit `my/goful/main.go`
 * History. so you can go back to previous folder you've been
 * yank and paste files/dirs
 * preview 
+* trash bin(rm, mv is to dangerous. trash bin is more safe)
+* regist your App by 'E' Key
 
 ### some tweaks for windows user
 
