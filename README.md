@@ -62,16 +62,16 @@ or you can compile goful by 'go install' in goful folder. and rest things are he
 | ------------------------------------ | ----------------------------------------------------------------------------------------- |
 | `down` `j`                           | Move cursor down                                                                          |
 | `up` `k`                             | Move cursor up                                                                            |
+| `J`                                  | Move cursor 5row down                                                                     |
+| `K`                                  | Move cursor 5row up                                                                       |
 | `home` `^` `I`                       | Move cursor top                                                                           |
 | `end` `$` `U`                        | Move cursor bottom                                                                        |
-| `C-i` `right` `l`                    | Move cursor right                                                                         |
-| `left` `h`                           | Move cursor left                                                                          |
-| `u`                                  | More move cursor down                                                                     |
-| `i`                                  | More move cursor up                                                                       |
 | `pgdn`                               | Page down                                                                                 |
 | `pgup`                               | Page up                                                                                   |
-| `backspace` `left` `h`               | Change to upper directory                                                                 |
-| `C-m` = `enter` `l` `left`           | open directory or file on cursor                                                          |
+| `left` `h` `bakcspace`               | Move cursor left  = ( Change to upper directory  )                                        |
+| `C-m` = `enter` `l` `right`          | open directory or file on cursor                                                          |
+| `H`                                  | go back to  previous directory                                                            |
+| `L`                                  | go to forward directory                                                                   |
 | `o`                                  | open every marked directorys and files                                                    |
 | `~`                                  | Change to home directory                                                                  |
 | `\`                                  | Change to root directory                                                                  |
@@ -91,9 +91,10 @@ or you can compile goful by 'go install' in goful folder. and rest things are he
 | `C-r`  `'`                           | refresh screen                                                                            |
 | `s`                                  | Sort                                                                                      |
 | `v`                                  | View                                                                                      |
-| `b`                                  | Bookmark                                                                                  |
-| `e`                                  | open other app                                                                            |
-| `E`                                  | open user app                                                                             |
+| `b`                                  | defult Bookmark                                                                                  |
+| `B`                                  | custom Bookmark                                                                                  |
+| `e`                                  | open eitor... app                                                                            |
+| `E`                                  | open custom app                                                                             |
 | `x`                                  | open basic Command menu                                                                   |
 | `X`                                  | open External command menu                                                                |
 | `f` `/`                              | Find                                                                                      |
@@ -104,8 +105,8 @@ or you can compile goful by 'go install' in goful folder. and rest things are he
 | `R`                                  | Bulk rename by regexp                                                                     |
 | `c` `f5`                             | Copy to neightbor window                                                                  |
 | `C`                                  | duplicate                                                                                 |
-| `m` `f6` `Xm`                        | Move to neightbor window                                                                  |
-| `K` `f7` `Xk`                        | Make new directory(f7 make dir by file name)                                              |
+| `m` `f6` `Xm`                        | Move files to neightbor window                                                                  |
+| `N` `f7` `Xk`                        | Make new directory(f7 make dir by file name)                                              |
 | `d` `f8`                             | Move files/folders to Recyle Bin                                                          |
 | `delete`                             | Remove files/folders permanently.                                                         |
 | `D`                                  | Change directory                                                                          |
@@ -113,8 +114,6 @@ or you can compile goful by 'go install' in goful folder. and rest things are he
 | `G`                                  | Glob recursive                                                                            |
 | `C-[` = `esc`                        | Cancel                                                                                    |
 | `q` `Q`                              | Quit                                                                                      |
-| `B`                                  | go back to  previous directory                                                            |
-| `F`                                  | go to forward directory                                                                   |
 | `y`                                  | yank(or copy) file to clipboard                                                           |
 | `p`                                  | paste yanked file to this directory (if you copy your file's PATH, you can paste it in goful too ([windows explorer: shift+rightClick+a]     [mac finder: cmd+opt+c])                                                       |
 | `P`                                  | move yanked file to this directory                                                        |
@@ -304,8 +303,30 @@ Install after edit `my/goful/main.go`
 
 * another easy way to remove
     1. open menu by "E" key and press '-' to remove
-    2. place cursor to app you want to remove. and press "Delete" key
+    2. place cursor to the app you want to remove. and press "Delete" key
     3. Done!
+
+
+### add your bookmark to "B" key, and remove it by "Delete" key
+
+* add
+    1. go to folder you want to add
+    2. open menu by "b" key and press '+' to regist
+    3. goful show where you are. 
+    4. name your app. 
+    5. regist your SHORTCUT. 
+    6. Done!
+
+* remove
+    1. open menu by "B" key and press '-' to remove
+    2. type SHORTCUT you want to remove
+    3. Done!
+
+* another easy way to remove
+    1. open menu by "B" key and press '-' to remove
+    2. place cursor to the bookmark you want to remove. and press "Delete" key
+    3. Done!
+
 
 
 
@@ -323,6 +344,7 @@ Install after edit `my/goful/main.go`
 * preview ('f3')
 * trash bin(rm, mv is to dangerous. trash bin is more safe)
 * regist your App by 'E' Key
+* regist your Bookmark by 'B' Key
 
 ### some tweaks for windows user
 

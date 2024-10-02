@@ -515,10 +515,10 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"a": func() { g.Shell(`7z a '%~D2/%~d.zip' %M`, -7) }, //zip to neighbor folder
 		"A": func() { g.Shell(`7z a '%~d.zip' %M`, -7) },      //zip to current folder
 
-		//b: func() { g.Menu("bookmark") }
-		"B":   func() { g.Workspace().Dir().GoPreviousFolder() }, //go to previous folder
-		"C-b": func() { g.Workspace().MoveFocus(-1) },            //move to previous window
-		"M-b": func() { g.MoveWorkspace(-1) },                    //move to previous tab
+		// "b": func() { g.Menu("bookmark") }
+		// "B": func() { g.Menu("myBookmark") }
+		"C-b": func() { g.Workspace().MoveFocus(-1) }, //move to previous window
+		"M-b": func() { g.MoveWorkspace(-1) },         //move to previous tab
 
 		"c": func() { g.Copy() }, //copy
 
@@ -539,32 +539,32 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 
 		"f": func() { g.Dir().Finder() }, //search file
 		"/": func() { g.Dir().Finder() }, //search file
-		"F": func() { g.Workspace().Dir().GoFowardFolder() },
+		"F": func() { //file Name copy 파일명 복사
+			myClip := util.RemoveExt(g.File().Name())
+			glippy.Set(myClip)
+			message.Info("file Name copied(파일명 복사함): " + myClip)
+		},
 
 		"g": func() { g.Glob() },    //search file in current folder
 		"G": func() { g.Globdir() }, //search file in current folder and subfolders
 
-		"h": func() { g.Dir().Chdir("..") }, //go to parent folder //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
-		//"H":
-		"i": func() { g.Dir().MoveCursor(-5) }, //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
-		"I": func() { g.Dir().MoveTop() },      //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
+		"h": func() { g.Dir().Chdir("..") },                    //go to parent folder //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
+		"H": func() { g.Workspace().Dir().GoPreviousFolder() }, //go to previous folder
+		// "i": func() { g.Dir().MoveCursor(-5) }, //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
+		// "I": func() { g.Dir().MoveTop() },      //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 
 		"j": func() { g.Dir().MoveCursor(1) }, //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
-		//"J":
+		"J": func() { g.Dir().MoveCursor(5) },
 		"k": func() { g.Dir().MoveCursor(-1) }, //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
-		"K": func() { g.Mkdir() },              //make directory
+		"K": func() { g.Dir().MoveCursor(-5) },
 		// "l":  open file with default application
-		//"L":
+		"L": func() { g.Workspace().Dir().GoFowardFolder() },
 		"m": func() { g.Move() },                                                                                               //move file
 		"M": ifElse(runtime.GOOS == "windows", func() { message.Info(`Windows doesn't need to chmod`) }, func() { g.Chmod() }), //change file permission
 		//C-M means enter. open file with default applicationmm
 
 		"n": func() { g.Touch() }, //new file
-		"N": func() { //file Name copy 파일명 복사
-			myClip := util.RemoveExt(g.File().Name())
-			glippy.Set(myClip)
-			message.Info("file Name copied(파일명 복사함): " + myClip)
-		},
+		"N": func() { g.Mkdir() }, //new folder
 		//"o":  open file with default application
 		"O": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`explorer . %&`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn(`open %D %&`) }, func() { g.Spawn(`xdg-open %D %&`) })), //open folder with file manager
 
@@ -613,8 +613,8 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"C-t": func() { g.Workspace().ReloadAll(); g.CreateWorkspace() }, //create new tab
 		"M-t": func() { g.Workspace().ReloadAll(); g.CloseWorkspace() },  //close tab
 
-		"u": func() { g.Dir().MoveCursor(5) }, //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
-		"U": func() { g.Dir().MoveBottom() },  //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
+		// "u": func() { g.Dir().MoveCursor(5) }, //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
+		// "U": func() { g.Dir().MoveBottom() },  //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 
 		//v: view menu
 		//"V":
