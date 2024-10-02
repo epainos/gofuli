@@ -10,6 +10,7 @@ import (
 	"github.com/epainos/gofuli/message"
 	"github.com/epainos/gofuli/util"
 	"github.com/epainos/gofuli/widget"
+	"github.com/f1bonacc1/glippy"
 )
 
 var menusMap = map[string][]*menuItem{}
@@ -50,17 +51,18 @@ func Remove(name string, accel string) {
 func (w *Menu) RemoveMenuInWindow() {
 	title := w.Title()
 	accel := menusMap[w.Title()][w.Cursor()].accel
-	appName := menusMap[w.Title()][w.Cursor()].label
+	nameToDel := menusMap[w.Title()][w.Cursor()].label
+	glippy.Set("menu:" + title + ":" + accel + ":" + nameToDel)
 
-	if title != "myApp" {
+	if !(title == "myApp" || title == "myBookmark") {
 		message.Errorf("Default menu cannot be removed... 기본 메뉴는 삭제할 수 없어요.")
 		return
 	} else if accel == "+" || accel == "-" {
-		message.Errorf("Default menu cannot be removed... 기본 메뉴는 삭제할 수 없어요.")
+		message.Errorf("'add', 'del' cannot be removed... 추가,삭제는 삭제할 수 없어요.")
 	} else {
 		// glippy.Set("menu:" + w.Title() + ":" + accel)
-		DelMyAppFromListFile(title, accel)
-		message.Info("삭제 완료: " + appName)
+		DelMyAppFromListFile("~/.goful/"+title, accel)
+		message.Info("삭제 완료: " + nameToDel)
 
 		Remove(title, accel)
 		w.Exit()
@@ -151,9 +153,9 @@ func (w *Menu) Disconnect() {}
 
 // DelMyAppFromListFile is a function to delete a shortcut from the myApp file.
 func DelMyAppFromListFile(path string, shortcutToDel string) {
-	if path == "" {
-		path = "~/.goful/myApp"
-	}
+	// if path == "" {
+	// 	path = "~/.goful/myApp"
+	// }
 	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDWR, 0644)
 	if err != nil {
 		fmt.Println("파일 열기 실패:", err)

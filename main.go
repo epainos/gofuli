@@ -41,7 +41,8 @@ func main() {
 	goful := app.NewGoful(state)
 	config(goful, is_tmux)
 	_ = cmdline.LoadHistory(history)
-	goful.OpenMyAppList("") // myfOpenMyAppList 메서드 호출
+	goful.OpenMyAppList("~/.goful/myApp")           // myfOpenMyAppList 메서드 호출
+	goful.OpenMyBookmarkList("~/.goful/myBookmark") // myfOpenMyBookmarkList 메서드 호출
 
 	goful.Run()
 
@@ -319,6 +320,12 @@ func config(g *app.Goful, is_tmux bool) {
 	}
 	g.AddKeymap("b", func() { g.Menu("bookmark") })
 
+	menu.Add("myBookmark",
+		"+", "add myBookmark   바로가기 추가 ", func() { g.AddMyBookmark() },
+		"-", "del myBookmark   바로가기 제거 ( DELETE key also can delete bookmark on cursor  )", func() { g.DelMyBookmark() },
+	)
+	g.AddKeymap("B", func() { g.Menu("myBookmark") })
+
 	menu.Add("editor",
 		"e", "vscodE       코드 ", func() { g.Spawn("code %f %&") },
 		"E", "Emacs client 이맥스 ", func() { g.Spawn("emacsclient -n %f %&") },
@@ -329,8 +336,8 @@ func config(g *app.Goful, is_tmux bool) {
 	g.AddKeymap("e", func() { g.Menu("editor") })
 
 	menu.Add("myApp",
-		"+", "add MyApp   사용자앱 추가 ", func() { g.AddMyAapp() },
-		"-", "del MyApp   사용자앱 제거 ( DELETE key also can delete app on cursor  )", func() { g.DelMyAapp() },
+		"+", "add MyApp   사용자앱 추가 ", func() { g.AddMyApp() },
+		"-", "del MyApp   사용자앱 제거 ( DELETE key also can delete app on cursor  )", func() { g.DelMyApp() },
 	)
 	g.AddKeymap("E", func() { g.Menu("myApp") })
 

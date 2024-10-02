@@ -578,11 +578,22 @@ func (m *globdirMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// addMyAapp add my app added by user
-func (g *Goful) AddMyAapp() {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func myfGetLastWord(filePath string) string {
+	lastIndex := strings.LastIndex(filePath, "/")
+
+	if lastIndex == -1 {
+		return filePath
+	}
+	return filePath[lastIndex+1:]
+}
+
+// addMyApp add my app added by user
+func (g *Goful) AddMyApp() {
 
 	src := ifElseSting((runtime.GOOS == "windows"), `start `, ifElseSting((runtime.GOOS == "darwin"), `open -a`, "")) + ` '` + g.File().Path() + `' ` + ` %F`
-	c := cmdline.New(&addMyAappMode{
+	c := cmdline.New(&addMyAppMode{
 		Goful:              g,
 		myShortCut:         "",
 		myAppName:          "",
@@ -593,7 +604,7 @@ func (g *Goful) AddMyAapp() {
 	g.next = c
 }
 
-type addMyAappMode struct {
+type addMyAppMode struct {
 	*Goful
 	myShortCut         string
 	myAppName          string
@@ -601,11 +612,11 @@ type addMyAappMode struct {
 	isDoneMyAppCommand bool
 }
 
-func (m *addMyAappMode) String() string { return "addMyAapp" }
-func (m *addMyAappMode) Prompt() string {
+func (m *addMyAppMode) String() string { return "addMyApp" }
+func (m *addMyAppMode) Prompt() string {
 
 	if !m.isDoneMyAppCommand {
-		return "addMyAapp 사용자앱 추가:"
+		return "addMyApp 사용자앱 추가:"
 	} else if m.myAppName == "" {
 		return "appName 앱이름: "
 	} else {
@@ -613,20 +624,19 @@ func (m *addMyAappMode) Prompt() string {
 	}
 }
 
-// func (m *addMyAappMode) Prompt() string          { return fmt.Sprintf("addMyAapp(이름변경) %s -> ", m.src) }
-func (m *addMyAappMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
-func (m *addMyAappMode) Run(c *cmdline.Cmdline) {
+func (m *addMyAppMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
+func (m *addMyAppMode) Run(c *cmdline.Cmdline) {
 	if !m.isDoneMyAppCommand {
 		m.myAppCommand = c.String()
 		m.isDoneMyAppCommand = true
-		c.SetText("")
+		c.SetText(strings.ReplaceAll(myfGetLastWord(c.String()), `'`, ``))
 	} else if m.myAppName == "" {
 		m.myAppName = c.String()
 		c.SetText("")
 	} else {
 		m.myShortCut = c.String()
 		if len(m.myShortCut) == 1 {
-			writeMyAppToFile(myMyAppFile, m.myShortCut+" <||> "+m.myAppName+" <||> "+m.myAppCommand+"\n")
+			writeMyAppToFile(myAppFile, m.myShortCut+" <||> "+m.myAppName+" <||> "+m.myAppCommand+"\n")
 			menu.Add("myApp", m.myShortCut, m.myAppName, func() { m.Spawn(m.myAppCommand) })
 			m.Workspace().ReloadAll()
 			c.Exit()
@@ -637,7 +647,7 @@ func (m *addMyAappMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-const myMyAppFile = "~/.goful/myApp"
+const myAppFile = "~/.goful/myApp"
 
 func writeMyAppToFile(path string, content string) {
 
@@ -684,8 +694,8 @@ func (g *Goful) OpenMyAppList(path string) {
 
 }
 
-// DelMyAapp delete my app added by user
-func (g *Goful) DelMyAapp() {
+// DelMyApp delete my app added by user
+func (g *Goful) DelMyApp() {
 	c := cmdline.New(&dellMyAppMode{
 		Goful:                g,
 		myShortCut:           "",
@@ -706,7 +716,7 @@ type dellMyAppMode struct {
 func (m *dellMyAppMode) String() string { return "dellMyApp" }
 func (m *dellMyAppMode) Prompt() string {
 	shortcutList := []string{""}
-	shortcutList, m.myShortCutAndAppName = loadMyShortcuts(myMyAppFile)
+	shortcutList, m.myShortCutAndAppName = loadMyShortcuts(myAppFile)
 
 	if len(shortcutList) > 10 {
 		shortcutList = shortcutList[:10]
@@ -742,7 +752,7 @@ func (m *dellMyAppMode) Run(c *cmdline.Cmdline) {
 	} else {
 		if c.String() == "Y" || c.String() == "y" || c.String() == "" {
 
-			menu.DelMyAppFromListFile(myMyAppFile, m.myShortCut)
+			menu.DelMyAppFromListFile(myAppFile, m.myShortCut)
 			message.Info("Deleted: " + m.myShortCut + " (" + m.myShortCutAndAppName[m.myShortCut] + ") ")
 			menu.Remove("myApp", m.myShortCut)
 			// m.Workspace().ReloadAll()
@@ -785,4 +795,164 @@ func loadMyShortcuts(path string) ([]string, map[string]string) {
 	}
 
 	return myShortCutList, mapForShortcutAndAppName
+}
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// addMyBookmark add my bookmart by user
+func (g *Goful) AddMyBookmark() {
+
+	src := strings.ReplaceAll(g.Dir().Path, "\\", "/")
+	c := cmdline.New(&addMyBookmarkMode{
+		Goful:                   g,
+		myShortCut:              "",
+		myBookmarkName:          "",
+		myBookmarkCommand:       src,
+		isDoneMyBookmarkCommand: false,
+	}, g)
+	c.SetText(src)
+	g.next = c
+}
+
+type addMyBookmarkMode struct {
+	*Goful
+	myShortCut              string
+	myBookmarkName          string
+	myBookmarkCommand       string
+	isDoneMyBookmarkCommand bool
+}
+
+func (m *addMyBookmarkMode) String() string { return "addMyBookmark" }
+func (m *addMyBookmarkMode) Prompt() string {
+
+	if !m.isDoneMyBookmarkCommand {
+		return "add Bookmark      바로가기 추가:"
+	} else if m.myBookmarkName == "" {
+		return "nickname Bookmark 바로가기 별명: "
+	} else {
+		return "shortCut for '" + m.myBookmarkName + "' " + m.myShortCut + " 단축키: "
+	}
+}
+
+const myBookmarkFile = "~/.goful/myBookmark"
+
+// func (m *addMyBookmarkMode) Prompt() string          { return fmt.Sprintf("addMyBookmark(이름변경) %s -> ", m.src) }
+func (m *addMyBookmarkMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
+func (m *addMyBookmarkMode) Run(c *cmdline.Cmdline) {
+	if !m.isDoneMyBookmarkCommand {
+		m.myBookmarkCommand = c.String()
+		m.isDoneMyBookmarkCommand = true
+		c.SetText(myfGetLastWord(c.String()))
+	} else if m.myBookmarkName == "" {
+		m.myBookmarkName = c.String()
+		c.SetText("")
+	} else {
+		m.myShortCut = c.String()
+		if len(m.myShortCut) == 1 {
+			writeMyAppToFile(myBookmarkFile, m.myShortCut+" <||> "+m.myBookmarkName+" <||> "+m.myBookmarkCommand+"\n")
+			menu.Add("myBookmark", m.myShortCut, m.myBookmarkName, func() { m.Dir().Chdir(m.myBookmarkCommand) })
+			m.Workspace().ReloadAll()
+			c.Exit()
+		} else {
+			m.myShortCut = ": (type one character, please)"
+			c.SetText("")
+		}
+	}
+}
+
+func (g *Goful) OpenMyBookmarkList(path string) {
+	if path == "" {
+		path = "~/.goful/myBookmark"
+	}
+
+	file, err := os.OpenFile(util.ExpandPath(path), os.O_RDONLY, os.FileMode(0644))
+	if err != nil {
+		fmt.Println("파일 열기 실패:", err)
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		items := strings.Split(line, " <||> ")
+		if len(items) == 3 {
+			menu.Add("myBookmark", items[0], items[1], func() { g.Dir().Chdir(items[2]) })
+			// fmt.Printf("항목1: %s, 항목2: %s, 항목3: %s\n", items[0], items[1], items[2])
+		} else {
+			// fmt.Println("잘못된 형식의 줄:", line)
+		}
+	}
+
+}
+
+// delMyBookmark delete my app added by user
+func (g *Goful) DelMyBookmark() {
+	c := cmdline.New(&delMyBookmarkMode{
+		Goful:                     g,
+		myShortCut:                "",
+		myShortCutAndBookmarkName: make(map[string]string),
+		isInList:                  false,
+	}, g)
+	c.SetText("")
+	g.next = c
+}
+
+type delMyBookmarkMode struct {
+	*Goful
+	myShortCut                string
+	myShortCutAndBookmarkName map[string]string
+	isInList                  bool
+}
+
+func (m *delMyBookmarkMode) String() string { return "delMyBookmark" }
+func (m *delMyBookmarkMode) Prompt() string {
+	shortcutList := []string{""}
+	shortcutList, m.myShortCutAndBookmarkName = loadMyShortcuts(myBookmarkFile)
+
+	if len(shortcutList) > 10 {
+		shortcutList = shortcutList[:10]
+		shortcutList[9] = "..."
+	}
+	src := strings.Join(shortcutList, ", ")
+	if m.myShortCut == "" {
+		return "Shortcut to Delete (지울 단축키): " + src + " : "
+		// } else if m.myShortCutAndAppName[m.myShortCut] == "" {
+		// 	return "Shortcut is NOT found. 단축키를 확인해주세요."
+	} else {
+		return "del your bookmark? '" + m.myShortCutAndBookmarkName[m.myShortCut] + "' [Y, n] : "
+	}
+}
+
+// func (m *delMyBookmarkMode) Prompt() string          { return fmt.Sprintf("delMyBookmark(이름변경) %s -> ", m.src) }
+func (m *delMyBookmarkMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
+func (m *delMyBookmarkMode) Run(c *cmdline.Cmdline) {
+	if m.myShortCutAndBookmarkName[c.String()] != "" {
+		m.isInList = true
+	}
+	if len(m.myShortCutAndBookmarkName) == 0 {
+		message.Info("No bookmark to delete...")
+		c.Exit()
+	} else if m.isInList == false && m.myShortCutAndBookmarkName[c.String()] == "" {
+		message.Errorf("Shortcut is NOT found. 단축키를 확인해주세요.")
+		// m.myShortCut = c.String()
+		c.SetText("")
+	} else if m.myShortCut == "" {
+		m.myShortCut = c.String()
+		c.SetText("y")
+
+	} else {
+		if c.String() == "Y" || c.String() == "y" || c.String() == "" {
+
+			menu.DelMyAppFromListFile(myBookmarkFile, m.myShortCut)
+			message.Info("Deleted: " + m.myShortCut + " (" + m.myShortCutAndBookmarkName[m.myShortCut] + ") ")
+			menu.Remove("myBookmark", m.myShortCut)
+			// m.Workspace().ReloadAll()
+			// m.OpenMyAppList("")
+			c.Exit()
+			// }
+		} else {
+			message.Info("canceled: " + m.myShortCut + " (" + m.myShortCutAndBookmarkName[m.myShortCut] + ") ")
+			c.Exit()
+		}
+	}
 }
