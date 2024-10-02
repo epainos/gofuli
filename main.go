@@ -409,17 +409,19 @@ func arrangeFilePathForWindows(str string) string {
 		if str == "" {
 			return `==PLEASE COPY FILE PATH BY 'shift + rightClick + a'===`
 		} else {
-			str = strings.Replace(str, `\`, `/`, -1)
+			str = strings.Replace(strings.Replace(str, `\`, `/`, -1), "\r\n", ` `, -1)
+			println(str)
 			var indices []int
 			indices = append(indices, 0)
 			for i := 1; i < len(str); i++ {
-				if str[i] == ':' { //find ':' and add index
-					indices = append(indices, i-2) //
+				if str[i] == ':' { //find ':' and add index //c:/Users 라고 하면 :을 기준으로 검색후, 앞자리 두개를 잘라오는 형태임
+					indices = append(indices, i-1) //
 				}
 			}
 			indices = append(indices, len(str))
 			returnString := ``
-			for i := 0; i < len(indices)-1; i++ { //add ' ' between strings
+			for i := 1; i < len(indices)-1; i++ { //add ' ' between strings
+				// println(str[indices[i]:indices[i+1]])
 				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
 			}
 			return strings.ReplaceAll(returnString, `''`, `'`)
