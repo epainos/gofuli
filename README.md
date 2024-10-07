@@ -306,6 +306,8 @@ Install after edit `my/goful/main.go`
     2. place cursor to the app you want to remove. and press "Delete" key
     3. Done!
 
+if you want to switch order, open ~/.goful/myApp, edit order -> save -> quit gofuli -> open gofuli 
+
 
 ### add your bookmark to "B" key, and remove it by "Delete" key
 
@@ -327,6 +329,7 @@ Install after edit `my/goful/main.go`
     2. place cursor to the bookmark you want to remove. and press "Delete" key
     3. Done!
 
+if you want to switch order, open ~/.goful/myBookmark, edit order -> save -> quit gofuli -> open gofuli 
 
 
 
