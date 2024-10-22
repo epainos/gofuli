@@ -256,7 +256,7 @@ func config(g *app.Goful, is_tmux bool) {
 
 	menu.Add("tab",
 		"t", "(C-t)   New tab          새탭        ", func() { g.CreateWorkspace(); g.MoveWorkspace(1) },
-		"T", "(M-c)   close tab        탭 닫기     ", func() { g.CloseWorkspace() },
+		"T", "(M-t)   close tab        탭 닫기     ", func() { g.CloseWorkspace() },
 		"n", "        changeTitle      탭이름 변경    ", func() { g.ChangeWorkspaceTitle() },
 		"f", "(t)     Forward tab      앞탭으로      ", func() { g.MoveWorkspace(1) },
 		"b", "(M-b)   Backward tab     뒷탭으로       ", func() { g.MoveWorkspace(-1) },
