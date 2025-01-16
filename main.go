@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"runtime"
 	"strings"
 
@@ -507,6 +508,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 	// The macro %f means expanded to a file name, for more see (spawn.go)
 
 	return widget.Keymap{
+
 		"C-[": func() { g.Workspace().ReloadAll(); g.Dir().Reset() }, // C-[ means ESC
 		"C-i": func() { g.Workspace().MoveFocus(1) },                 //C-i = tab
 		//C-m means Enter key
@@ -521,6 +523,15 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"M-b": func() { g.MoveWorkspace(-1) },         //move to previous tab
 
 		"c": func() { g.Copy() }, //copy
+
+		"C-c": func() { //file copy 파일 복사
+			myClip := strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
+			glippy.Set(myClip)
+			message.Info("Yanked file(파일 복사함)): " + myClip)
+			//윈도우에서도 사용할 수 있게 윈도우용으로 변환함
+			command := `Add-Type -AssemblyName System.Windows.Forms; $files = [regex]::Matches((Get-Clipboard -Format Text), "'([^']+)'") | ForEach-Object {$_.Groups[1].Value}; $filesCollection = New-Object System.Collections.Specialized.StringCollection; $filesCollection.AddRange($files); [System.Windows.Forms.Clipboard]::SetFileDropList($filesCollection); Write-Host $filesCollection`
+			exec.Command("powershell", "-Command", command).Run()
+		},
 
 		"C": ifElse(runtime.GOOS == "windows", func() { //Duplicate
 			g.Shell("Copy-Item -Recurse  '" + strings.ReplaceAll(strings.ReplaceAll(g.File().Name(), "[", "`["), "]", "`]") + "' '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`) // WTF?? // fileName having '[ ]' does not work with Invoke-Item.
@@ -559,8 +570,34 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"K": func() { g.Dir().MoveCursor(-5) },
 		// "l":  open file with default application
 		"L": func() { g.Workspace().Dir().GoFowardFolder() },
-		"m": func() { g.Move() },                                                                                               //move file
-		"M": ifElse(runtime.GOOS == "windows", func() { message.Info(`Windows doesn't need to chmod`) }, func() { g.Chmod() }), //change file permission
+		"m": func() { g.Move() },
+		"M": //move file 복사파일 이동함
+		ifElse(runtime.GOOS == "windows", func() {
+			value, _ := glippy.Get()
+			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
+				//g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
+				command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
+				cmd := exec.Command("powershell", "-Command", command)
+				output, _ := cmd.CombinedOutput()
+				value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
+			} else { //경로를 복사해서 붙여넣기 하는 경우
+				value = arrangeFilePathForWindows(value)
+			}
+			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
+
+			g.Dir().Reset()
+			g.Workspace().ReloadAll()
+		}, ifElse(runtime.GOOS == "darwin", func() {
+			value, _ := glippy.Get()
+			value = arrangeFilePathForMac(value)
+			g.Shell(`mv -f -v `+value+` %D`, -7)
+		}, func() {
+			value, _ := glippy.Get()
+			value = arrangeFilePathForLin(value)
+			g.Shell(`mv -f -v `+value+` %D`, -7)
+		})),
+		//move file
+		"M-m": ifElse(runtime.GOOS == "windows", func() { message.Info(`Windows doesn't need to chmod`) }, func() { g.Chmod() }), //change file permission
 		//C-M means enter. open file with default applicationmm
 
 		"n": func() { g.Touch() }, //new file
@@ -571,8 +608,18 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"p": //paste file 복사 파일 붙여넣기
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
-			value = arrangeFilePathForWindows(value)
+			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
+				//g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
+				command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
+				cmd := exec.Command("powershell", "-Command", command)
+				output, _ := cmd.CombinedOutput()
+				value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
+			} else { //경로를 복사해서 붙여넣기 하는 경우
+				value = arrangeFilePathForWindows(value)
+			}
 			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
+			g.Dir().Reset()
+			g.Workspace().ReloadAll()
 		}, ifElse(runtime.GOOS == "darwin", func() {
 			value, _ := glippy.Get()
 			value = arrangeFilePathForMac(value)
@@ -586,8 +633,18 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"P": //move file 복사파일 이동함
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
-			value = arrangeFilePathForWindows(value)
+			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
+				//g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
+				command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
+				cmd := exec.Command("powershell", "-Command", command)
+				output, _ := cmd.CombinedOutput()
+				value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
+			} else { //경로를 복사해서 붙여넣기 하는 경우
+				value = arrangeFilePathForWindows(value)
+			}
 			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
+			g.Dir().Reset()
+			g.Workspace().ReloadAll()
 		}, ifElse(runtime.GOOS == "darwin", func() {
 			value, _ := glippy.Get()
 			value = arrangeFilePathForMac(value)
@@ -616,8 +673,32 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		// "u": func() { g.Dir().MoveCursor(5) }, //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 		// "U": func() { g.Dir().MoveBottom() },  //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 
-		//v: view menu
-		//"V":
+		//"v": view menu
+		"V": //paste file 복사 파일 붙여넣기
+		ifElse(runtime.GOOS == "windows", func() {
+			value, _ := glippy.Get()
+			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
+				//g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
+				command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
+				cmd := exec.Command("powershell", "-Command", command)
+				output, _ := cmd.CombinedOutput()
+				value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
+			} else { //경로를 복사해서 붙여넣기 하는 경우
+				value = arrangeFilePathForWindows(value)
+			}
+			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
+
+			g.Dir().Reset()
+			g.Workspace().ReloadAll()
+		}, ifElse(runtime.GOOS == "darwin", func() {
+			value, _ := glippy.Get()
+			value = arrangeFilePathForMac(value)
+			g.Shell(`cp -r -v `+value+` %D`, -7)
+		}, func() {
+			value, _ := glippy.Get()
+			value = arrangeFilePathForLin(value)
+			g.Shell(`cp -r -v `+value+` %D`, -7)
+		})),
 
 		"w":   func() { g.Workspace().ReloadAll(); g.Workspace().ChdirNeighbor2This() }, //change next window to this folder
 		"W":   func() { g.Workspace().ReloadAll(); g.Workspace().ChdirNeighbor() },      // change this window to next folder
@@ -631,6 +712,10 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 			myClip := strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
 			glippy.Set(myClip)
 			message.Info("Yanked file(파일 복사함)): " + myClip)
+			//윈도우에서도 사용할 수 있게 윈도우용으로 변환함
+			command := `Add-Type -AssemblyName System.Windows.Forms; $files = [regex]::Matches((Get-Clipboard -Format Text), "'([^']+)'") | ForEach-Object {$_.Groups[1].Value}; $filesCollection = New-Object System.Collections.Specialized.StringCollection; $filesCollection.AddRange($files); [System.Windows.Forms.Clipboard]::SetFileDropList($filesCollection); Write-Host $filesCollection`
+			exec.Command("powershell", "-Command", command).Run()
+
 		},
 		"Y": func() { //Path copy 경로 복사
 			myClip := util.RemoveExt(g.File().Path())
