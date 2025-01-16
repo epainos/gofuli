@@ -575,15 +575,15 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
 			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
-				//g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
-				command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
-				cmd := exec.Command("powershell", "-Command", command)
-				output, _ := cmd.CombinedOutput()
-				value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
+				g.Shell(` copy clipboard files to here (클립보드 파일 이동하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=move $filesString /to='%~D/'"; Invoke-Expression $command  `)
+				// command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
+				// cmd := exec.Command("powershell", "-Command", command)
+				// output, _ := cmd.CombinedOutput()
+				// value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
 			} else { //경로를 복사해서 붙여넣기 하는 경우
 				value = arrangeFilePathForWindows(value)
+				g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
 			}
-			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
 
 			g.Dir().Reset()
 			g.Workspace().ReloadAll()
@@ -609,15 +609,15 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
 			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
-				//g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
-				command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
-				cmd := exec.Command("powershell", "-Command", command)
-				output, _ := cmd.CombinedOutput()
-				value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
+				g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
+				// command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
+				// cmd := exec.Command("powershell", "-Command", command)
+				// output, _ := cmd.CombinedOutput()
+				// value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
 			} else { //경로를 복사해서 붙여넣기 하는 경우
 				value = arrangeFilePathForWindows(value)
+				g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
 			}
-			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
 			g.Dir().Reset()
 			g.Workspace().ReloadAll()
 		}, ifElse(runtime.GOOS == "darwin", func() {
@@ -634,15 +634,15 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
 			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
-				//g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
-				command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
-				cmd := exec.Command("powershell", "-Command", command)
-				output, _ := cmd.CombinedOutput()
-				value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
+				g.Shell(` copy clipboard files to here (클립보드 파일 이동하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=move $filesString /to='%~D/'"; Invoke-Expression $command  `)
+				// command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
+				// cmd := exec.Command("powershell", "-Command", command)
+				// output, _ := cmd.CombinedOutput()
+				// value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
 			} else { //경로를 복사해서 붙여넣기 하는 경우
 				value = arrangeFilePathForWindows(value)
+				g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
 			}
-			g.Shell(`fcp /cmd=Move `+value+` /to='%~D/'`, -7)
 			g.Dir().Reset()
 			g.Workspace().ReloadAll()
 		}, ifElse(runtime.GOOS == "darwin", func() {
@@ -678,16 +678,15 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		ifElse(runtime.GOOS == "windows", func() {
 			value, _ := glippy.Get()
 			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
-				//g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
-				command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
-				cmd := exec.Command("powershell", "-Command", command)
-				output, _ := cmd.CombinedOutput()
-				value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
+				g.Shell(` copy clipboard files to here (클립보드 파일 복사하겠음);$files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
+				// command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
+				// cmd := exec.Command("powershell", "-Command", command)
+				// output, _ := cmd.CombinedOutput()
+				// value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
 			} else { //경로를 복사해서 붙여넣기 하는 경우
 				value = arrangeFilePathForWindows(value)
+				g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
 			}
-			g.Shell(`fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
-
 			g.Dir().Reset()
 			g.Workspace().ReloadAll()
 		}, ifElse(runtime.GOOS == "darwin", func() {
