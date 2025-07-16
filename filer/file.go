@@ -52,6 +52,7 @@ type FileStat struct {
 	display     string      // display name for draw
 	marked      bool        // marked whether
 	myColor     tcell.Style
+	isDir       bool // cached directory status
 }
 
 // ifElse 함수 정의
@@ -86,14 +87,27 @@ func NewFileStat(dir string, name string) *FileStat {
 		stat = lstat
 	}
 
+	// Normalize filename for proper display (especially for macOS NFD/NFC issues)
+	normalizedName := util.NormalizeFileName(name)
+
 	var display string
 	d := tcell.StyleDefault
 	myColor := d.Foreground(tcell.ColorGray)
-	if stat.IsDir() {
-		display = "📂 " + name //📁
+
+	// Windows에서 심볼릭 링크 처리 개선
+	isDir := stat.IsDir()
+	if runtime.GOOS == "windows" && lstat.Mode()&os.ModeSymlink != 0 {
+		// 윈도우에서 심볼릭 링크인 경우, 대상이 디렉토리인지 확인
+		if targetStat, err := os.Stat(path); err == nil {
+			isDir = targetStat.IsDir()
+		}
+	}
+
+	if isDir {
+		display = "📂 " + normalizedName //📁
 	} else {
-		display = util.RemoveExt(name)
-		ext := filepath.Ext(name)
+		display = util.RemoveExt(normalizedName)
+		ext := filepath.Ext(normalizedName)
 		//💾📙📘⚛⛯☢🧲🐬⚒🄰⚙⛭🛠🔧🧭🛜🛡🖨🕸🌐📏🎨🎧🎬🎮🎴💳🗂🗃🪧▶🦥🚯🍥⛔🐴✉📩🕹🗒🗓📄🏠⛪♿☕☀🌞🌅🌄🎴🏡🏘️🏗️🏢🏛⛏🪛🪪🔆🪙⏹⏹️🪟🆒🌞☀️⛱🌬🌬️🧰🖥💻⚓🔍🔎🔥🔨🔩
 
 		if stat.Mode().Perm()&0111 != 0 || hasExtension(ext, []string{"exe", "com", "bat", "sh", "app"}) { //exec file is treated one more metoth
@@ -145,10 +159,11 @@ func NewFileStat(dir string, name string) *FileStat {
 		FileInfo: lstat,
 		stat:     stat,
 		path:     path,
-		name:     name,
+		name:     normalizedName, // Use normalized name for display
 		display:  display,
 		marked:   false,
 		myColor:  myColor,
+		isDir:    isDir,
 	}
 }
 
@@ -164,10 +179,11 @@ func (f *FileStat) SetDisplay(name string) {
 
 // ResetDisplay resets the display name to the file name.
 func (f *FileStat) ResetDisplay() {
+	normalizedName := util.NormalizeFileName(f.name)
 	if f.stat.IsDir() {
-		f.display = f.name
+		f.display = normalizedName
 	} else {
-		f.display = util.RemoveExt(f.name)
+		f.display = util.RemoveExt(normalizedName)
 	}
 }
 
@@ -206,6 +222,11 @@ func (f *FileStat) Ext() string {
 // ext is zip?
 func (f *FileStat) IsColorful() bool {
 	return true
+}
+
+// IsDir overrides the embedded FileInfo's IsDir method to use cached directory status
+func (f *FileStat) IsDir() bool {
+	return f.isDir
 }
 
 // IsLink reports whether the symlink.
@@ -279,7 +300,7 @@ func (f *FileStat) states() string {
 		if f.stat.IsDir() {
 			ret += fmt.Sprintf("%8s", "<DIR>")
 		} else {
-			ret += fmt.Sprintf("%8s", util.FormatSize(f.stat.Size()))
+			ret += fmt.Sprintf("%8s", util.FormatSizeForPane(f.stat.Size()))
 		}
 	}
 	if statView.permission {

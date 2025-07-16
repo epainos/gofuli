@@ -72,6 +72,25 @@ func (c *Cmdline) Disconnect() { c.completion = widget.Nil() }
 
 // StartCompletion starts a completion based on the cmdline text.
 func (c *Cmdline) StartCompletion() {
+	// ~만 입력된 경우 자동으로 ~/로 보정
+	fixed := c.String()
+	// 1. 드라이브 문자:로 끝나면 \\를 붙임 (예: D: → D:\\)
+	if len(fixed) == 2 && fixed[1] == ':' {
+		fixed = fixed + "\\"
+	}
+	// 2. \\를 /로 일괄 변환
+	fixed = strings.ReplaceAll(fixed, "\\", "/")
+
+	if fixed != c.String() {
+		c.SetText(fixed)
+		c.MoveCursor(len(fixed))
+	}
+
+	if c.String() == "~" {
+		c.SetText("~/")
+		c.MoveCursor(2) // 커서를 맨 끝으로 이동
+	}
+
 	x, y := c.History.LeftTop()
 	width, height := c.History.Width(), c.History.Height()
 	comp := NewCompletion(x, y, width, height, c)
@@ -141,6 +160,20 @@ func (c *Cmdline) Input(key string) {
 			r, _ := utf8.DecodeRuneInString(key)
 			c.InsertChar(r)
 		}
+	}
+}
+
+// HandleMouseClick handles mouse click events in cmdline mode
+func (c *Cmdline) HandleMouseClick(x, y int) {
+	// 마우스 클릭이 cmdline 영역 밖에서 발생하면 ESC 효과
+	cmdlineX, cmdlineY := c.LeftTop()
+	cmdlineWidth := c.Width()
+	cmdlineHeight := c.Height()
+
+	if x < cmdlineX || x >= cmdlineX+cmdlineWidth ||
+		y < cmdlineY || y >= cmdlineY+cmdlineHeight {
+		// cmdline 영역 밖 클릭 - ESC 효과
+		c.Exit()
 	}
 }
 
@@ -337,4 +370,9 @@ func (h *History) CursorUp() {
 	} else {
 		h.cmdline.SetText(h.CurrentContent().Name())
 	}
+}
+
+// mode를 반환하는 메서드 추가
+func (c *Cmdline) Mode() Mode {
+	return c.mode
 }

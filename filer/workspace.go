@@ -81,7 +81,8 @@ func (w *Workspace) ChdirNeighbor2This() {
 	w.NextDir().Chdir(w.Dir().Path)
 }
 
-func (w *Workspace) visible(visible bool) {
+// Visible sets the workspace visibility (exported)
+func (w *Workspace) Visible(visible bool) {
 	if visible {
 		w.ReloadAll()
 	} else {

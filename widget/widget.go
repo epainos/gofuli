@@ -270,6 +270,10 @@ func Init() {
 	} else if err := s.Init(); err != nil {
 		panic(err)
 	}
+
+	// Enable mouse events
+	s.EnableMouse()
+
 	screen = s
 }
 

@@ -4,6 +4,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/epainos/gofuli/look"
 	"github.com/mattn/go-runewidth"
 )
 
@@ -289,4 +290,55 @@ func DeleteBytes(s []byte, offset, length int) []byte {
 	copy(s[offset:], s[offset+length:])
 	s = s[:len(s)-length]
 	return s
+}
+
+// TextBox가 widget.Widget 인터페이스를 구현할 수 있도록 Input 메서드 개선
+func (b *TextBox) Input(key string) {
+	// 방향키, 삭제, 엔터 등 키 처리
+	switch key {
+	case "left":
+		b.BackwardChar()
+	case "right":
+		b.ForwardChar()
+	case "home":
+		b.MoveTop()
+	case "end":
+		b.MoveBottom()
+	case "backspace":
+		b.DeleteBackwardChar()
+	case "delete":
+		b.DeleteChar()
+	case "C-u":
+		b.KillLineAll()
+	case "C-k":
+		b.KillLine()
+	case "enter", "C-m":
+		// 엔터는 상위에서 처리하므로 아무것도 하지 않음
+		return
+	default:
+		if utf8.RuneCountInString(key) == 1 {
+			r, _ := utf8.DecodeRuneInString(key)
+			b.InsertChar(r)
+		} else if utf8.RuneCountInString(key) > 1 {
+			b.InsertString(key)
+		}
+	}
+}
+
+// DrawLine draws the textbox with cursor (cmdline 스타일)
+func (b *TextBox) DrawLine() {
+	b.Clear()
+	x, y := b.LeftTop()
+	w := b.Width() - 2
+	s := b.String()
+	s = runewidth.Truncate(s, w, "")
+	if b.Cursor() >= w {
+		s = b.TextBeforeCursor()
+		s = TruncLeft(s, w, "~")
+		x = SetCells(x, y, s, look.Cmdline())
+		ShowCursor(x, y)
+	} else {
+		SetCells(x, y, s, look.Cmdline())
+		ShowCursor(x+b.Cursor(), y)
+	}
 }

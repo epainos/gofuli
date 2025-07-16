@@ -133,6 +133,10 @@ func (g *Goful) copy(dst string, src ...string) {
 	}
 	dstAbs, _ := filepath.Abs(dst)
 
+	// 디버깅: copy 함수 입력 파라미터 확인
+	// message.Infof("Copy function called - dst: %s, src: %v", dst, src)
+	// message.Infof("Copy function absolute paths - dstAbs: %s, srcAbs: %v", dstAbs, srcAbs)
+
 	g.asyncFilectrl(func() {
 		walker := g.newWalker(overwriteNo, overwriteNo, copyJob{})
 		if err := letWalk(walker, dstAbs, srcAbs...); err != nil {
@@ -217,7 +221,9 @@ func (w *walker) walk(src, dst string) error {
 		return err
 	}
 	if srcstat.IsDir() {
-		if strings.HasPrefix(dst, src) {
+		absSrc, _ := filepath.Abs(src)
+		absDst, _ := filepath.Abs(dst)
+		if absDst == absSrc || strings.HasPrefix(absDst, absSrc+string(os.PathSeparator)) {
 			return fmt.Errorf("cannot copy/move directory %s into itself %s", src, dst)
 		}
 		if err := w.dir2dir(src, dst); err != nil {
@@ -239,11 +245,12 @@ const (
 	overwriteYesAll
 	overwriteNoAll
 	overwriteCancel
-	backup
+	duplicate
+	duplicateAll
 )
 
 func (w *walker) confirm(message string) overWrite {
-	switch w.dialog(message, "y", "n", "Y", "N", "b") {
+	switch w.dialog(message, "y", "n", "Y", "N", "d", "D", "Duplicate") {
 	case "y":
 		return overwriteYes
 	case "n":
@@ -252,8 +259,12 @@ func (w *walker) confirm(message string) overWrite {
 		return overwriteYesAll
 	case "N":
 		return overwriteNoAll
-	case "b":
-		return backup
+	case "d":
+		return duplicate
+	case "D":
+		return duplicateAll
+	case "Duplicate":
+		return duplicateAll
 	default:
 		return overwriteCancel
 	}
@@ -265,20 +276,38 @@ func (w *walker) file2file(src, dst string) error {
 			return err
 		}
 	} else {
+		if w.fileConfirmed == duplicateAll {
+			var name string
+			ext := filepath.Ext(dst)
+			if ext != dst {
+				name = dst[:len(dst)-len(ext)]
+			} else {
+				name = dst
+			}
+			for {
+				name = name + "_"
+				_, err := os.Stat(name + ext)
+				if os.IsNotExist(err) {
+					break
+				}
+			}
+			copyFile(src, name+ext)
+			return nil
+		}
 		switch w.fileConfirmed {
 		case overwriteNoAll:
 			return nil
 		case overwriteYesAll:
 			break
 		default:
-			w.fileConfirmed = w.confirm(fmt.Sprintf("Overwrite? %s", filepath.Base(dst))) //w.confirm(fmt.Sprintf("Overwrite? exists %s", dst))
+			msg := fmt.Sprintf("Overwrite? %s ", filepath.Base(dst))
+			w.fileConfirmed = w.confirm(msg)
 			switch w.fileConfirmed {
 			case overwriteNo, overwriteNoAll:
 				return nil
 			case overwriteCancel:
 				return fmt.Errorf("canceled file operation")
-
-			case backup:
+			case duplicate:
 				var name string
 				ext := filepath.Ext(dst)
 				if ext != dst {
@@ -295,7 +324,24 @@ func (w *walker) file2file(src, dst string) error {
 				}
 				copyFile(src, name+ext)
 				return nil
-
+			case duplicateAll:
+				w.fileConfirmed = duplicateAll
+				var name string
+				ext := filepath.Ext(dst)
+				if ext != dst {
+					name = dst[:len(dst)-len(ext)]
+				} else {
+					name = dst
+				}
+				for {
+					name = name + "_"
+					_, err := os.Stat(name + ext)
+					if os.IsNotExist(err) {
+						break
+					}
+				}
+				copyFile(src, name+ext)
+				return nil
 			}
 		}
 	}
@@ -578,7 +624,7 @@ func letCopy(srcfile, dstfile *os.File) error {
 	quit := make(chan bool)
 	defer close(quit)
 	go func() { // drawing progress
-		ticker := time.NewTicker(50 * time.Millisecond)
+		ticker := time.NewTicker(1000 * time.Millisecond) // 1 second. 원래 50이었음
 		defer ticker.Stop()
 		for {
 			select {
@@ -597,7 +643,8 @@ func letCopy(srcfile, dstfile *os.File) error {
 	}
 	progress.StartTask(srcstat)
 	defer progress.FinishTask()
-	buf := make([]byte, 4096)
+	buf := make([]byte, 1024*1024) // 1MB buffer size
+	//buf := make([]byte, 4096) // 4KB buffer size
 	for {
 		n, err := srcfile.Read(buf)
 		if err != nil && err != io.EOF {

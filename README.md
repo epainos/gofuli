@@ -33,7 +33,8 @@ See [releases](https://github.com/epainos/gofuli/releases) or 'bin' folder
     ...
     $ goful
 
-### users for Linux 
+### users for Linux
+
 Linux user need to install gnome-terminal for shell and gnoem-sushi for preview, trash for safe delete and vim
 
     sudo apt install gnome-terminal
@@ -41,93 +42,90 @@ Linux user need to install gnome-terminal for shell and gnoem-sushi for preview,
     sudo apt install trash-cli
     sudo apt install vim
 
-
-### users for Windows  
+### users for Windows
 
 1. in 'bin' folder, unzip 'windowsExe.zip' to c:\windows\system32 folder.
 2. install quickLook for preview https://github.com/QL-Win/QuickLook/releases
 
 or you can compile goful by 'go install' in goful folder. and rest things are here. you can download it by yourself.
+
 * 7z: https://www.7-zip.org/download.html
 * fcp : https://forest.watch.impress.co.jp/library/software/fastcopy/download_11574.html
-* recycle: https://github.com/Zigatronz/Windows-recycle-bin-CLI-for-CMD 
+* recycle: https://github.com/Zigatronz/Windows-recycle-bin-CLI-for-CMD
 * quickLook: https://github.com/QL-Win/QuickLook/releases
-
-
-
 
 ## Usage
 
-| key                                  | function                                                                                  |
-| ------------------------------------ | ----------------------------------------------------------------------------------------- |
-| `down` `j`                           | Move cursor down                                                                          |
-| `up` `k`                             | Move cursor up                                                                            |
-| `J`                                  | Move cursor 5row down                                                                     |
-| `K`                                  | Move cursor 5row up                                                                       |
-| `home` `^` `I`                       | Move cursor top                                                                           |
-| `end` `$` `U`                        | Move cursor bottom                                                                        |
-| `pgdn`                               | Page down                                                                                 |
-| `pgup`                               | Page up                                                                                   |
-| `left` `h` `bakcspace`               | Move cursor left  = ( Change to upper directory  )                                        |
-| `C-m` = `enter` `l` `right`          | open directory or file on cursor                                                          |
-| `H`                                  | go back to  previous directory                                                            |
-| `L`                                  | go to forward directory                                                                   |
-| `o`                                  | open every marked directorys and files                                                    |
-| `~`                                  | Change to home directory                                                                  |
-| `\`                                  | Change to root directory                                                                  |
-| `w`                                  | Change to neighbor directory to this one                                                  |
-| `W`                                  | Change to this directory to neighbor's                                                    |
-| `C-w`                                | Create directory window                                                                   |
-| `M-w`                                | Close directory window                                                                    |
-| `tab`                                | Move next window                                                                          |
-| `C-b`                                | Move previous window                                                                      |
-| `C-t`                                | Create workspace                                                                          |
-| `M-t`                                | Close workspace                                                                           |
-| `t`                                  | change to next tab                                                                        |
-| `T`                                  | open tab menu                                                                             |
-| `space`                              | Toggle mark                                                                               |
-| `                                    | Invert mark                                                                               |
-| `f3` `C-space`                       | preview (Mac have to change or uncheck default keyboard short cut C-Space) (Windows should install QuickLook https://github.com/QL-Win/QuickLook/releases) (Linux is not ready yet)                       |
-| `C-r`  `'`                           | refresh screen                                                                            |
-| `s`                                  | Sort                                                                                      |
-| `v`                                  | View                                                                                      |
-| `b`                                  | defult Bookmark                                                                                  |
-| `B`                                  | custom Bookmark                                                                                  |
-| `e`                                  | open eitor... app                                                                            |
-| `E`                                  | open custom app                                                                             |
-| `x`                                  | open basic Command menu                                                                   |
-| `X`                                  | open External command menu                                                                |
-| `f` `/`                              | Find                                                                                      |
-| `;`                                  | Shell                                                                                     |
-| `:`                                  | Shell suspend                                                                             |
-| `n`                                  | Make new file                                                                             |
-| `r` `f2` `Xr`                        | Rename                                                                                    |
-| `R`                                  | Bulk rename by regexp                                                                     |
-| `c` `f5`                             | Copy to neightbor window                                                                  |
-| `C`                                  | duplicate                                                                                 |
-| `m` `f6` `Xm`                        | Move files to neightbor window                                                                  |
-| `N` `f7` `Xk`                        | Make new directory(f7 make dir by file name)                                              |
-| `d` `f8`                             | Move files/folders to Recyle Bin                                                          |
-| `delete`                             | Remove files/folders permanently.                                                         |
-| `D`                                  | Change directory                                                                          |
-| `g`                                  | Glob                                                                                      |
-| `G`                                  | Glob recursive                                                                            |
-| `C-[` = `esc`                        | Cancel                                                                                    |
-| `q` `Q`                              | Quit                                                                                      |
-| `y`                                  | yank(or copy) file to clipboard                                                           |
-| `p`                                  | paste yanked file to this directory (if you copy your file's PATH, you can paste it in goful too ([windows explorer: shift+rightClick+a]     [mac finder: cmd+opt+c])                                                       |
-| `P`                                  | move yanked file to this directory                                                        |
-| `Y`                                  | copy file(or directory) path to clipboard                                                 |
-| `N`                                  | copy file(or directory) name only to clipboard                                            |
-| `O`                                  | open this directory in finder, explorer...                                                |
-| `a`                                  | zip marked files, dirs to neighbor dir                                                    |
-| `A`                                  | zip marked files, dirs to this dir                                                        |
-| `z`                                  | unzip file to neighbor dir                                                                |
-| `Z`                                  | unzip file go this dir                                                                    |
+| key                                 | function                                                                                                                                                                            |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `down` `j`                      | Move cursor down                                                                                                                                                                    |
+| `up` `k`                        | Move cursor up                                                                                                                                                                      |
+| `J`                               | Move cursor 5row down                                                                                                                                                               |
+| `K`                               | Move cursor 5row up                                                                                                                                                                 |
+| `home` `^` `I`                | Move cursor top                                                                                                                                                                     |
+| `end` `$` `U`                 | Move cursor bottom                                                                                                                                                                  |
+| `pgdn`                            | Page down                                                                                                                                                                           |
+| `pgup`                            | Page up                                                                                                                                                                             |
+| `left` `h` `bakcspace`        | Move cursor left  = ( Change to upper directory  )                                                                                                                                  |
+| `C-m` = `enter` `l` `right` | open directory or file on cursor                                                                                                                                                    |
+| `H`                               | go back to  previous directory                                                                                                                                                      |
+| `L`                               | go to forward directory                                                                                                                                                             |
+| `o`                               | open every marked directorys and files                                                                                                                                              |
+| `~`                               | Change to home directory                                                                                                                                                            |
+| `\`                               | Change to root directory                                                                                                                                                            |
+| `w`                               | Change to neighbor directory to this one                                                                                                                                            |
+| `W`                               | Change to this directory to neighbor's                                                                                                                                              |
+| `C-w`                             | Create directory window                                                                                                                                                             |
+| `M-w`                             | Close directory window                                                                                                                                                              |
+| `tab`                             | Move next window                                                                                                                                                                    |
+| `C-b`                             | Move previous window                                                                                                                                                                |
+| `C-t`                             | Create workspace                                                                                                                                                                    |
+| `M-t`                             | Close workspace                                                                                                                                                                     |
+| `t`                               | change to next tab                                                                                                                                                                  |
+| `T`                               | open tab menu                                                                                                                                                                       |
+| `space`                           | Toggle mark                                                                                                                                                                         |
+| `                                   | Invert mark                                                                                                                                                                         |
+| `f3` `C-space`                  | preview (Mac have to change or uncheck default keyboard short cut C-Space) (Windows should install QuickLook https://github.com/QL-Win/QuickLook/releases) (Linux is not ready yet) |
+| `C-r`  `'`                      | refresh screen                                                                                                                                                                      |
+| `s`                               | Sort                                                                                                                                                                                |
+| `v`                               | View                                                                                                                                                                                |
+| `b`                               | defult Bookmark                                                                                                                                                                     |
+| `B`                               | custom Bookmark                                                                                                                                                                     |
+| `e`                               | open eitor... app                                                                                                                                                                   |
+| `E`                               | open custom app                                                                                                                                                                     |
+| `x`                               | open basic Command menu                                                                                                                                                             |
+| `X`                               | open External command menu                                                                                                                                                          |
+| `f` `/`                         | Find                                                                                                                                                                                |
+| `;`                               | Shell                                                                                                                                                                               |
+| `:`                               | Shell suspend                                                                                                                                                                       |
+| `n`                               | Make new file                                                                                                                                                                       |
+| `r` `f2` `Xr`                 | Rename                                                                                                                                                                              |
+| `R`                               | Bulk rename by regexp                                                                                                                                                               |
+| `c` `f5`                        | Copy to neightbor window                                                                                                                                                            |
+| `C`                               | duplicate                                                                                                                                                                           |
+| `m` `f6` `Xm`                 | Move files to neightbor window                                                                                                                                                      |
+| `N` `f7` `Xk`                 | Make new directory(f7 make dir by file name)                                                                                                                                        |
+| `d` `f8`                        | Move files/folders to Recyle Bin                                                                                                                                                    |
+| `delete`                          | Remove files/folders permanently.                                                                                                                                                   |
+| `D`                               | Change directory                                                                                                                                                                    |
+| `g`                               | Glob                                                                                                                                                                                |
+| `G`                               | Glob recursive                                                                                                                                                                      |
+| `C-[` = `esc`                   | Cancel                                                                                                                                                                              |
+| `q` `Q`                         | Quit                                                                                                                                                                                |
+| `y`                               | yank(or copy) file to clipboard                                                                                                                                                     |
+| `p`                               | paste yanked file to this directory (if you copy your file's PATH, you can paste it in goful too ([windows explorer: shift+rightClick+a]     [mac finder: cmd+opt+c])               |
+| `P`                               | move yanked file to this directory                                                                                                                                                  |
+| `Y`                               | copy file(or directory) path to clipboard                                                                                                                                           |
+| `N`                               | copy file(or directory) name only to clipboard                                                                                                                                      |
+| `O`                               | open this directory in finder, explorer...                                                                                                                                          |
+| `a`                               | zip marked files, dirs to neighbor dir                                                                                                                                              |
+| `A`                               | zip marked files, dirs to this dir                                                                                                                                                  |
+| `z`                               | unzip file to neighbor dir                                                                                                                                                          |
+| `Z`                               | unzip file go this dir                                                                                                                                                              |
 
 **f2, f5, f6, f7, f8 do External command(rename, copy, move, mkdir, remove)
 external command is more fast and comfortable in some cases. but 'refresh screen' is needed because goful doesn't know it has been finished.
-(default copy and move command shows the Progress bar, and refresh view after it. so default copy/move command is good for small size files.) 
+(default copy and move command shows the Progress bar, and refresh view after it. so default copy/move command is good for small size files.)
 
 For more see [main.go](main.go)
 
@@ -200,7 +198,7 @@ Hit reset key (default `C-[` = `Esc`) to clear filtering.
 Glob is matched by wild card pattern in the current directory (default `g` and
 recursive `G`).
 
-Hit reset key (default`C-[` = `Esc`) to clear glob patterns.
+Hit reset key (default `C-[` = `Esc`) to clear glob patterns.
 
 ![demo_glob](.github/demo_glob.gif)
 
@@ -232,17 +230,16 @@ If goful is running in tmux, it creates a new window and executes the command.
 
 | macro           | expanded string                                                            |
 | --------------- | -------------------------------------------------------------------------- |
-| `%f` `%F`   | File name/path on cursor                                                       |
-| `%x` `%X`   | File name/path without extension on cursor                                     |
-| `%e`        | File extension only on cursor                                                  |
-| `%m` `%M`   | Marked file names/paths joined by spaces                                       |
-| `%c` `%C`   | Marked file names/paths joined by spaces + singleQuore + comma                 |
-| `%d` `%D`   | Directory name/path on cursor                                                  |
-| `%d2` `%D2` | Neighbor directory name/path                                                   |
-| `%~f` ...   | Expand by non quote. that means every macro will be quoted by ' without ~.     |
-| `%T` `%t`   | yearMonthDay, hourMinuteSecond                                                 |
-| `%&`        | Flag to run command in background                                              |
-
+| `%f` `%F`   | File name/path on cursor                                                   |
+| `%x` `%X`   | File name/path without extension on cursor                                 |
+| `%e`          | File extension only on cursor                                              |
+| `%m` `%M`   | Marked file names/paths joined by spaces                                   |
+| `%c` `%C`   | Marked file names/paths joined by spaces + singleQuore + comma             |
+| `%d` `%D`   | Directory name/path on cursor                                              |
+| `%d2` `%D2` | Neighbor directory name/path                                               |
+| `%~f` ...     | Expand by non quote. that means every macro will be quoted by ' without ~. |
+| `%T` `%t`   | yearMonthDay, hourMinuteSecond                                             |
+| `%&`          | Flag to run command in background                                          |
 
 The macro is useful if do not want to specify a file name when run the shell.
 
@@ -286,52 +283,51 @@ Install after edit `my/goful/main.go`
 ### add your app to "E" key, and remove it by "Delete" key
 
 * add
-    1. place cursor to app you want
-    2. open menu by "E" key and press '+' to regist
-    3. goful show defult command
-        ex. excel in windows "start excel '%~f'"
-        ex. safari in OSX "open safari %f"
-        if multi file input is supported by the app, you've better to change %f to %m
-    4. name your app. 
-    5. regist your SHORTCUT. 
-    6. Done!
 
+  1. place cursor to app you want
+  2. open menu by "E" key and press '+' to regist
+  3. goful show defult command
+     ex. excel in windows "start excel '%~f'"
+     ex. safari in OSX "open safari %f"
+     if multi file input is supported by the app, you've better to change %f to %m
+  4. name your app.
+  5. regist your SHORTCUT.
+  6. Done!
 * remove
-    1. open menu by "E" key and press '-' to remove
-    2. type SHORTCUT you want to remove
-    3. Done!
 
+  1. open menu by "E" key and press '-' to remove
+  2. type SHORTCUT you want to remove
+  3. Done!
 * another easy way to remove
-    1. open menu by "E" key and press '-' to remove
-    2. place cursor to the app you want to remove. and press "Delete" key
-    3. Done!
 
-if you want to switch order, open ~/.goful/myApp, edit order -> save -> quit gofuli -> open gofuli 
+  1. open menu by "E" key and press '-' to remove
+  2. place cursor to the app you want to remove. and press "Delete" key
+  3. Done!
 
+if you want to switch order, open ~/.goful/myApp, edit order -> save -> quit gofuli -> open gofuli
 
 ### add your bookmark to "B" key, and remove it by "Delete" key
 
 * add
-    1. go to folder you want to add
-    2. open menu by "b" key and press '+' to regist
-    3. goful show where you are. 
-    4. name your app. 
-    5. regist your SHORTCUT. 
-    6. Done!
 
+  1. go to folder you want to add
+  2. open menu by "b" key and press '+' to regist
+  3. goful show where you are.
+  4. name your app.
+  5. regist your SHORTCUT.
+  6. Done!
 * remove
-    1. open menu by "B" key and press '-' to remove
-    2. type SHORTCUT you want to remove
-    3. Done!
 
+  1. open menu by "B" key and press '-' to remove
+  2. type SHORTCUT you want to remove
+  3. Done!
 * another easy way to remove
-    1. open menu by "B" key and press '-' to remove
-    2. place cursor to the bookmark you want to remove. and press "Delete" key
-    3. Done!
 
-if you want to switch order, open ~/.goful/myBookmark, edit order -> save -> quit gofuli -> open gofuli 
+  1. open menu by "B" key and press '-' to remove
+  2. place cursor to the bookmark you want to remove. and press "Delete" key
+  3. Done!
 
-
+if you want to switch order, open ~/.goful/myBookmark, edit order -> save -> quit gofuli -> open gofuli
 
 ### Contributing
 
@@ -341,7 +337,7 @@ if you want to switch order, open ~/.goful/myBookmark, edit order -> save -> qui
 
 ### add fuction
 
-* set icon + color by extension 
+* set icon + color by extension
 * History. so you can go back to previous folder you've been ('B' = go back,'F' = go forward)
 * yank('y') and paste('p') files/dirs
 * preview ('f3')
@@ -354,9 +350,6 @@ if you want to switch order, open ~/.goful/myBookmark, edit order -> save -> qui
 * quote symbol changed to ' not  ". windows have troubles using ".
 * windows cmd changed to powershell.
 * \ changed to /  ('c:\users\bilbo' -> c:/users/bilbo').
-* 7z is main archive manager. zip, rar, tar, gz... rfiles are compressed and unzipped with 7z. 
-* fastcopy(fcp) is copy manager. f5, f6 or External command use fcp. default copy or move is slower than fcp. (default copy and move command shows the Progress bar, and refresh view after it. so default copy/move command is good for small size files.) 
+* 7z is main archive manager. zip, rar, tar, gz... rfiles are compressed and unzipped with 7z.
+* fastcopy(fcp) is copy manager. f5, f6 or External command use fcp. default copy or move is slower than fcp. (default copy and move command shows the Progress bar, and refresh view after it. so default copy/move command is good for small size files.)
 * recycle.exe moves files(and folders) to recycle bin for safely delete. 'delete' key removes files(and folder) permanently.
-
-
-

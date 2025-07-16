@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -85,7 +87,7 @@ func config(g *app.Goful, is_tmux bool) {
 	opener := "xdg-open %m %&"
 	switch runtime.GOOS {
 	case "windows":
-		opener = "Invoke-Item  %c %&" //windows // open selected files // fileName having '[ ]' does not work with Invoke-Item.
+		opener = "Invoke-Item -LiteralPath %F %&" //windows // open selected files with full path
 		// opener = "explorer '%~f' %&" //windows //open olny one file
 	case "darwin":
 		opener = "open %m %&"
@@ -212,7 +214,7 @@ func config(g *app.Goful, is_tmux bool) {
 		"c", "(c) copy            복사        ", func() { g.Copy() },
 		"m", "(m) move            이동        ", func() { g.Move() },
 		"d", "(delete)            삭제      ", func() { g.Remove() },
-		"k", "(K) mkdir           폴더생성       ", func() { g.Mkdir() },
+		"k", "(K) make dir        폴더생성       ", func() { g.Mkdir() },
 		"n", "(n) newfile         파일생성     ", func() { g.Touch() },
 		"M", "(M) chmod           권한수정       ", func() { g.Chmod() },
 		"r", "(r) rename          이름변경      ", func() { g.Rename() },
@@ -224,35 +226,48 @@ func config(g *app.Goful, is_tmux bool) {
 		"f", "(F) go forward dir  폴더 앞으로 가기", func() { g.Dir().GoFowardFolder() },
 	)
 	g.AddKeymap("x", func() { g.Menu("command") })
+	menu.Add("external-command",
+		"r", "(f2) (rename) %f      이름변경", func() { g.Rename2() },
+		"R", "(R)  bulk rename      이름 일괄 변경 ", func() { g.BulkRename() },
+		"c", "(f5) copy %m to %D2   복사", func() { g.Copy2() },
+		"m", "(f6) move %m to %D2   이동", func() { g.Move2() },
+		"k", "(f7) make directory   새폴더", func() { g.Mkdir2() },
+		"d", "(f8) del /s %M        삭제", func() { g.Remove2() },
+		// "D", "rd /s /q %~m     폴더 삭제", func() { g.Shell("rd /s /q %~m") },
+		"n", "(n)  create newfile   새파일", func() { g.Shell("copy nul ") },
+		"M", "(m)  change mode %m   권한변경", ifElse(runtime.GOOS == "windows", func() { message.Info("Windows doesn't need to CHMOD (윈도우는 권한설정 불필요)") }, func() { g.Chmod() }), //change file permission
 
-	if runtime.GOOS == "windows" {
-		menu.Add("external-command",
-			"c", "(f5) copy %m to %D2   복사", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell(`fcp /cmd=diff '%~F' /to='%~D2'`) },
-			"m", "(f6) move %m to %D2   이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }),
-			"k", "(f7) make directory   새폴더", ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'./` + util.RemoveExt(g.File().Name()) + `'`) }),
-			"d", "(f8) del /s %M        삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv -f -v %M ~/.local/share/Trash`, -7) })),
-			// "D", "rd /s /q %~m     폴더 삭제", func() { g.Shell("rd /s /q %~m") },
-			"n", "(n)  create newfile   새파일", func() { g.Shell("copy nul ") },
-			"r", "(r)  move (rename) %f 이름변경", ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
-			"R", "(R)  bulk rename      이름 일괄 변경 ", func() { g.BulkRename() },
-			"w", "     where . *        찾기", func() { g.Shell("where . *") },
-			// "A", "archives menu     ", func() { g.Menu("archive") },
-		)
-	} else {
-		menu.Add("external-command",
-			"c", "(f5) copy %m to %D2      복사", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=force_copy %M /to='%~D2/'`, -7) }, func() { g.Shell(`cp -r -v %M %D2`, -7) }), //func() { g.Shell("cp -vai %m %D2") },
-			"m", "(f6) move %m to %D2      이동", ifElse(runtime.GOOS == "windows", func() { g.Shell(`fcp /cmd=move %M /to='%~D2/'`, -7) }, func() { g.Shell(`mv -f -v %M %D2`, -7) }), //func() { g.Shell("mv -vi %m %D2") },
-			"k", "(f7) make directory      새폴더", ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'./` + util.RemoveExt(g.File().Name()) + `'`) }),
-			"D", "(f8) remove %m files     삭제", ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv -f -v %M ~/.local/share/Trash`, -7) })),
-			"n", "(n)  create newfile      새파일", func() { g.Shell("touch './" + g.File().Name() + `'`) },
-			"T", "     time copy %f to %m  시간복사", func() { g.Shell("touch -r %f %m") },
-			"M", "(m)  change mode %m      권한변경", func() { g.Shell("chmod 644 %m", -3) },
-			"r", "(r)  move (rename) %f    이름변경", ifElse(runtime.GOOS == "windows", func() { g.Shell("move %F './" + g.File().Name() + `'`) }, func() { g.Shell("mv -vi %f '" + g.File().Name() + `'`) }),
-			"R", "(R)  bulk rename %m      이름변경(대량)", func() { g.Shell(`rename -v "s///" %m`, -6) },
-			"f", "(f)  find . -name        찾기", func() { g.Shell(`find . -name "*"`, -1) },
-			// "A", "archives menu     ", func() { g.Menu("archive") },
-		)
-	}
+		"Z", "(Z) zip to here       압축파일관련 메뉴", func() { g.ZipToHere() }, //add file to archive
+		"z", "(z) zip to other      압축파일관련 메뉴", func() { g.ZipToOtherPane() }, //add file to archive
+		"A", "(A) unzip to here     압축파일관련 메뉴", func() { g.UnZipToHere() }, //unzip file to here
+		"a", "(a) unzip to other    압축파일관련 메뉴", func() { g.UnzipToOtherPane() }, //unzip file to other
+
+		"y", "(y) copy to clipboard 클립보드에 파일 복사", func() {
+			if runtime.GOOS == "windows" {
+				myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
+				glippy.Set(myClip)
+				message.Info("Files copied to clipboard (클립보드 복사): " + myClip)
+				command := `Add-Type -AssemblyName System.Windows.Forms; $filePaths = [regex]::Matches((Get-Clipboard), '\"(.*?)\"') | ForEach-Object { $_.Groups[1].Value }; if ($filePaths.Count -gt 0) { $stringCollection = New-Object System.Collections.Specialized.StringCollection; $stringCollection.AddRange($filePaths); [System.Windows.Forms.Clipboard]::SetFileDropList($stringCollection) }`
+				exec.Command("powershell", "-Command", command).Run()
+			} else if runtime.GOOS == "darwin" {
+				filePaths := g.Dir().MarkfilePaths()
+				if err := copyFilesToMacClipboard(filePaths); err != nil {
+					message.Info("클립보드 복사 실패: " + err.Error())
+				} else {
+					message.Info(fmt.Sprintf("✅ %d개 파일이 클립보드에 복사되었습니다! (Cmd+V로 붙여넣기)", len(filePaths)))
+				}
+			} else {
+				myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
+				glippy.Set(myClip)
+				message.Info("Files copied to clipboard (클립보드 복사): " + myClip)
+			}
+		},
+
+		"p", "(p) paste from clipboard 클립보드에서 파일 붙여넣기", func() { g.PasteCopy() },
+
+		"P", "(P) move from clipboard 클립보드에서 파일 이동", func() { g.PasteMove() },
+	)
+
 	g.AddKeymap("X", func() { g.Menu("external-command") })
 
 	menu.Add("tab",
@@ -330,9 +345,9 @@ func config(g *app.Goful, is_tmux bool) {
 	menu.Add("editor",
 		"e", "vscodE       코드 ", func() { g.Spawn("code %f %&") },
 		"E", "Emacs client 이맥스 ", func() { g.Spawn("emacsclient -n %f %&") },
-		"v", "Vim          빔 ", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`gvim '"%~F"'`) }, func() { g.Spawn("vim %f") }),
+		"c", "cursor       커서 ", func() { g.Spawn("cursor %f %&") },
 		"x", "eXcel        엑셀", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Microsoft Office/root/Office16/excel.exe' '"%~F"'`) }, func() { g.Spawn(`open -a "Microsoft Excel"  %f %&`) }),
-		"c", "Chrome       크롬", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Google/Chrome/Application/chrome' '"%~F"'`) }, func() { g.Spawn(`open -a "Google Chrome" %f %&`) }),
+		"C", "Chrome       크롬", ifElse(runtime.GOOS == "windows", func() { g.Spawn(`start 'C:/Program Files/Google/Chrome/Application/chrome' '"%~F"'`) }, func() { g.Spawn(`open -a "Google Chrome" %f %&`) }),
 	)
 	g.AddKeymap("e", func() { g.Menu("editor") })
 
@@ -360,14 +375,14 @@ func config(g *app.Goful, is_tmux bool) {
 		".dir":  func() { g.Dir().EnterDir(); g.Workspace().ReloadAll() },
 		".exec": func() { g.Shell(" ./" + g.File().Name()) },
 
-		".zip": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) },
-		".tar": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvf %f -C %D`) },
-		".gz":  func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfz %f -C %D`) },
-		".tgz": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfz %f -C %D`) },
-		".bz2": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfj %f -C %D`) },
-		".xz":  func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfJ %f -C %D`) },
-		".txz": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`tar xvfJ %f -C %D`) },
-		".rar": func() { g.Shell(`7z x '%~F' -o'%~D/%~x'`) }, //func() { g.Shell(`unrar x %f -C %D`) },
+		".zip": func() { g.UnZipToHere() },
+		".tar": func() { g.UnZipToHere() },
+		".gz":  func() { g.UnZipToHere() },
+		".tgz": func() { g.UnZipToHere() },
+		".bz2": func() { g.UnZipToHere() },
+		".xz":  func() { g.UnZipToHere() },
+		".txz": func() { g.UnZipToHere() },
+		".rar": func() { g.UnZipToHere() },
 
 		".go": func() { g.Shell(`go run %f`) },
 		".py": func() { g.Shell(`python %f`) },
@@ -406,116 +421,52 @@ func ifElse(condition bool, trueVal func(), falseVal func()) func() {
 	return falseVal
 }
 
-func arrangeFilePathForWindows(str string) string {
-	if strings.Contains(str, `"`) || strings.Contains(str, `'`) { //case for copied file path.
-		//"C:\Windows"
-		//"C:\Users"
-		//      -> 'C:/Windows' 'C:/Users'
-		return strings.Replace(strings.Replace(strings.Replace(str, "\r\n", ` `, -1), `\`, `/`, -1), `"`, `'`, -1)
-	} else { //case for copied file
-		// c:\Users c:\Windows -> 'c:/Users' 'c:/Windows'
-		if str == "" {
-			return `==PLEASE COPY FILE PATH BY 'shift + rightClick + a'===`
-		} else {
-			str = strings.Replace(strings.Replace(str, `\`, `/`, -1), "\r\n", ` `, -1)
-			println(str)
-			var indices []int
-			indices = append(indices, 0)
-			for i := 1; i < len(str); i++ {
-				if str[i] == ':' { //find ':' and add index //c:/Users 라고 하면 :을 기준으로 검색후, 앞자리 두개를 잘라오는 형태임
-					indices = append(indices, i-1) //
-				}
-			}
-			indices = append(indices, len(str))
-			returnString := ``
-			for i := 1; i < len(indices)-1; i++ { //add ' ' between strings
-				// println(str[indices[i]:indices[i+1]])
-				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
-			}
-			return strings.ReplaceAll(returnString, `''`, `'`)
+// Finder 클립보드에 파일 객체로 복사하는 함수 (macOS 전용)
+func copyFilesToFinderClipboard(paths []string) error {
+	var sb strings.Builder
+	sb.WriteString("set theFiles to {")
+	for i, p := range paths {
+		if i > 0 {
+			sb.WriteString(", ")
 		}
+		sb.WriteString("\"" + p + "\"")
 	}
+	sb.WriteString("}\n")
+	sb.WriteString("set theAliasList to {}\n")
+	sb.WriteString("repeat with aFile in theFiles\n")
+	sb.WriteString("    set end of theAliasList to (POSIX file aFile) as alias\n")
+	sb.WriteString("end repeat\n")
+	sb.WriteString("tell application \"Finder\"\n")
+	sb.WriteString("    set the clipboard to theAliasList\n")
+	sb.WriteString("end tell\n")
+
+	script := sb.String()
+	cmd := exec.Command("osascript", "-e", script)
+	return cmd.Run()
 }
-
-func arrangeFilePathForMac(str string) string {
-	//case for copied file path.
-	// 	/Users
-	// /System
-	// /Applications -> '/Users' '/System' '/Applications'
-	if strings.Contains(str, "\n") {
-		return strings.ReplaceAll(`'`+strings.Replace(str, "\n", `' '`, -1)+`'`, `''`, `'`)
-	} else {
-		//case for copied file
-		// /Users /System /Applications -> '/Users' '/System' '/Applications'
-		if str == "" {
-			return `==PLEASE COPY FILE PATH BY 'cmd + opt + c' in finder===`
-		} else {
-			var indices []int
-
-			indices = append(indices, 0)
-			for i := 1; i < len(str); i++ {
-				if str[i-1] == ' ' && str[i] == '/' { //find ':' and add index
-					indices = append(indices, i-1) //
-				}
-			}
-			indices = append(indices, len(str))
-
-			returnString := ""
-			for i := 0; i < len(indices)-1; i++ { //add ' ' between strings
-				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
-			}
-			return strings.ReplaceAll(returnString, `''`, `'`)
-		}
-	}
-}
-
-func arrangeFilePathForLin(str string) string {
-	//case for copied file path.
-	// 	/Users
-	// /System
-	// /Applications -> '/Users' '/System' '/Applications'
-	if strings.Contains(str, "\n") {
-		return strings.ReplaceAll(`'`+strings.Replace(str, "\n", `' '`, -1)+`'`, `''`, `'`)
-	} else {
-		//case for copied file
-		// /Users /System /Applications -> '/Users' '/System' '/Applications'
-		if str == "" {
-			return `===your path is EMPTY ===`
-		} else {
-			var indices []int
-
-			indices = append(indices, 0)
-			for i := 1; i < len(str); i++ {
-				if str[i-1] == ' ' && str[i] == '/' { //find ':' and add index
-					indices = append(indices, i-1) //
-				}
-			}
-			indices = append(indices, len(str))
-
-			returnString := ""
-			for i := 0; i < len(indices)-1; i++ { //add ' ' between strings
-				returnString += `'` + strings.TrimSpace(str[indices[i]:indices[i+1]]) + `' `
-			}
-			return strings.ReplaceAll(returnString, `''`, `'`)
-		}
-	}
-}
-
-// Widget keymap functions.
 
 func filerKeymap(g *app.Goful) widget.Keymap {
 	// Setup open command for C-m (when the enter key is pressed)
 	// The macro %f means expanded to a file name, for more see (spawn.go)
+	opener := "xdg-open %m %&"
+	switch runtime.GOOS {
+	case "windows":
+		opener = "Invoke-Item -LiteralPath  %F %&"
+	case "darwin":
+		opener = "open %m %&"
+	}
 
 	return widget.Keymap{
 
 		"C-[": func() { g.Workspace().ReloadAll(); g.Dir().Reset() }, // C-[ means ESC
 		"C-i": func() { g.Workspace().MoveFocus(1) },                 //C-i = tab
 		//C-m means Enter key
-		//C means Ctrl key, M means Meta key (Alt key)
+		//Cmeans Ctrl key, M means Meta key (Alt key)
 
-		"a": func() { g.Shell(`ZIP to neighbor folder [반대쪽에 압축];   7z a '%~D2/%~d.zip' %M`, -7) }, //zip to neighbor folder
-		"A": func() { g.Shell(`ZIP to here [여기에 압축];   7z a '%~d.zip' %M`, -7) },                  //zip to current folder
+		"a": func() { g.UnzipToOtherPane() },
+		"A": func() { g.UnZipToHere() },
+		// "a": func() { g.Shell(`ZIP to neighbor folder [반대쪽에 압축];   7z a '%~D2/%~d.zip' %M`, -7) }, //zip to neighbor folder
+		// "A": func() { g.Shell(`ZIP to here [여기에 압축];   7z a '%~d.zip' %M`, -7) },                  //zip to current folder
 
 		// "b": func() { g.Menu("bookmark") }
 		// "B": func() { g.Menu("myBookmark") }
@@ -523,26 +474,40 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"M-b": func() { g.MoveWorkspace(-1) },         //move to previous tab
 
 		"c": func() { g.Copy() }, //copy
-
-		"C-c": ifElse(runtime.GOOS == "windows", func() { //file copy 파일 복사
-			myClip := strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
+		//C-c는 윈도우 기본 단축키가 우선이라 문제가 있을 수 있어서 뺌
+		"M-c": ifElse(runtime.GOOS == "windows", func() { //file copy 파일 복사
+			myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
 			glippy.Set(myClip)
-			message.Info("files YANKed (클립보드로 복사)) : " + myClip)
-			//윈도우에서도 사용할 수 있게 윈도우용으로 변환함
-			command := `Add-Type -AssemblyName System.Windows.Forms; $files = [regex]::Matches((Get-Clipboard -Format Text), "'([^']+)'") | ForEach-Object {$_.Groups[1].Value}; $filesCollection = New-Object System.Collections.Specialized.StringCollection; $filesCollection.AddRange($files); [System.Windows.Forms.Clipboard]::SetFileDropList($filesCollection); Write-Host $filesCollection`
+			message.Info("Files copied to clipboard (클립보드 복사): " + myClip)
+			command := `Add-Type -AssemblyName System.Windows.Forms; $filePaths = [regex]::Matches((Get-Clipboard), '\"(.*?)\"') | ForEach-Object { $_.Groups[1].Value }; if ($filePaths.Count -gt 0) { $stringCollection = New-Object System.Collections.Specialized.StringCollection; $stringCollection.AddRange($filePaths); [System.Windows.Forms.Clipboard]::SetFileDropList($stringCollection) }`
+
 			exec.Command("powershell", "-Command", command).Run()
-		}, func() {}),
 
-		"C": ifElse(runtime.GOOS == "windows", func() { //Duplicate
-			g.Shell("duplicate file [파일복제];   Copy-Item -Recurse  '" + strings.ReplaceAll(strings.ReplaceAll(g.File().Name(), "[", "`["), "]", "`]") + "' '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`) // WTF?? // fileName having '[ ]' does not work with Invoke-Item.
-		}, func() {
-			g.Shell("duplicate file [파일복제];   cp -r %f '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`)
-		}),
+		}, ifElse(runtime.GOOS == "darwin", func() { // macOS 전용 파일 복사
+			filePaths := g.Dir().MarkfilePaths()
+			if err := copyFilesToMacClipboard(filePaths); err != nil {
+				message.Info("클립보드 복사 실패: " + err.Error())
+			} else {
+				message.Info(fmt.Sprintf("✅ %d개 파일이 클립보드에 복사되었습니다! (Cmd+V로 붙여넣기)", len(filePaths)))
+			}
+		}, func() { // Linux 및 기타 OS
+			myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
+			glippy.Set(myClip)
+			message.Info("Files copied to clipboard (클립보드 복사): " + myClip)
+		})),
 
-		"d": ifElse(runtime.GOOS == "windows", func() { g.Shell(`DELETE files? (파일삭제?);   recycle -s %M `, -7) }, //move file(s) to recycle bin
-			ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) },
-				func() { g.Shell(`DELETE files? [파일삭제?];   trash %m`, -7) })),
-		// "d":      ifElse(runtime.GOOS == "windows", func() { g.Shell(`recycle -s %M `, -7) }, ifElse(runtime.GOOS == "darwin", func() { g.Shell(`mv %M ~/.Trash`, -7) }, func() { g.Shell(`mv %M ~/.local/share/Trash`, -7) })),
+		"C": func() { g.Duplicate() }, //duplicate file 복제파일
+		// "C": ifElse(runtime.GOOS == "windows", func() { //Duplicate
+		// 	g.Shell("duplicate file [파일복제];   Copy-Item -Recurse  '" + strings.ReplaceAll(strings.ReplaceAll(g.File().Name(), "[", "`["), "]", "`]") + "' '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`) // WTF?? // fileName having '[ ]' does not work with Invoke-Item.
+		// }, func() {
+		// 	g.Shell("duplicate file [파일복제];   cp -r %f '" + util.RemoveExt(g.File().Name()) + `_` + util.GetExt((g.File().Name())) + `'`)
+		// }),
+
+		"d": func() { g.Remove2() }, //copy file
+		// "d": ifElse(runtime.GOOS == "windows", func() { g.Shell(`DELETE files? (파일삭제?);   recycle -s %M `, -7) }, //move file(s) to recycle bin
+		// ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) },
+		// func() { g.Shell(`DELETE files? [파일삭제?];   trash %m`, -7) })),
+
 		"D": func() { g.Workspace().ReloadAll(); g.Chdir() }, //change directory
 
 		//"e"   : //open with editor application
@@ -553,7 +518,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"F": func() { //file Name copy 파일명 복사
 			myClip := util.RemoveExt(g.File().Name())
 			glippy.Set(myClip)
-			message.Info("file Name copied(파일이름 복사함): " + myClip)
+			message.Info("File name copied (파일명 복사): " + myClip)
 		},
 
 		"g": func() { g.Glob() },    //search file in current folder
@@ -569,35 +534,22 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"k": func() { g.Dir().MoveCursor(-1) }, //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 		"K": func() { g.Dir().MoveCursor(-5) },
 		// "l":  open file with default application
-		"L": func() { g.Workspace().Dir().GoFowardFolder() },
-		"m": func() { g.Move() },
-		"M": //move file 복사파일 이동함
-		ifElse(runtime.GOOS == "windows", func() {
-			value, _ := glippy.Get()
-			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
-				g.Shell(`MOVE clipboard to here [클립보드 파일 이동하겠음];   $files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=move $filesString /to='%~D/'"; Invoke-Expression $command  `)
-				// command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
-				// cmd := exec.Command("powershell", "-Command", command)
-				// output, _ := cmd.CombinedOutput()
-				// value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
-			} else { //경로를 복사해서 붙여넣기 하는 경우
-				value = arrangeFilePathForWindows(value)
-				g.Shell(`MOVE clipboard to here [클립보드 파일 이동하겠음];   fcp /cmd=Move `+value+` /to='%~D/'`, -7)
+		"L": func() {
+			ws := g.Workspace()
+			if ws == nil {
+				return
 			}
-
-			g.Dir().Reset()
-			g.Workspace().ReloadAll()
-		}, ifElse(runtime.GOOS == "darwin", func() {
-			value, _ := glippy.Get()
-			value = arrangeFilePathForMac(value)
-			g.Shell(`MOVE clipboard to here [클립보드 파일 이동하겠음];   mv -f -v `+value+` %D`, -7)
-		}, func() {
-			value, _ := glippy.Get()
-			value = arrangeFilePathForLin(value)
-			g.Shell(`MOVE clipboard to here [클립보드 파일 이동하겠음];   mv -f -v `+value+` %D`, -7)
-		})),
+			dir := ws.Dir()
+			if dir == nil {
+				return
+			}
+			dir.GoFowardFolder()
+		},
+		"m": func() { g.Move() },
+		"M": ifElse(runtime.GOOS == "windows", func() { message.Info("Windows doesn't need to CHMOD (윈도우는 권한설정 불필요)") }, func() { g.Chmod() }), //change file permission
 		//move file
-		"M-m": ifElse(runtime.GOOS == "windows", func() { message.Info(`Windows doesn't need to CHMOD [윈도우는 권한설정이 필요없음]`) }, func() { g.Chmod() }), //change file permission
+		"M-m": func() { g.PasteMove() }, //move file 복사파일 이동함
+		"c-m": func() { g.PasteMove() }, //move file 복사파일 이동함
 		//C-M means enter. open file with default applicationmm
 
 		"n": func() { g.Touch() }, //new file
@@ -605,55 +557,9 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		//"o":  open file with default application
 		"O": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`explorer . %&`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn(`open %D %&`) }, func() { g.Spawn(`xdg-open %D %&`) })), //open folder with file manager
 
-		"p": //paste file 복사 파일 붙여넣기
-		ifElse(runtime.GOOS == "windows", func() {
-			value, _ := glippy.Get()
-			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
-				g.Shell(`COPY clipboard to here [클립보드 파일 복사];   $files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
-				// command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
-				// cmd := exec.Command("powershell", "-Command", command)
-				// output, _ := cmd.CombinedOutput()
-				// value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
-			} else { //경로를 복사해서 붙여넣기 하는 경우
-				value = arrangeFilePathForWindows(value)
-				g.Shell(`COPY clipboard to here [클립보드 파일 복사];   fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
-			}
-			g.Dir().Reset()
-			g.Workspace().ReloadAll()
-		}, ifElse(runtime.GOOS == "darwin", func() {
-			value, _ := glippy.Get()
-			value = arrangeFilePathForMac(value)
-			g.Shell(`COPY clipboard to here [클립보드 파일 복사];   cp -r -v `+value+` %D`, -7)
-		}, func() {
-			value, _ := glippy.Get()
-			value = arrangeFilePathForLin(value)
-			g.Shell(`COPY clipboard to here [클립보드 파일 복사];   cp -r -v `+value+` %D`, -7)
-		})),
+		"p": func() { g.PasteCopy() }, //paste file 복사 파일 붙여넣기
 
-		"P": //move file 복사파일 이동함
-		ifElse(runtime.GOOS == "windows", func() {
-			value, _ := glippy.Get()
-			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
-				g.Shell(`MOVE clipboard to here [클립보드 파일 이동];   $files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=move $filesString /to='%~D/'"; Invoke-Expression $command  `)
-				// command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
-				// cmd := exec.Command("powershell", "-Command", command)
-				// output, _ := cmd.CombinedOutput()
-				// value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
-			} else { //경로를 복사해서 붙여넣기 하는 경우
-				value = arrangeFilePathForWindows(value)
-				g.Shell(`MOVE clipboard to here [클립보드 파일 이동];   fcp /cmd=Move `+value+` /to='%~D/'`, -7)
-			}
-			g.Dir().Reset()
-			g.Workspace().ReloadAll()
-		}, ifElse(runtime.GOOS == "darwin", func() {
-			value, _ := glippy.Get()
-			value = arrangeFilePathForMac(value)
-			g.Shell(`MOVE clipboard to here [클립보드 파일 이동];   mv -f -v `+value+` %D`, -7)
-		}, func() {
-			value, _ := glippy.Get()
-			value = arrangeFilePathForLin(value)
-			g.Shell(`MOVE clipboard to here [클립보드 파일 이동];   mv -f -v `+value+` %D`, -7)
-		})),
+		"P": func() { g.PasteMove() }, //move file 복사파일 이동함
 
 		"q": func() { g.Quit() },
 		"Q": func() { g.Workspace().SwapNextDir() },
@@ -674,78 +580,167 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		// "U": func() { g.Dir().MoveBottom() },  //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 
 		//"v": view menu
-		"V": //paste file 복사 파일 붙여넣기
-		ifElse(runtime.GOOS == "windows", func() {
-			value, _ := glippy.Get()
-			if value == "" { //윈도우에서 ctrl + c로 복사한 파일을 붙여넣기 하는 경우
-				g.Shell(`COPY clipboard to here [클립보드 파일 복사];   $files = Get-Clipboard -Format FileDropList;  $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); $command = "fcp /cmd=force_copy $filesString /to='%~D/'"; Invoke-Expression $command  `)
-				// command := `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $files = Get-Clipboard -Format FileDropList; $filesString = (($files | ForEach-Object { "'$($_)'" }) -join " "); Write-Host $filesString`
-				// cmd := exec.Command("powershell", "-Command", command)
-				// output, _ := cmd.CombinedOutput()
-				// value = strings.TrimSpace(string(output)) // 앞뒤 공백 제거
-			} else { //경로를 복사해서 붙여넣기 하는 경우
-				value = arrangeFilePathForWindows(value)
-				g.Shell(`COPY clipboard to here [클립보드 파일 복사];   fcp /cmd=force_copy `+value+` /to='%~D/'`, -7)
-			}
-			g.Dir().Reset()
-			g.Workspace().ReloadAll()
-		}, ifElse(runtime.GOOS == "darwin", func() {
-			value, _ := glippy.Get()
-			value = arrangeFilePathForMac(value)
-			g.Shell(`COPY clipboard to here [클립보드 파일 복사];   cp -r -v `+value+` %D`, -7)
-		}, func() {
-			value, _ := glippy.Get()
-			value = arrangeFilePathForLin(value)
-			g.Shell(`COPY clipboard to here [클립보드 파일 복사];   cp -r -v `+value+` %D`, -7)
-		})),
+		"M-v": func() { g.PasteCopy() }, //paste file 복사 파일 붙여넣기
+		// "C-v": func() { g.PasteCopy() }, //paste file 복사 파일 붙여넣기. 윈도우 기본 단축키가 우선이라 문제 생김
 
 		"w":   func() { g.Workspace().ReloadAll(); g.Workspace().ChdirNeighbor2This() }, //change next window to this folder
 		"W":   func() { g.Workspace().ReloadAll(); g.Workspace().ChdirNeighbor() },      // change this window to next folder
 		"C-w": func() { g.Workspace().ReloadAll(); g.Workspace().CreateDir() },          //create new window
 		"M-w": func() { g.Workspace().ReloadAll(); g.Workspace().CloseDir() },           //close window
 
-		//"x": command menu
-		//"X": external command menu
+		"x": func() { g.Menu("command") },
+		"X": func() { g.Menu("external") },
+
+		// "V": ifElse(runtime.GOOS == "windows", func() { // file cut 파일 잘라내기 ... 라고 하지만 복사만 됨. 지우려다가 놔둠
+		// 	myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
+		// 	glippy.Set(myClip)
+		// 	message.Info("Files cut to clipboard (클립보드 잘라내기): " + myClip)
+		// 	// PowerShell 스크립트: 파일 목록과 함께 '잘라내기' 효과(Move = 2)를 클립보드에 설정
+		// 	command := `
+		//     Add-Type -AssemblyName System.Windows.Forms;
+		//     $filePaths = [regex]::Matches((Get-Clipboard), '\"(.*?)\"') | ForEach-Object { $_.Groups[1].Value };
+		//     if ($filePaths.Count -gt 0) {
+		//         $stringCollection = New-Object System.Collections.Specialized.StringCollection;
+		//         $stringCollection.AddRange($filePaths);
+
+		//         $dataObject = New-Object System.Windows.Forms.DataObject;
+		//         $dataObject.SetFileDropList($stringCollection);
+
+		//         # '잘라내기' 효과(Move = 2)를 위한 MemoryStream 생성
+		//         $moveEffect = New-Object System.IO.MemoryStream;
+		//         $moveEffect.WriteByte(2); # 1은 Copy, 2는 Move
+
+		//         # 클립보드에 데이터와 함께 'Preferred DropEffect'를 설정
+		//         $dataObject.SetData("Preferred DropEffect", $moveEffect);
+		//         [System.Windows.Forms.Clipboard]::SetDataObject($dataObject, $true);
+		//     }
+		// `
+		// 	exec.Command("powershell", "-Command", command).Run()
+
+		// }, func() { // Non-windows
+		// 	myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
+		// 	glippy.Set(myClip)
+		// 	message.Info("Files cut to clipboard (클립보드 잘라내기): " + myClip)
+		// }),
 
 		"y": ifElse(runtime.GOOS == "windows", func() { //file copy 파일 복사
-			myClip := strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
+			myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
 			glippy.Set(myClip)
-			message.Info("files YANKed (클립보드로 복사함)): " + myClip)
-			//files to window clipboard. 윈도우 클립보드로 파일 복사
-			command := `Add-Type -AssemblyName System.Windows.Forms; $files = [regex]::Matches((Get-Clipboard -Format Text), "'([^']+)'") | ForEach-Object {$_.Groups[1].Value}; $filesCollection = New-Object System.Collections.Specialized.StringCollection; $filesCollection.AddRange($files); [System.Windows.Forms.Clipboard]::SetFileDropList($filesCollection); Write-Host $filesCollection`
+			message.Info("Files copied to clipboard (클립보드 복사): " + myClip)
+			command := `Add-Type -AssemblyName System.Windows.Forms; $filePaths = [regex]::Matches((Get-Clipboard), '\"(.*?)\"') | ForEach-Object { $_.Groups[1].Value }; if ($filePaths.Count -gt 0) { $stringCollection = New-Object System.Collections.Specialized.StringCollection; $stringCollection.AddRange($filePaths); [System.Windows.Forms.Clipboard]::SetFileDropList($stringCollection) }`
+
 			exec.Command("powershell", "-Command", command).Run()
-		}, func() {
-			myClip := strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
+
+		}, ifElse(runtime.GOOS == "darwin", func() { // macOS 전용 파일 복사
+			myClip := g.Dir().MarkfilePaths()
+			if err := copyFilesToMacClipboard(myClip); err != nil {
+				message.Info("클립보드 복사 실패: " + err.Error())
+			} else {
+				message.Info("Files copied to clipboard (클립보드 복사): " + strings.Join(myClip, ", "))
+			}
+		}, func() { // Linux 및 기타 OS
+			myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
 			glippy.Set(myClip)
-			message.Info("files YANKed (클립보드로 복사함)): " + myClip)
-		}),
+			message.Info("Files copied to clipboard (클립보드 복사): " + myClip)
+		})),
 
 		"Y": func() { //Path copy 경로 복사
-			myClip := util.RemoveExt(g.File().Path())
+			myClip := strings.Join(g.Dir().MarkfilePaths(), " ")
 			glippy.Set(myClip)
-			message.Info("PATH copied (경로 복사함): " + myClip)
+			message.Info("Path copied (경로 복사): " + myClip)
 		},
 
-		"z": func() { g.Shell(`UnZip to neighbor folder [반대쪽에 압축풀기];   7z x '%~F' -o'%~D2/%~x'`) }, //extract zip file to neighbor folder
-		"Z": func() { g.Shell(`UnZip to here [여기에 압축풀기];   7z x '%~F' -o'%~D/%~x'`) },              //extract zip file to current folder
+		"z": func() { g.ZipToOtherPane() }, //add file to archive
+		"Z": func() { g.ZipToHere() },      //add file to archive
+
+		// 한글 키보드 단축키 (QWERTY -> 한글 정확한 매핑)
+		// q w e r t y u i o p
+		"ㅂ": func() { g.Quit() },                                                      // q -> ㅂ (quit)
+		"ㅈ": func() { g.Workspace().ReloadAll(); g.Workspace().ChdirNeighbor2This() }, // w -> ㅈ (window)
+		"ㄷ": func() { g.Menu("editor") },                                              // e -> ㄷ (editor)
+		"ㄱ": func() { g.Rename() },                                                    // r -> ㄱ (rename)
+		"ㅅ": func() { g.Workspace().ReloadAll(); g.MoveWorkspace(1) },                 // t -> ㅅ (tab)
+		"ㅛ": ifElse(runtime.GOOS == "windows", func() { //y -> ㅛ (file copy to clipboard)
+			myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
+			glippy.Set(myClip)
+			message.Info("Files copied to clipboard (클립보드 복사): " + myClip)
+			command := `Add-Type -AssemblyName System.Windows.Forms; $filePaths = [regex]::Matches((Get-Clipboard), '\"(.*?)\"') | ForEach-Object { $_.Groups[1].Value }; if ($filePaths.Count -gt 0) { $stringCollection = New-Object System.Collections.Specialized.StringCollection; $stringCollection.AddRange($filePaths); [System.Windows.Forms.Clipboard]::SetFileDropList($stringCollection) }`
+			exec.Command("powershell", "-Command", command).Run()
+		}, ifElse(runtime.GOOS == "darwin", func() { // macOS 전용 파일 복사
+			filePaths := g.Dir().MarkfilePaths()
+			if err := copyFilesToMacClipboard(filePaths); err != nil {
+				message.Info("클립보드 복사 실패: " + err.Error())
+			} else {
+				message.Info(fmt.Sprintf("✅ %d개 파일이 클립보드에 복사되었습니다! (Cmd+V로 붙여넣기)", len(filePaths)))
+			}
+		}, func() { // Linux 및 기타 OS
+			myClip := strings.Join(g.Dir().MarkfileDoubleQuotedPaths(), " ")
+			glippy.Set(myClip)
+			message.Info("Files copied to clipboard (클립보드 복사): " + myClip)
+		})),
+		//"ㅕ": func() { g.Dir().MoveCursor(5) }, // u -> ㅕ (cursor down 5)
+		//"ㅑ": func() { g.Dir().MoveCursor(-5) }, // i -> ㅑ (cursor up 5)
+		"ㅐ": func() { g.Spawn(opener) }, // o -> ㅐ (open with default application)
+		"ㅔ": func() { g.PasteCopy() },   // p -> ㅔ (paste)
+
+		// A S D F G H J K L 대문자
+		"ㅁ": func() { g.UnZipToHere() },        // A -> ㅁ (unzip here) - A키와 a키 동일 문자라 구분 안됨, 실제로는 별도 구현 필요
+		"ㄴ": func() { g.Mkdir() },              // N -> ㄴ 없음, 하지만 새 폴더는 중요하니 별도 추가 가능
+		"ㅇ": func() { g.Remove2() },            // d -> ㅇ (delete)
+		"ㄹ": func() { g.Dir().Finder() },       // f -> ㄹ (find)
+		"ㅎ": func() { g.Glob() },               // g -> ㅎ (glob)
+		"ㅗ": func() { g.Dir().Chdir("..") },    // h -> ㅗ (parent folder)
+		"ㅓ": func() { g.Dir().MoveCursor(1) },  // j -> ㅓ (down)
+		"ㅏ": func() { g.Dir().MoveCursor(-1) }, // k -> ㅏ (up)
+		"ㅣ": func() { g.Spawn(opener) },        // l -> ㅣ (open with default, same as l key)
+
+		// z x c v b n m
+		"ㅋ": func() { g.ZipToOtherPane() }, // z -> ㅋ (zip)
+		"ㅌ": func() { g.Menu("command") },  // x -> ㅌ (command menu)
+		"ㅊ": func() { g.Copy() },           // c -> ㅊ (copy)
+		"ㅍ": func() { g.Menu("view") },     // v -> ㅍ (view)
+		"ㅠ": func() { g.Menu("bookmark") }, // b -> ㅠ (bookmark)
+		"ㅜ": func() { g.Touch() },          // n -> ㅜ (new file)
+		"ㅡ": func() { g.Move() },           // m -> ㅡ (move)
+
+		// 대문자/쌍자음 (Shift + 키)
+		"ㅃ": func() { g.Workspace().SwapNextDir() },                                                                                                                                           // Q -> ㅃ (swap)
+		"ㅉ": func() { g.Workspace().ReloadAll(); g.Workspace().CloseDir() },                                                                                                                   // W -> ㅉ (close window)
+		"ㄸ": func() { g.Workspace().ReloadAll(); g.Chdir() },                                                                                                                                  // E -> ㄸ (change directory)
+		"ㄲ": func() { g.Globdir() },                                                                                                                                                           // R -> ㄲ (glob in subdirs)
+		"ㅆ": func() { g.Menu("tab") },                                                                                                                                                         // T -> 쌰 (tab menu) - 실제로는 ㅆ이 맞지만 쌰로 되어있음
+		"ㅒ": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`explorer . %&`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn(`open %D %&`) }, func() { g.Spawn(`xdg-open %D %&`) })), //open folder with file manager                                // O -> ㅒ (move to top)
+		"ㅖ": func() { g.PasteMove() },                                                                                                                                                         //move file 복사파일 이동함
+
+		// "z": func() { g.Shell(`UnZip to neighbor folder [반대쪽에 압축풀기];   7z x '%~F' -o'%~D2/%~x'`) }, //extract zip file to neighbor folder
+		// "Z": func() { g.Shell(`UnZip to here [여기에 압축풀기];   7z x '%~F' -o'%~D/%~x'`) },              //extract zip file to current folder
 
 		// function keys do External command
-		"f2": ifElse(runtime.GOOS == "windows", func() { g.Shell("rename [이름바꾸기];   move %F './" + g.File().Name() + `'`) }, func() { g.Shell("rename [이름바꾸기];   mv -vi %f '" + g.File().Name() + `'`) }),
+
+		// function keys do External command
+		"f2": func() { g.Rename2() },
 		"f3": ifElse(runtime.GOOS == "windows", func() { g.Spawn(`~/AppData/Local/Programs/QuickLook/quickLook.exe '` + g.File().Path() + `'`) }, ifElse(runtime.GOOS == "darwin", func() { g.Spawn("qlmanage -p " + g.File().Name()) }, func() { g.Spawn(" sushi " + g.File().Path()) })),
 
-		"f5": ifElse(runtime.GOOS == "windows", func() {
-			g.Shell(`COPY to neighbor folder [반대쪽에 파일 복사];   fcp /cmd=force_copy %M /to='%~D2/'`, -7)
-		}, func() { g.Shell(`COPY to neighbor folder [반대쪽에 파일 복사];   cp -r -v %M %D2`, -7) }),
-		"f6": ifElse(runtime.GOOS == "windows", func() {
-			g.Shell(`MOVE to neighbor folder [반대쪽에 파일 이동];   fcp /cmd=move %M /to='%~D2/'`, -7)
-		}, func() { g.Shell(`MOVE to neighbor folder [반대쪽에 파일 이동];   mv -f -v %M %D2`, -7) }),
-		"f7": ifElse(runtime.GOOS == "windows", func() {
-			g.Shell(`create FOLDER [폴더만들기];   mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`)
-		}, func() { g.Shell(`create FOLDER [폴더만들기];  mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
-		"f8": ifElse(runtime.GOOS == "windows", func() { g.Shell(`DELETE file [파일 삭제];   (recycle -s %M `, -7) }, //move file(s) to recycle bin
-			ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) },
-				func() { g.Shell(`DELETE file [파일 삭제];   trash %m`, -7) })),
-		//"f9": ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
+		"f5": func() { g.Copy2() },
+		"f6": func() { g.Move2() },
+		"f7": func() { g.Mkdir2() },  //make new folder
+		"f8": func() { g.Remove2() }, //move file(s) to recycle bin
+
+		// "f5": ifElse(runtime.GOOS == "windows", func() {
+		// 	g.Shell(`COPY to neighbor folder [반대쪽에 파일 복사];   fcp /cmd=force_copy %M /to='%~D2/'`, -7)
+		// }, func() { g.Shell(`COPY to neighbor folder [반대쪽에 파일 복사];   cp -r -v %M %D2`, -7) }),
+		// "f6": ifElse(runtime.GOOS == "windows", func() {
+		// 	g.Shell(`MOVE to neighbor folder [반대쪽에 파일 이동];   fcp /cmd=move %M /to='%~D2/'`, -7)
+		// }, func() { g.Shell(`MOVE to neighbor folder [반대쪽에 파일 이동];   mv -f -v %M %D2`, -7) }),
+		// "f7": ifElse(runtime.GOOS == "windows", func() {
+		// 	g.Shell(`create FOLDER [폴더만들기];   mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`)
+		// }, func() {
+		// 	g.Shell(`create FOLDER [폴더만들기];  mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`)
+		// }),
+		// "f8": ifElse(runtime.GOOS == "windows", func() { g.Shell(`DELETE file [파일 삭제];   (recycle -s %M `, -7) }, //move file(s) to recycle bin
+		// 	ifElse(runtime.GOOS == "darwin", func() { g.Shell(`echo "Move file(s) to Trash? 휴지통으로 삭제? "; %| `, -7) },
+		// 		func() { g.Shell(`DELETE file [파일 삭제];   trash %m`, -7) })),
+		// //"f9": ifElse(runtime.GOOS == "windows", func() { g.Shell(`mkdir ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }, func() { g.Shell(`mkdir -vp ` + `'` + util.RemoveExt(g.File().Name()) + `'`) }),
 
 		"delete": func() { g.Remove() }, //delete
 
@@ -754,10 +749,13 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"~":  func() { g.Dir().Chdir("~") },
 		"\\": func() { g.Dir().Chdir("/") },
 
+		// "backspace": func() { g.Dir().Chdir("..") },    //go to parent folder
 		"backspace": func() { g.Dir().Chdir("..") },    //go to parent folder
 		"left":      func() { g.Dir().Chdir("..") },    //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 		"down":      func() { g.Dir().MoveCursor(1) },  //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
 		"up":        func() { g.Dir().MoveCursor(-1) }, //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
+		"C-l":       func() { g.HeaderPathEdit() },     //헤더 경로 편집 모드 (자동완성/히스토리)
+		"M-l":       func() { g.HeaderPathEdit() },     //헤더 경로 편집 모드 (자동완성/히스토리)
 		//"right": open file with default application
 
 		"home": func() { g.Dir().MoveTop() },    //hjkl ←↓↑→,    ui ↟↡,    ^,U = Home,    $, I = End
@@ -874,4 +872,27 @@ func menuKeymap(w *menu.Menu) widget.Keymap {
 		"C-g":       func() { w.Exit() },
 		"C-[":       func() { w.Exit() }, //// C-[ means ESC //
 	}
+}
+
+func ExpandPath(name string) string {
+	if name == "" {
+		return ""
+	}
+	if name == "~" || strings.HasPrefix(name, "~/") || strings.HasPrefix(name, "~\\") {
+		home, _ := os.UserHomeDir()
+		if name == "~" {
+			name = home
+		} else if strings.HasPrefix(name, "~/") || strings.HasPrefix(name, "~\\") {
+			name = home + name[1:]
+		}
+	}
+	if runtime.GOOS == "windows" {
+		name = strings.Replace(strings.Replace(name, `\\`, `/`, -1), `"`, `'`, -1)
+	}
+	// 반드시 절대경로로 변환
+	abs, err := filepath.Abs(name)
+	if err == nil {
+		return abs
+	}
+	return name
 }

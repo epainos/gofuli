@@ -384,9 +384,8 @@ func (b *ListBox) ScrollRate() string {
 }
 
 func (b *ListBox) drawHeader() {
-	title := fmt.Sprintf("%s [%d/%d] %s", b.title, b.cursor+1, b.Upper(), b.ScrollRate())
 	x, y := b.LeftTop()
-	SetCells(x, y, title, look.Title())
+	SetCells(x, y, b.title, look.Title())
 }
 
 func (b *ListBox) drawScrollbar() {

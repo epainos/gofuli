@@ -130,25 +130,25 @@ func (f *Filer) CloseWorkspace() {
 		return
 	}
 	i := f.Current
-	f.Workspaces[i].visible(false)
+	f.Workspaces[i].Visible(false)
 	f.Workspaces[i] = nil
 	f.Workspaces = append(f.Workspaces[:i], f.Workspaces[i+1:]...)
 	if f.Current > len(f.Workspaces)-1 {
 		f.Current = len(f.Workspaces) - 1
 	}
-	f.Workspace().visible(true)
+	f.Workspace().Visible(true)
 }
 
 // MoveWorkspace moves to the other workspace.
 func (f *Filer) MoveWorkspace(amount int) {
-	f.Workspace().visible(false)
+	f.Workspace().Visible(false)
 	f.Current += amount
 	if f.Current >= len(f.Workspaces) {
 		f.Current = 0
 	} else if f.Current < 0 {
 		f.Current = len(f.Workspaces) - 1
 	}
-	f.Workspace().visible(true)
+	f.Workspace().Visible(true)
 }
 
 // Workspace returns the current workspace.
@@ -214,6 +214,12 @@ func (f *Filer) MergeExtmap(m widget.Extmap) {
 
 // Input for key events.
 func (f *Filer) Input(key string) {
+	// Directory가 편집 모드면 무조건 위임 (키 매핑 무시)
+	if f.Dir().EditingPath {
+		f.Dir().Input(key)
+		return
+	}
+
 	if finder := f.Dir().finder; finder != nil {
 		if callback, ok := finderKeymap(finder)[key]; ok {
 			callback()
@@ -255,6 +261,7 @@ func (f *Filer) drawHeader() {
 	ws := f.Workspace()
 	width := (f.Width() - x) / len(ws.Dirs)
 	for i := 0; i < len(ws.Dirs); i++ {
+		dir := ws.Dirs[i]
 		style := look.Default()
 		if ws.Focus == i {
 			style = style.Reverse(true)
@@ -262,10 +269,54 @@ func (f *Filer) drawHeader() {
 		s := fmt.Sprintf("[%d] ", i+1)
 		x = widget.SetCells(x, y, s, style)
 		w := width - len(s)
-		s = util.ShortenPath(ws.Dirs[i].Title(), w)
-		s = runewidth.Truncate(s, w, "~")
-		s = runewidth.FillRight(s, w)
-		x = widget.SetCells(x, y, s, style)
+
+		if dir.EditingPath {
+			// 편집 모드일 때 경로 텍스트 표시
+			editText := dir.PathEditText
+			if editText == "" {
+				editText = TildePath(dir.Path)
+				dir.PathEditText = editText
+				dir.PathEditCursor = len(editText)
+			}
+
+			// 경로 텍스트를 너비에 맞게 조정
+			editText = util.ShortenPath(editText, w)
+			editText = runewidth.Truncate(editText, w, "~")
+			editText = runewidth.FillRight(editText, w)
+
+			// 커서 위치 계산
+			cursorPos := dir.PathEditCursor
+			if cursorPos > len(editText) {
+				cursorPos = len(editText)
+			}
+
+			// 텍스트를 커서 앞뒤로 나누어 표시
+			beforeCursor := editText[:cursorPos]
+			afterCursor := editText[cursorPos:]
+
+			// 커서 앞 텍스트 표시
+			x = widget.SetCells(x, y, beforeCursor, style)
+
+			// 커서 표시 (반전)
+			if len(afterCursor) > 0 {
+				x = widget.SetCells(x, y, string(afterCursor[0]), style.Reverse(true))
+				afterCursor = afterCursor[1:]
+			} else {
+				// 커서가 끝에 있을 때 공백으로 커서 표시
+				x = widget.SetCells(x, y, " ", style.Reverse(true))
+			}
+
+			// 커서 뒤 텍스트 표시
+			if len(afterCursor) > 0 {
+				x = widget.SetCells(x, y, afterCursor, style)
+			}
+		} else {
+			// 일반 모드일 때 경로 표시
+			s = util.ShortenPath(dir.Title(), w)
+			s = runewidth.Truncate(s, w, "~")
+			s = runewidth.FillRight(s, w)
+			x = widget.SetCells(x, y, s, style)
+		}
 	}
 }
 

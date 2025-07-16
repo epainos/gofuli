@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/mattn/go-runewidth"
+	"golang.org/x/text/unicode/norm"
 )
 
 // ExpandPath expands path beginning of ~  to the home directory.
@@ -18,12 +19,16 @@ func ExpandPath(name string) string {
 	if name == "" {
 		return ""
 	}
-	if name[:1] == "~" {
+	if name == "~" || strings.HasPrefix(name, "~/") || strings.HasPrefix(name, "~\\") {
 		home, _ := os.UserHomeDir()
-		return strings.Replace(name, "~", home, 1)
+		if name == "~" {
+			name = home
+		} else if strings.HasPrefix(name, "~/") || strings.HasPrefix(name, "~\\") {
+			name = home + name[1:]
+		}
 	}
 	if runtime.GOOS == "windows" {
-		name = strings.Replace(strings.Replace(name, `\`, `/`, -1), `"`, `'`, -1)
+		name = strings.Replace(strings.Replace(name, `\\`, `/`, -1), `"`, `'`, -1)
 	}
 	return name
 }
@@ -133,7 +138,7 @@ func Quote(s string) string {
 
 }
 
-// FormatSize returns formated to SI prefix unit.
+// FormatSize returns formated to SI prefix unit with 3-digit alignment.
 func FormatSize(n int64) string {
 	const (
 		Tb = 1024 * 1024 * 1024 * 1024
@@ -141,16 +146,95 @@ func FormatSize(n int64) string {
 		Mb = 1024 * 1024
 		kb = 1024
 	)
+
+	var size float64
+	var unit string
+
 	if n > Tb {
-		return fmt.Sprintf("%.1fT", float64(n)/Tb)
+		size = float64(n) / Tb
+		unit = "T"
 	} else if n > Gb {
-		return fmt.Sprintf("%.1fG", float64(n)/Gb)
+		size = float64(n) / Gb
+		unit = "G"
 	} else if n > Mb {
-		return fmt.Sprintf("%.1fM", float64(n)/Mb)
+		size = float64(n) / Mb
+		unit = "M"
 	} else if n > kb {
-		return fmt.Sprintf("%.1fk", float64(n)/kb)
+		size = float64(n) / kb
+		unit = "k"
 	} else {
-		return fmt.Sprintf("%d", n)
+		size = float64(n)
+		unit = "b"
+	}
+
+	// 3자리 맞춤을 위한 포맷팅
+	if size < 10 {
+		return fmt.Sprintf("__%.1f%s", size, unit)
+	} else if size < 100 {
+		return fmt.Sprintf("_%.1f%s", size, unit)
+	} else if size < 1000 {
+		return fmt.Sprintf("%.1f%s", size, unit)
+	} else {
+		// 1000 이상일 때는 다음 단위로 변환
+		if unit == "k" {
+			return fmt.Sprintf("__%.1fM", size/1024)
+		} else if unit == "M" {
+			return fmt.Sprintf("__%.1fG", size/1024)
+		} else if unit == "G" {
+			return fmt.Sprintf("__%.1fT", size/1024)
+		} else {
+			return fmt.Sprintf("__%.1fk", size/1024)
+		}
+	}
+}
+
+// FormatSizeForPane returns formated size for pane display without underscore prefix and with 'b' suffix for bytes.
+func FormatSizeForPane(n int64) string {
+	const (
+		Tb = 1024 * 1024 * 1024 * 1024
+		Gb = 1024 * 1024 * 1024
+		Mb = 1024 * 1024
+		kb = 1024
+	)
+
+	var size float64
+	var unit string
+
+	if n > Tb {
+		size = float64(n) / Tb
+		unit = "T"
+	} else if n > Gb {
+		size = float64(n) / Gb
+		unit = "G"
+	} else if n > Mb {
+		size = float64(n) / Mb
+		unit = "M"
+	} else if n > kb {
+		size = float64(n) / kb
+		unit = "k"
+	} else {
+		size = float64(n)
+		unit = "b"
+	}
+
+	// pane용 포맷팅 (언더스코어 없이, b 단위 추가)
+	if size < 10 {
+		return fmt.Sprintf(" %.1f%s", size, unit)
+	} else if size < 100 {
+		return fmt.Sprintf("%.1f%s", size, unit)
+	} else if size < 1000 {
+		return fmt.Sprintf("%.1f%s", size, unit)
+	} else {
+		// 1000 이상일 때는 다음 단위로 변환
+		if unit == "kb" {
+			return fmt.Sprintf(" %.1fMb", size/1024)
+		} else if unit == "Mb" {
+			return fmt.Sprintf(" %.1fGb", size/1024)
+		} else if unit == "Gb" {
+			return fmt.Sprintf(" %.1fTb", size/1024)
+		} else {
+			return fmt.Sprintf(" %.1fkb", size/1024)
+		}
 	}
 }
 
@@ -210,4 +294,15 @@ func CalcSizeCount(src ...string) (int64, int) {
 		})
 	}
 	return size, count
+}
+
+// NormalizeFileName normalizes Unicode filename from NFD to NFC
+// This is particularly useful on macOS where filenames are stored in NFD format
+// causing Korean characters to appear as separated components
+func NormalizeFileName(name string) string {
+	if runtime.GOOS == "darwin" {
+		// NFD (정규분해) → NFC (정규결합) 변환
+		return norm.NFC.String(name)
+	}
+	return name
 }
