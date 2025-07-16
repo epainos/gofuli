@@ -19,7 +19,7 @@ Goful is a CUI file manager written in Go.
 
 ### Pre-build binaries
 
-See [releases](https://github.com/epainos/gofuli/releases) or 'bin' folder
+See [releases](https://github.com/epainos/gofuli/releases) 
 
 ### Go version >= 1.16
 
@@ -44,11 +44,10 @@ Linux user need to install gnome-terminal for shell and gnoem-sushi for preview,
 
 ### users for Windows
 
-1. in 'bin' folder, unzip 'windowsExe.zip' to c:\windows\system32 folder.
+1. in 'bin' folder, unzip 'windowsExe.zip' to c:\windows\system32 folder
 2. install quickLook for preview https://github.com/QL-Win/QuickLook/releases
 
-or you can compile goful by 'go install' in goful folder. and rest things are here. you can download it by yourself.
-
+* terminal:   https://apps.microsoft.com/detail/9n0dx20hk701
 * 7z: https://www.7-zip.org/download.html
 * fcp : https://forest.watch.impress.co.jp/library/software/fastcopy/download_11574.html
 * recycle: https://github.com/Zigatronz/Windows-recycle-bin-CLI-for-CMD
@@ -84,7 +83,7 @@ or you can compile goful by 'go install' in goful folder. and rest things are he
 | `t`                               | change to next tab                                                                                                                                                                  |
 | `T`                               | open tab menu                                                                                                                                                                       |
 | `space`                           | Toggle mark                                                                                                                                                                         |
-| `                                   | Invert mark                                                                                                                                                                         |
+| `                                   | Invert mark (= mark all if nothing marked)                                                                                                                                                                     |
 | `f3` `C-space`                  | preview (Mac have to change or uncheck default keyboard short cut C-Space) (Windows should install QuickLook https://github.com/QL-Win/QuickLook/releases) (Linux is not ready yet) |
 | `C-r`  `'`                      | refresh screen                                                                                                                                                                      |
 | `s`                               | Sort                                                                                                                                                                                |
@@ -112,16 +111,16 @@ or you can compile goful by 'go install' in goful folder. and rest things are he
 | `G`                               | Glob recursive                                                                                                                                                                      |
 | `C-[` = `esc`                   | Cancel                                                                                                                                                                              |
 | `q` `Q`                         | Quit                                                                                                                                                                                |
-| `y`                               | yank(or copy) file to clipboard                                                                                                                                                     |
-| `p`                               | paste yanked file to this directory (if you copy your file's PATH, you can paste it in goful too ([windows explorer: shift+rightClick+a]     [mac finder: cmd+opt+c])               |
+| `y`                               | yank(or copy) file to clipboard (it can be pasted to windows explore and mac finder)                                                                                                                                                    |
+| `p`                               | paste yanked file to this directory (gofuli can paste copied files from windows explore and mac finder)               |
 | `P`                               | move yanked file to this directory                                                                                                                                                  |
 | `Y`                               | copy file(or directory) path to clipboard                                                                                                                                           |
-| `N`                               | copy file(or directory) name only to clipboard                                                                                                                                      |
+| `F`                               | copy file(or directory) name only to clipboard                                                                                                                                      |
 | `O`                               | open this directory in finder, explorer...                                                                                                                                          |
-| `a`                               | zip marked files, dirs to neighbor dir                                                                                                                                              |
-| `A`                               | zip marked files, dirs to this dir                                                                                                                                                  |
-| `z`                               | unzip file to neighbor dir                                                                                                                                                          |
-| `Z`                               | unzip file go this dir                                                                                                                                                              |
+| `z`                               | zip marked files to neighbor dir                                                                                                                                              |
+| `Z`                               | zip marked files to this dir                                                                                                                                                  |
+| `a`                               | unzip file to neighbor dir                                                                                                                                                          |
+| `A`                               | unzip file go this dir                                                                                                                                                              |
 
 **f2, f5, f6, f7, f8 do External command(rename, copy, move, mkdir, remove)
 external command is more fast and comfortable in some cases. but 'refresh screen' is needed because goful doesn't know it has been finished.
@@ -150,14 +149,14 @@ gauge, bps and estimated time of arrival.
 If the source file type is a directory, recursively copy.  Also copy
 modification time and permissions.
 
-Rise a override confirm dialog `[y/n/Y/N/b]` if the name same as source file
+Rise a override confirm dialog `[y/n/Y/N/d]` if the name same as source file
 exists in the destination.  This dialog means:
 
 * `y` is overwrite only this file
 * `n` is not overwrite only this file
 * `Y` is overwrite all later file
 * `N` is not overwrite all later file
-* `b` is make a backupfile.
+* `d` is duplicate file.
 
 Copy process works asynchronously.  And processed in the order if you run
 multiple copies.
@@ -167,7 +166,7 @@ the application (default `q` `Q`).
 
 ### Bulk Rename
 
-Bulk renaming (default `R`) for mark (default `space` and invert `C-space`)
+Bulk renaming (default `R`) for mark (default `space` and invert `)
 files.
 
 Rename by the regexp pattern.  Input like the vim substituting style
@@ -344,12 +343,15 @@ if you want to switch order, open ~/.goful/myBookmark, edit order -> save -> qui
 * trash bin(rm, mv is to dangerous. trash bin is more safe)
 * regist your App by 'E' Key
 * regist your Bookmark by 'B' Key
+* surport mouse
+* faster folder refresh
 
 ### some tweaks for windows user
 
 * quote symbol changed to ' not  ". windows have troubles using ".
-* windows cmd changed to powershell.
+* changed cmd to powershell.
 * \ changed to /  ('c:\users\bilbo' -> c:/users/bilbo').
 * 7z is main archive manager. zip, rar, tar, gz... rfiles are compressed and unzipped with 7z.
 * fastcopy(fcp) is copy manager. f5, f6 or External command use fcp. default copy or move is slower than fcp. (default copy and move command shows the Progress bar, and refresh view after it. so default copy/move command is good for small size files.)
 * recycle.exe moves files(and folders) to recycle bin for safely delete. 'delete' key removes files(and folder) permanently.
+* path auto comeplition can be done in windows(decapitalized)
