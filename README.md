@@ -23,15 +23,10 @@ See [releases](https://github.com/epainos/gofuli/releases)
 
 ### Go version >= 1.16
 
-    $ go install github.com/anmitsu/goful@latest
+    $ go install github.com/epainos/gofuli@latest
     ...
-    $ goful
+    $ gofuli
 
-### Go version < 1.16
-
-    $ go get github.com/anmitsu/goful
-    ...
-    $ goful
 
 ### users for Linux
 
