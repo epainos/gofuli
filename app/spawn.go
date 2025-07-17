@@ -181,10 +181,10 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(src, `\`, `/`), src)
 			case macroMarkfileWithComma:
 				if !nonQuote {
-					src = `'"` + strings.Join(g.Dir().MarkfileNames(), `"', '"`) + `"'`
+					src = `'"` + strings.Join(g.Dir().MarkfileNames(), `"', '"`) + `"'` // some filename with space need this. some.exe '"bla bla"'
 				} else {
 					src = `'` + strings.Join(g.Dir().MarkfileNames(), `', '`) + `'`
-					//windows needs single quote for everey path.
+					//windows needs single quote for everey path. powershell invoke-item does not need ".
 				}
 				src = ifElseSting(runtime.GOOS == "windows", strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(src, "[", "`["), "]", "`]"), `\`, `/`), src)
 
