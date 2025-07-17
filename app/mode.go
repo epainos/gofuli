@@ -1683,7 +1683,7 @@ func myfGetLastWord(filePath string) string {
 // addMyApp add my app added by user
 func (g *Goful) AddMyApp() {
 
-	src := ifElseSting((runtime.GOOS == "windows"), `start `, ifElseSting((runtime.GOOS == "darwin"), `open -a`, "")) + ` '` + g.File().Path() + `' ` + ` %f`
+	src := ifElseSting((runtime.GOOS == "windows"), `start '`+g.File().Path()+`' %c`, ifElseSting((runtime.GOOS == "darwin"), `open -a '`+g.File().Path()+`' %m`, `'`+g.File().Path()+`' %m`))
 	c := cmdline.New(&addMyAppMode{
 		Goful:              g,
 		myShortCut:         "",
