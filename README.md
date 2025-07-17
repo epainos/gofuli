@@ -19,14 +19,13 @@ Goful is a CUI file manager written in Go.
 
 ### Pre-build binaries
 
-See [releases](https://github.com/epainos/gofuli/releases) 
+See [releases](https://github.com/epainos/gofuli/releases)
 
 ### Go version >= 1.16
 
     $ go install github.com/epainos/gofuli@latest
     ...
     $ gofuli
-
 
 ### users for Linux
 
@@ -78,7 +77,7 @@ Linux user need to install gnome-terminal for shell and gnoem-sushi for preview,
 | `t`                               | change to next tab                                                                                                                                                                  |
 | `T`                               | open tab menu                                                                                                                                                                       |
 | `space`                           | Toggle mark                                                                                                                                                                         |
-| `                                   | Invert mark (= mark all if nothing marked)                                                                                                                                                                     |
+| `                                   | Invert mark (= mark all if nothing marked)                                                                                                                                          |
 | `f3` `C-space`                  | preview (Mac have to change or uncheck default keyboard short cut C-Space) (Windows should install QuickLook https://github.com/QL-Win/QuickLook/releases) (Linux is not ready yet) |
 | `C-r`  `'`                      | refresh screen                                                                                                                                                                      |
 | `s`                               | Sort                                                                                                                                                                                |
@@ -106,14 +105,14 @@ Linux user need to install gnome-terminal for shell and gnoem-sushi for preview,
 | `G`                               | Glob recursive                                                                                                                                                                      |
 | `C-[` = `esc`                   | Cancel                                                                                                                                                                              |
 | `q` `Q`                         | Quit                                                                                                                                                                                |
-| `y`                               | yank(or copy) file to clipboard (it can be pasted to windows explore and mac finder)                                                                                                                                                    |
-| `p`                               | paste yanked file to this directory (gofuli can paste copied files from windows explore and mac finder)               |
+| `y`                               | yank(or copy) file to clipboard (it can be pasted to windows explore and mac finder)                                                                                                |
+| `p`                               | paste yanked file to this directory (gofuli can paste copied files from windows explore and mac finder)                                                                             |
 | `P`                               | move yanked file to this directory                                                                                                                                                  |
 | `Y`                               | copy file(or directory) path to clipboard                                                                                                                                           |
 | `F`                               | copy file(or directory) name only to clipboard                                                                                                                                      |
 | `O`                               | open this directory in finder, explorer...                                                                                                                                          |
-| `z`                               | zip marked files to neighbor dir                                                                                                                                              |
-| `Z`                               | zip marked files to this dir                                                                                                                                                  |
+| `z`                               | zip marked files to neighbor dir                                                                                                                                                    |
+| `Z`                               | zip marked files to this dir                                                                                                                                                        |
 | `a`                               | unzip file to neighbor dir                                                                                                                                                          |
 | `A`                               | unzip file go this dir                                                                                                                                                              |
 
@@ -340,6 +339,7 @@ if you want to switch order, open ~/.goful/myBookmark, edit order -> save -> qui
 * regist your Bookmark by 'B' Key
 * surport mouse
 * faster folder refresh
+* mac nfd transper to nfc
 
 ### some tweaks for windows user
 
