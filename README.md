@@ -1,10 +1,10 @@
-# Goful
+# Gofuli
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/anmitsu/goful)](https://goreportcard.com/report/github.com/anmitsu/goful)
 [![Go Reference](https://pkg.go.dev/badge/github.com/anmitsu/goful.svg)](https://pkg.go.dev/github.com/anmitsu/goful)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/epainos/gofuli/blob/master/LICENSE)
 
-Goful is a CUI terminal file manager written in Go.
+Gofuli is a CUI terminal file manager written in Go.
 
 * Works on cross-platform such as gnome-terminal, osx and windows terminal(cmd.exe is ok but not recommended. powershell or windows terminal is better).
 * Displays multiple windows and workspaces
