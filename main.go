@@ -87,7 +87,7 @@ func config(g *app.Goful, is_tmux bool) {
 	opener := "xdg-open %m %&"
 	switch runtime.GOOS {
 	case "windows":
-		opener = "Invoke-Item -LiteralPath %F %&" //windows // open selected files with full path
+		opener = "Invoke-Item  %c %&" // c meaans comma separated file name
 		// opener = "explorer '%~f' %&" //windows //open olny one file
 	case "darwin":
 		opener = "open %m %&"
@@ -451,7 +451,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 	opener := "xdg-open %m %&"
 	switch runtime.GOOS {
 	case "windows":
-		opener = "Invoke-Item -LiteralPath  %F %&"
+		opener = "Invoke-Item  %c %&" // c meaans comma separated file name
 	case "darwin":
 		opener = "open %m %&"
 	}
